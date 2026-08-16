@@ -10,13 +10,13 @@ export function Section({
   tone?: "light" | "muted" | "dark";
 }) {
   const tones = {
-    light: "bg-white text-ink",
-    muted: "bg-surface text-ink",
-    dark: "bg-navy-900 text-white",
+    light: "bg-elevated text-ink",
+    muted: "bg-surface-muted text-ink",
+    dark: "tc-hero-mesh text-white",
   };
 
   return (
-    <section className={cn("py-16 sm:py-20 lg:py-24", tones[tone], className)}>
+    <section className={cn("py-12 sm:py-20 lg:py-24", tones[tone], className)}>
       {children}
     </section>
   );

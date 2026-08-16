@@ -11,7 +11,7 @@ export function AdminPlaceholder({
 }) {
   return (
     <div className="space-y-8">
-      <Breadcrumb items={[{ href: "/admin", label: "Dashboard" }, { label: title }]} />
+      <Breadcrumb items={[{ href: "/admin/dashboard", label: "Dashboard" }, { label: title }]} />
       <PageHeader title={title} description={description} />
       <EmptyState
         title="CRUD is not enabled in this phase"

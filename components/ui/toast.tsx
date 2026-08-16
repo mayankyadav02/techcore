@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={value}>
       {children}
       <div
-        className="pointer-events-none fixed right-4 bottom-4 z-50 flex w-[min(22rem,calc(100%-2rem))] flex-col gap-2"
+        className="pointer-events-none fixed right-4 bottom-4 left-4 z-50 flex max-w-sm flex-col gap-2 sm:left-auto sm:w-[min(22rem,calc(100%-2rem))]"
         aria-live="polite"
         aria-relevant="additions"
       >
@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto border bg-white px-4 py-3 shadow-[var(--shadow-md)]",
+              "pointer-events-auto border bg-elevated px-4 py-3 shadow-[var(--shadow-md)]",
               toast.tone === "danger"
                 ? "border-danger/30"
                 : toast.tone === "success"

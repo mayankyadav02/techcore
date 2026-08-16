@@ -3,101 +3,348 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { publicCta, publicNav } from "@/lib/site";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  ArrowRight,
+  Menu,
+  X,
+} from "lucide-react";
+
+import { desktopNav, publicCta } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
-import { IconButton } from "@/components/ui/icon-button";
 import { Logo } from "@/components/marketing/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+
+function navActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
+
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12);
     };
-  }, [open]);
+
+    onScroll();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  // Close mobile navigation whenever route changes.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Lock page scrolling while mobile menu is open.
+  useEffect(() => {
+    if (!mobileOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
+
+  // Escape closes the mobile navigation.
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
+
+  const invertChrome = !scrolled;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white">
-      <div className="mx-auto flex h-[var(--header-height)] max-w-[80rem] items-center justify-between gap-6 px-5 sm:px-6 lg:px-8">
-        <Logo />
-        <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
-          {publicNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "text-sm font-medium transition-colors",
-                pathname === item.href
-                  ? "text-navy-900"
-                  : "text-ink-muted hover:text-navy-900",
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="hidden lg:block">
-          <ButtonLink href={publicCta.href} size="sm">
-            {publicCta.label}
-          </ButtonLink>
-        </div>
-        <IconButton
-          label={open ? "Close menu" : "Open menu"}
-          className="lg:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-navigation"
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? <CloseIcon /> : <MenuIcon />}
-        </IconButton>
-      </div>
-      {open ? (
+    <>
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300",
+          scrolled
+            ? "border-line bg-elevated/92 shadow-[var(--shadow-sm)] backdrop-blur-xl"
+            : "border-transparent bg-transparent",
+        )}
+      >
         <div
-          id="mobile-navigation"
-          className="border-t border-line bg-white lg:hidden"
+          className={cn(
+            "relative mx-auto flex h-[var(--header-height)] max-w-[80rem] min-w-0 items-center px-4 sm:px-6 lg:px-8",
+            mobileOpen && "relative z-[70]",
+          )}
         >
-          <nav aria-label="Mobile" className="flex flex-col px-5 py-4">
-            {publicNav.map((item) => (
+{/* Logo */}
+<div className="shrink-0">
+  <Logo
+    inverted={invertChrome}
+    className="min-w-0 transition-transform duration-200 hover:scale-[1.025] motion-reduce:hover:scale-100"
+    priority
+    size="md"
+  />
+          </div>
+          
+          {/* Desktop navigation */}
+          <nav
+            aria-label="Primary"
+            className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-3 lg:flex xl:gap-5"
+          >
+            {desktopNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setOpen(false)}
                 className={cn(
-                  "border-b border-line py-3 text-base font-medium",
-                  pathname === item.href ? "text-navy-900" : "text-ink-muted",
+                  "relative text-[0.78rem] font-medium whitespace-nowrap transition-colors after:absolute after:right-0 after:-bottom-1 after:left-0 after:h-px after:origin-left after:bg-brand after:transition-transform after:duration-200 xl:text-[0.8125rem]",
+                  navActive(pathname, item.href)
+                    ? invertChrome
+                      ? "text-white after:scale-x-100"
+                      : "text-ink after:scale-x-100"
+                    : invertChrome
+                      ? "text-white/70 after:scale-x-0 hover:text-white hover:after:scale-x-100"
+                      : "text-ink-muted after:scale-x-0 hover:text-ink hover:after:scale-x-100",
                 )}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="pt-4">
-              <ButtonLink href={publicCta.href} className="w-full">
-                {publicCta.label}
-              </ButtonLink>
-            </div>
           </nav>
+
+          {/* Desktop actions */}
+          <div className="ml-auto hidden items-center gap-2 lg:flex">
+            <ThemeToggle invert={invertChrome} />
+
+            <ButtonLink
+              href={publicCta.href}
+              variant="secondary"
+              size="sm"
+              className="group"
+            >
+              <span>{publicCta.label}</span>
+              <ArrowRight
+                size={15}
+                strokeWidth={1.8}
+                className="transition-transform duration-200 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </ButtonLink>
+          </div>
+
+          {/* Mobile actions */}
+          <div className="ml-auto flex items-center gap-1.5 lg:hidden">
+            <ThemeToggle invert={invertChrome} />
+
+            <button
+  type="button"
+  aria-label={
+    mobileOpen ? "Close navigation menu" : "Open navigation menu"
+  }
+  aria-expanded={mobileOpen}
+  aria-controls="mobile-navigation"
+  onClick={() => setMobileOpen((current) => !current)}
+className={cn(
+  "flex h-11 w-11 items-center justify-center",
+  "transition-colors duration-200",
+  invertChrome
+    ? "text-white hover:text-brand-bright"
+    : "text-ink hover:text-brand-dark",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+  "motion-reduce:transition-none",
+)}
+>
+  <AnimatePresence mode="wait" initial={false}>
+    {mobileOpen ? (
+      <motion.span
+        key="close"
+        initial={
+          reduce
+            ? false
+            : { opacity: 0, rotate: -45, scale: 0.8 }
+        }
+        animate={{ opacity: 1, rotate: 0, scale: 1 }}
+        exit={{ opacity: 0, rotate: 45, scale: 0.8 }}
+        transition={{ duration: 0.16 }}
+        className="flex"
+      >
+        <X size={22} strokeWidth={1.7} aria-hidden="true" />
+      </motion.span>
+    ) : (
+      <motion.span
+        key="menu"
+        initial={
+          reduce
+            ? false
+            : { opacity: 0, rotate: 45, scale: 0.8 }
+        }
+        animate={{ opacity: 1, rotate: 0, scale: 1 }}
+        exit={{ opacity: 0, rotate: -45, scale: 0.8 }}
+        transition={{ duration: 0.16 }}
+        className="flex"
+      >
+        <Menu size={22} strokeWidth={1.7} aria-hidden="true" />
+      </motion.span>
+    )}
+  </AnimatePresence>
+</button>
+          </div>
         </div>
-      ) : null}
-    </header>
-  );
-}
+      </header>
 
-function MenuIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
+      {/* Mobile navigation */}
+      <AnimatePresence>
+        {mobileOpen ? (
+          <>
+            {/* Backdrop */}
+            <motion.button
+              type="button"
+              aria-label="Close navigation"
+              className="fixed inset-0 z-[55] bg-navy-950/55 backdrop-blur-sm lg:hidden"
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileOpen(false)}
+            />
 
-function CloseIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
+            {/* Drawer */}
+            <motion.aside
+              id="mobile-navigation"
+              aria-label="Mobile navigation"
+              className="fixed inset-x-3 top-[calc(var(--header-height)+0.5rem)] z-[60] overflow-hidden rounded-[1.5rem] border border-line bg-elevated/95 shadow-[var(--shadow-lg)] backdrop-blur-2xl lg:hidden"
+              initial={
+                reduce
+                  ? false
+                  : {
+                      opacity: 0,
+                      y: -12,
+                      scale: 0.98,
+                    }
+              }
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={
+                reduce
+                  ? undefined
+                  : {
+                      opacity: 0,
+                      y: -8,
+                      scale: 0.985,
+                    }
+              }
+              transition={{
+                duration: reduce ? 0 : 0.22,
+                ease: "easeOut",
+              }}
+            >
+              {/* Small brand accent */}
+              <div
+                className="h-px w-full bg-gradient-to-r from-transparent via-brand to-transparent"
+                aria-hidden="true"
+              />
+
+              <nav className="p-3" aria-label="Mobile primary">
+                <ul className="space-y-1">
+                  {desktopNav.map((item, index) => {
+                    const active = navActive(pathname, item.href);
+
+                    return (
+                      <motion.li
+                        key={item.href}
+                        initial={
+                          reduce
+                            ? false
+                            : {
+                                opacity: 0,
+                                x: -8,
+                              }
+                        }
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                        }}
+                        transition={{
+                          duration: 0.18,
+                          delay: reduce ? 0 : index * 0.025,
+                        }}
+                      >
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={cn(
+                            "relative flex min-h-12 items-center rounded-xl px-4 text-sm font-medium transition-all duration-200",
+                            active
+                              ? "bg-brand/10 text-brand-dark"
+                              : "text-ink-muted hover:bg-brand/5 hover:text-ink",
+                          )}
+                        >
+                          {active ? (
+                            <span
+                              className="absolute left-0 h-6 w-0.5 rounded-full bg-brand"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+
+                          <span>{item.label}</span>
+
+                          {active ? (
+                            <span
+                              className="ml-auto h-1.5 w-1.5 rounded-full bg-brand shadow-[0_0_10px_rgb(0_200_120_/_0.65)]"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                        </Link>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+
+                <div className="mt-3 border-t border-line pt-3">
+                  <ButtonLink
+                    href={publicCta.href}
+                    variant="primary"
+                    size="lg"
+                    className="group w-full justify-center"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <span>{publicCta.label}</span>
+                    <ArrowRight
+                      size={16}
+                      strokeWidth={1.8}
+                      className="transition-transform duration-200 group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </ButtonLink>
+                </div>
+              </nav>
+            </motion.aside>
+          </>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }

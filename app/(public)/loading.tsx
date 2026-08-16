@@ -1,5 +1,5 @@
-import { LoadingState } from "@/components/ui/spinner";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 
 export default function PublicLoading() {
-  return <LoadingState label="Loading" />;
+  return <LoadingScreen label="Loading" />;
 }

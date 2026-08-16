@@ -14,7 +14,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "border border-dashed border-line px-6 py-14 text-center",
+        "rounded-[var(--radius-lg)] border border-dashed border-line bg-elevated px-6 py-14 text-center",
         className,
       )}
     >

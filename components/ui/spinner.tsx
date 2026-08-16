@@ -4,7 +4,7 @@ export function Spinner({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-block h-5 w-5 animate-spin rounded-full border-2 border-line-strong border-t-navy-900",
+        "inline-block h-5 w-5 animate-spin rounded-full border-2 border-line-strong border-t-brand",
         className,
       )}
       aria-hidden="true"
@@ -19,7 +19,7 @@ export function LoadingState({
 }) {
   return (
     <div
-      className="flex items-center justify-center gap-3 py-16 text-sm text-ink-muted"
+      className="flex min-h-[40vh] items-center justify-center gap-3 py-20 text-sm text-ink-muted"
       role="status"
       aria-live="polite"
     >

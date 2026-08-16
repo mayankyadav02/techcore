@@ -1,8 +1,17 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/seo";
+import { loadListOrEmpty } from "@/lib/public-load";
+import {
+  listPublishedIndustrySlugs,
+  listPublishedServiceSlugs,
+  listPublishedSolutionSlugs,
+} from "@/modules/catalog/public.service";
+import { listPublishedProjectSlugs } from "@/modules/work/public.service";
+import { listPublishedPostSlugs } from "@/modules/insights/public.service";
+import { listOpenJobSlugs } from "@/modules/careers/public.service";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://techcore.example";
-  const paths = [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticPaths = [
     "",
     "/about",
     "/services",
@@ -12,13 +21,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/careers",
     "/blog",
     "/contact",
-    "/request-quote",
+    "/quote",
     "/privacy",
     "/terms",
   ];
 
-  return paths.map((path) => ({
-    url: `${base}${path}`,
+  const [serviceSlugs, solutionSlugs, industrySlugs, projectSlugs, jobSlugs, postSlugs] =
+    await Promise.all([
+      loadListOrEmpty(listPublishedServiceSlugs),
+      loadListOrEmpty(listPublishedSolutionSlugs),
+      loadListOrEmpty(listPublishedIndustrySlugs),
+      loadListOrEmpty(listPublishedProjectSlugs),
+      loadListOrEmpty(listOpenJobSlugs),
+      loadListOrEmpty(listPublishedPostSlugs),
+    ]);
+
+  const dynamic = [
+    ...serviceSlugs.map((item) => `/services/${item.slug}`),
+    ...solutionSlugs.map((item) => `/solutions/${item.slug}`),
+    ...industrySlugs.map((item) => `/industries/${item.slug}`),
+    ...projectSlugs.map((item) => `/projects/${item.slug}`),
+    ...jobSlugs.map((item) => `/careers/${item.slug}`),
+    ...postSlugs.map((item) => `/blog/${item.slug}`),
+  ];
+
+  return [...staticPaths, ...dynamic].map((path) => ({
+    url: `${siteUrl}${path}`,
     lastModified: new Date(),
   }));
 }

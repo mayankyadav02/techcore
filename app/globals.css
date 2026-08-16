@@ -1,29 +1,72 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --navy-950: #07111f;
-  --navy-900: #0b1b33;
-  --navy-800: #122544;
-  --navy-700: #1a335c;
-  --blue-700: #1d4ed8;
-  --blue-600: #2563eb;
-  --surface: #f5f6f8;
-  --surface-muted: #eef0f3;
-  --ink: #0f172a;
-  --ink-muted: #475569;
-  --ink-subtle: #64748b;
-  --line: #e2e8f0;
-  --line-strong: #cbd5e1;
+  --tc-emerald: #00c878;
+  --tc-neon: #00f06a;
+  --tc-teal: #00d9c0;
+  --tc-navy: #07111f;
+  --tc-navy-surface: #0c1828;
+  --tc-dark-card: #101d2e;
+  --tc-dark-elevated: #132337;
+  --tc-light-bg: #f7faf9;
+  --tc-light-surface: #ffffff;
+  --tc-soft-green: #f0fbf6;
+  --tc-dark-text: #0b1726;
+  --tc-dark-main: #f4f7fa;
+  --tc-dark-muted: #9aa8b8;
+  --tc-light-muted: #5d6875;
+  --tc-line: #dce9e3;
+  --tc-gradient: linear-gradient(135deg, var(--tc-emerald), var(--tc-teal));
+
+  --brand: var(--tc-emerald);
+  --brand-deep: #00a866;
+  --brand-bright: var(--tc-neon);
+  --brand-teal: var(--tc-teal);
+  --navy-950: var(--tc-navy);
+  --navy-900: var(--tc-navy-surface);
+  --navy-800: var(--tc-dark-card);
+  --navy-700: var(--tc-dark-elevated);
+  --blue-700: var(--tc-emerald);
+  --blue-600: var(--tc-neon);
+  --surface: var(--tc-light-bg);
+  --surface-muted: var(--tc-soft-green);
+  --elevated: var(--tc-light-surface);
+  --ink: var(--tc-dark-text);
+  --ink-muted: var(--tc-light-muted);
+  --ink-subtle: #7a8794;
+  --line: var(--tc-line);
+  --line-strong: #c5d8cf;
   --danger: #b42318;
-  --success: #027a48;
+  --success: #00a866;
   --warning: #b54708;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
-  --shadow-md: 0 8px 24px rgb(15 23 42 / 0.06);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 2px rgb(7 17 31 / 0.04), 0 8px 20px rgb(0 200 120 / 0.06);
+  --shadow-md: 0 12px 36px rgb(7 17 31 / 0.08), 0 10px 28px rgb(0 200 120 / 0.1);
   --header-height: 4.25rem;
+  --mobile-tabbar: 4.25rem;
   --admin-sidebar: 15.5rem;
+}
+
+.dark {
+  --navy-950: var(--tc-navy);
+  --navy-900: var(--tc-navy-surface);
+  --navy-800: var(--tc-dark-card);
+  --navy-700: var(--tc-dark-elevated);
+  --surface: var(--tc-navy);
+  --surface-muted: var(--tc-navy-surface);
+  --elevated: var(--tc-dark-card);
+  --ink: var(--tc-dark-main);
+  --ink-muted: var(--tc-dark-muted);
+  --ink-subtle: #7d8b9a;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(0 200 120 / 0.18);
+  --shadow-sm: 0 1px 2px rgb(7 17 31 / 0.45);
+  --shadow-md: 0 16px 40px rgb(7 17 31 / 0.55), 0 0 40px rgb(0 200 120 / 0.08);
 }
 
 @theme inline {
@@ -31,10 +74,13 @@
   --color-navy-900: var(--navy-900);
   --color-navy-800: var(--navy-800);
   --color-navy-700: var(--navy-700);
-  --color-brand: var(--blue-600);
-  --color-brand-dark: var(--blue-700);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-deep);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-teal: var(--brand-teal);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-elevated: var(--elevated);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-ink-subtle: var(--ink-subtle);
@@ -44,30 +90,135 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --font-sans: var(--font-sans-family);
+  --font-heading: var(--font-heading-family);
   --container-site: 72rem;
   --container-wide: 80rem;
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 0.75rem);
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans-family), ui-sans-serif, system-ui, sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 1.03125rem;
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+.dark body {
+  background:
+    radial-gradient(1100px 420px at 85% -8%, rgb(0 200 120 / 0.08), transparent 55%),
+    var(--surface);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-heading-family), var(--font-sans-family), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.03em;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--blue-600) 18%, white);
+  background: color-mix(in srgb, var(--brand) 28%, var(--elevated));
   color: var(--ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--blue-600);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+.tc-gradient {
+  background-image: var(--tc-gradient);
+}
+
+.text-hero {
+  font-size: clamp(2.75rem, 6vw, 5.5rem);
+  line-height: 1.05;
+}
+
+.text-display {
+  font-size: clamp(2rem, 3.6vw, 3.15rem);
+  line-height: 1.12;
+}
+
+.tc-hero-mesh {
+  background:
+    radial-gradient(ellipse 80% 60% at 90% -10%, rgb(0 240 106 / 0.18), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 0% 100%, rgb(0 217 192 / 0.12), transparent 50%),
+    var(--tc-navy);
+}
+
+.card-lift {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.motion-fade {
+  animation: fade-in 0.2s ease-out;
+}
+
+dialog[open] {
+  animation: dialog-in 0.18s ease-out;
+}
+
+dialog[open]::backdrop {
+  animation: overlay-in 0.18s ease-out;
+}
+
+details[open] .accordion-panel {
+  animation: fade-in 0.18s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -82,5 +233,9 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .card-lift:hover {
+    transform: none;
   }
 }

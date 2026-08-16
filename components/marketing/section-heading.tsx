@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 export function SectionHeading({
   eyebrow,
@@ -22,14 +21,19 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? (
-        <Badge tone={inverted ? "brand" : "navy"} className="mb-4">
+        <p
+          className={cn(
+            "mb-3 text-xs font-medium tracking-[0.18em] uppercase",
+            inverted ? "text-brand-bright" : "text-brand-dark",
+          )}
+        >
           {eyebrow}
-        </Badge>
+        </p>
       ) : null}
       <h2
         className={cn(
-          "text-3xl font-semibold tracking-tight sm:text-4xl",
-          inverted ? "text-white" : "text-navy-900",
+          "text-display font-semibold tracking-tight break-words",
+          inverted ? "text-white" : "text-ink",
         )}
       >
         {title}

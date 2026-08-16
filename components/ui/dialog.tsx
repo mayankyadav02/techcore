@@ -33,7 +33,7 @@ export function Dialog({
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
-      className="w-[min(32rem,calc(100%-2rem))] rounded-[var(--radius-lg)] border border-line bg-white p-0 text-ink shadow-[var(--shadow-md)] backdrop:bg-navy-950/50"
+      className="max-h-[min(36rem,calc(100dvh-2rem))] w-[min(32rem,calc(100%-2rem))] overflow-y-auto overscroll-contain rounded-[var(--radius-lg)] border border-line bg-elevated p-0 text-ink shadow-[var(--shadow-md)] backdrop:bg-navy-950/50"
       onClose={onClose}
     >
       <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">

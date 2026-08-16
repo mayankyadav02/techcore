@@ -24,7 +24,7 @@ export default function GlobalError({
         <button
           type="button"
           onClick={reset}
-          className="text-sm font-medium text-navy-900 underline"
+          className="text-sm font-medium text-ink underline"
         >
           Try again
         </button>

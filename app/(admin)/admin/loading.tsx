@@ -1,5 +1,5 @@
-import { LoadingState } from "@/components/ui/spinner";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 
 export default function AdminLoading() {
-  return <LoadingState label="Loading admin" />;
+  return <LoadingScreen label="Loading admin" />;
 }

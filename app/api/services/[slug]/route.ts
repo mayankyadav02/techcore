@@ -1,0 +1,6 @@
+import { getByParamHandler } from "@/lib/api/handlers";
+import { getPublicServiceApi } from "@/lib/public-api";
+
+export const dynamic = "force-dynamic";
+
+export const GET = getByParamHandler(getPublicServiceApi, "slug");

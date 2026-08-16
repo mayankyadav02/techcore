@@ -30,7 +30,7 @@ export function Tabs({
               className={cn(
                 "-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors",
                 selected
-                  ? "border-navy-900 text-navy-900"
+                  ? "border-brand text-ink"
                   : "border-transparent text-ink-muted hover:text-ink",
               )}
               onClick={() => setActive(tab.id)}

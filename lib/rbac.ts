@@ -57,3 +57,16 @@ const rolePermissions: Record<Role, readonly Permission[]> = {
 export function hasPermission(role: Role, permission: Permission): boolean {
   return rolePermissions[role].includes(permission);
 }
+
+export function roleLabel(role: Role) {
+  switch (role) {
+    case "super_admin":
+      return "Super admin";
+    case "admin":
+      return "Admin";
+    case "editor":
+      return "Editor";
+    case "viewer":
+      return "Viewer";
+  }
+}

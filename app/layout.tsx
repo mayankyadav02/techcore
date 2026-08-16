@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import { ToastProvider } from "@/components/ui/toast";
+import { siteUrl } from "@/lib/seo";
+import { site } from "@/lib/site";
+import { themeScript } from "@/lib/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,14 +13,20 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-heading-family",
+  weight: ["600", "700"],
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://techcore.example"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "TechCore — Technology That Moves Business",
-    template: "%s | TechCore",
+    default: `${site.name} — ${site.tagline.replace(/\.$/, "")}`,
+    template: `%s | ${site.name}`,
   },
-  description:
-    "IT services, technology solutions, and industry expertise from TechCore.",
+  description: site.description,
 };
 
 export default function RootLayout({
@@ -26,8 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full font-sans text-ink">
+    <html
+      lang="en"
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-full bg-surface font-sans text-ink">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

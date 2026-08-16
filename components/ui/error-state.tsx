@@ -7,7 +7,7 @@ export function ErrorState({
 }) {
   return (
     <div
-      className="border border-line bg-white px-6 py-14 text-center"
+      className="border border-line bg-elevated px-6 py-14 text-center"
       role="alert"
     >
       <h2 className="text-lg font-semibold text-ink">{title}</h2>

@@ -1,3 +1,6 @@
+import type { Permission } from "@/lib/rbac";
+import { hasPermission, type Role } from "@/lib/rbac";
+
 export const site = {
   name: "TechCore",
   tagline: "Technology That Moves Business.",
@@ -14,38 +17,52 @@ export type NavItem = {
 };
 
 export const publicNav: NavItem[] = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/solutions", label: "Solutions" },
+  { href: "/industries", label: "Industries" },
   { href: "/projects", label: "Projects" },
   { href: "/careers", label: "Careers" },
   { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
 ];
 
+export const desktopNav: NavItem[] = publicNav.filter((item) => item.href !== "/");
+
 export const publicCta: NavItem = {
-  href: "/request-quote",
-  label: "Start a Project",
+  href: "/quote",
+  label: "Request a Quote",
 };
 
 export const footerGroups = [
-  {
-    title: "Services",
-    links: [
-      { href: "/services", label: "IT Services" },
-      { href: "/solutions", label: "Solutions" },
-      { href: "/industries", label: "Industries" },
-      { href: "/projects", label: "Projects" },
-    ],
-  },
   {
     title: "Company",
     links: [
       { href: "/about", label: "About" },
       { href: "/careers", label: "Careers" },
       { href: "/contact", label: "Contact" },
-      { href: "/request-quote", label: "Request a Quote" },
+      { href: "/quote", label: "Request a Quote" },
     ],
+  },
+  {
+    title: "Services",
+    links: [
+      { href: "/services", label: "All services" },
+      { href: "/services/web-development", label: "Web Development" },
+      { href: "/services/mobile-app-development", label: "Mobile Apps" },
+      { href: "/services/custom-software", label: "Custom Software" },
+    ],
+  },
+  {
+    title: "Solutions",
+    links: [
+      { href: "/solutions", label: "All solutions" },
+      { href: "/projects", label: "Projects" },
+    ],
+  },
+  {
+    title: "Industries",
+    links: [{ href: "/industries", label: "All industries" }],
   },
   {
     title: "Resources",
@@ -62,15 +79,24 @@ export const socialLinks = [
   { href: "https://x.com", label: "X" },
 ] as const;
 
-export const adminNav = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/services", label: "Services" },
-  { href: "/admin/solutions", label: "Solutions" },
-  { href: "/admin/projects", label: "Projects" },
-  { href: "/admin/blog", label: "Blog" },
-  { href: "/admin/careers", label: "Careers" },
-  { href: "/admin/applications", label: "Applications" },
-  { href: "/admin/enquiries", label: "Enquiries" },
-  { href: "/admin/testimonials", label: "Testimonials" },
-  { href: "/admin/settings", label: "Settings" },
-] as const;
+export const adminNav: {
+  href: string;
+  label: string;
+  permission: Permission;
+}[] = [
+  { href: "/admin/dashboard", label: "Dashboard", permission: "dashboard:read" },
+  { href: "/admin/services", label: "Services", permission: "content:read" },
+  { href: "/admin/solutions", label: "Solutions", permission: "content:read" },
+  { href: "/admin/industries", label: "Industries", permission: "content:read" },
+  { href: "/admin/projects", label: "Projects", permission: "content:read" },
+  { href: "/admin/blog", label: "Blog", permission: "content:read" },
+  { href: "/admin/careers", label: "Careers", permission: "content:read" },
+  { href: "/admin/applications", label: "Applications", permission: "leads:read" },
+  { href: "/admin/enquiries", label: "Enquiries", permission: "leads:read" },
+  { href: "/admin/testimonials", label: "Testimonials", permission: "testimonials:read" },
+  { href: "/admin/settings", label: "Settings", permission: "settings:read" },
+];
+
+export function adminNavForRole(role: Role) {
+  return adminNav.filter((item) => hasPermission(role, item.permission));
+}

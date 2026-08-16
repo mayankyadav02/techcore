@@ -11,7 +11,7 @@ export function Breadcrumb({
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`} className="flex items-center gap-2">
             {item.href ? (
-              <Link href={item.href} className="hover:text-ink">
+              <Link href={item.href} className="inline-flex min-h-10 items-center hover:text-ink">
                 {item.label}
               </Link>
             ) : (
