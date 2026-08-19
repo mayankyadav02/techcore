@@ -105,8 +105,12 @@ export default async function HomePage() {
         }}
       />
 
-    <section
-  className="relative isolate overflow-hidden bg-navy-950 text-white"
+<section
+  className="
+    relative isolate overflow-hidden
+    bg-surface text-ink
+    dark:bg-navy-950 dark:text-white
+  "
   style={{
     backgroundImage: "url('/images/hero.png')",
     backgroundSize: "cover",
@@ -114,41 +118,174 @@ export default async function HomePage() {
     backgroundRepeat: "no-repeat",
   }}
 >
-  {/* Premium dark overlay */}
+  {/* =========================================================
+      LIGHT MODE
+      Soft green/white atmosphere while keeping hero image visible
+      ========================================================= */}
+
+  {/* Light base wash */}
   <div
-    className="absolute inset-0 bg-navy-950/60"
+    className="
+      absolute inset-0
+      bg-white/65
+      dark:hidden
+    "
     aria-hidden="true"
   />
 
-  {/* Left-to-right readability gradient */}
+  {/* Light green readability gradient */}
   <div
-    className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-950/75 to-navy-950/45"
+    className="
+      pointer-events-none absolute inset-0
+      bg-gradient-to-br
+      from-white/75
+      via-emerald-50/55
+      to-emerald-100/35
+      dark:hidden
+    "
     aria-hidden="true"
   />
 
-  {/* Subtle emerald atmospheric glow */}
+  {/* Light subtle left readability */}
   <div
-    className="pointer-events-none absolute -right-32 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-brand/10 blur-3xl"
+    className="
+      pointer-events-none absolute inset-0
+      bg-gradient-to-r
+      from-white/55
+      via-white/15
+      to-transparent
+      dark:hidden
+    "
     aria-hidden="true"
   />
 
-  <Container className="relative grid items-center gap-8 pt-[calc(var(--header-height)+2.25rem)] pb-12 sm:gap-12 sm:pb-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:pb-24">
+  {/* =========================================================
+      DARK MODE
+      Transparent dark overlay so background image remains visible
+      ========================================================= */}
+
+  {/* Dark base overlay */}
+  <div
+    className="
+      absolute inset-0 hidden
+      bg-navy-950/18
+      dark:block
+    "
+    aria-hidden="true"
+  />
+
+  {/* Dark readability gradient */}
+  <div
+    className="
+      pointer-events-none absolute inset-0 hidden
+      bg-gradient-to-r
+      from-navy-950/55
+      via-navy-950/25
+      to-transparent
+      dark:block
+    "
+    aria-hidden="true"
+  />
+
+  {/* =========================================================
+      ATMOSPHERIC GLOW
+      ========================================================= */}
+
+  {/* Light green glow */}
+  <div
+    className="
+      pointer-events-none absolute
+      -right-32 top-1/2
+      h-96 w-96
+      -translate-y-1/2
+      rounded-full
+      bg-brand/10
+      blur-3xl
+      dark:hidden
+    "
+    aria-hidden="true"
+  />
+
+  {/* Dark emerald glow */}
+  <div
+    className="
+      pointer-events-none absolute
+      -right-32 top-1/2
+      hidden h-96 w-96
+      -translate-y-1/2
+      rounded-full
+      bg-brand/10
+      blur-3xl
+      dark:block
+    "
+    aria-hidden="true"
+  />
+
+  {/* =========================================================
+      CONTENT
+      ========================================================= */}
+
+  <Container
+    className="
+      relative grid items-center gap-8
+      pt-[calc(var(--header-height)+2.25rem)]
+      pb-12
+      sm:gap-12 sm:pb-16
+      lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]
+      lg:pb-24
+    "
+  >
     <div className="min-w-0">
-      <p className="text-xs font-medium tracking-[0.18em] text-brand-bright uppercase">
+      {/* Eyebrow */}
+      <p
+        className="
+          text-xs font-medium
+          tracking-[0.18em]
+          text-brand-dark
+          uppercase
+          dark:text-brand-bright
+        "
+      >
         IT services &amp; software
       </p>
 
-      <h1 className="font-heading text-hero mt-4 max-w-3xl font-semibold tracking-tight break-words">
+      {/* Main heading */}
+      <h1
+        className="
+          font-heading text-hero
+          mt-4 max-w-3xl
+          font-semibold
+          tracking-tight
+          break-words
+          text-navy-950
+          dark:text-white
+        "
+      >
         Digital Solutions Built for Businesses That Want to Grow.
       </h1>
 
-      <p className="mt-5 max-w-xl text-base leading-7 text-white/70 sm:mt-6 sm:text-lg">
+      {/* Description */}
+      <p
+        className="
+          mt-5 max-w-xl
+          text-base leading-7
+          text-ink-muted
+          sm:mt-6 sm:text-lg
+          dark:text-white/70
+        "
+      >
         TechCore designs and develops modern websites, applications and
         software solutions that help businesses build stronger digital
         experiences.
       </p>
 
-      <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap">
+      {/* CTA Buttons */}
+      <div
+        className="
+          mt-8 flex flex-col gap-3
+          sm:mt-10 sm:flex-row sm:flex-wrap
+        "
+      >
         <ButtonLink
           href="/quote"
           variant="primary"
@@ -162,7 +299,17 @@ export default async function HomePage() {
           href="/services"
           variant="inverse"
           size="lg"
-          className="w-full sm:w-auto"
+          className="
+            w-full sm:w-auto
+            border-navy-950/20
+            bg-white/35
+            text-navy-950
+            hover:bg-white/55
+            dark:border-white/20
+            dark:bg-transparent
+            dark:text-white
+            dark:hover:bg-white/8
+          "
         >
           Explore Services
         </ButtonLink>
@@ -171,7 +318,17 @@ export default async function HomePage() {
           href="/projects"
           variant="inverse"
           size="lg"
-          className="w-full sm:w-auto"
+          className="
+            w-full sm:w-auto
+            border-navy-950/20
+            bg-white/35
+            text-navy-950
+            hover:bg-white/55
+            dark:border-white/20
+            dark:bg-transparent
+            dark:text-white
+            dark:hover:bg-white/8
+          "
         >
           View Projects
         </ButtonLink>
@@ -180,8 +337,7 @@ export default async function HomePage() {
 
     <HeroVisual stats={catalogueStats} />
   </Container>
-      </section>
-      
+</section>
 
       <TrustStrip />
       <StatsStrip items={publicStats} />
