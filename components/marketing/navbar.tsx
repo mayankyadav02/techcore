@@ -42,11 +42,6 @@ export function Navbar() {
     };
   }, []);
 
-  // Close mobile navigation whenever route changes.
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   // Lock page scrolling while mobile menu is open.
   useEffect(() => {
     if (!mobileOpen) {

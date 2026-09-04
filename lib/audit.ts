@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { connectMongo } from "@/lib/db";
 import { AuditLog } from "@/modules/shared/audit-log.model";
 
@@ -30,13 +31,23 @@ function sanitizeMetadata(
 export async function writeAuditLog(event: AuditEvent): Promise<void> {
   try {
     await connectMongo();
-    await AuditLog.create({
+    const logData: Record<string, unknown> = {
       action: event.action.slice(0, 80),
-      actorId: event.actorId,
       resourceType: event.resourceType.slice(0, 80),
       resourceId: event.resourceId?.slice(0, 80),
       metadata: sanitizeMetadata(event.metadata),
-    });
+    };
+
+    // Only include actorId if provided and valid
+    if (event.actorId) {
+      try {
+        logData.actorId = new mongoose.Types.ObjectId(event.actorId);
+      } catch {
+        // If not a valid ObjectId, omit it
+      }
+    }
+
+    await AuditLog.create(logData);
   } catch (error) {
     console.error(
       JSON.stringify({

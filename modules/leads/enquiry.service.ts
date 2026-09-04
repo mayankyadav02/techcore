@@ -4,6 +4,10 @@ import { writeAuditLog } from "@/lib/audit";
 import { opaqueRecordId } from "@/lib/api/ids";
 import { findPublishedServiceBySlug } from "@/modules/catalog/public.service";
 import { AppError } from "@/lib/errors";
+import {
+  sendContactEnquiryEmails,
+  sendQuoteEnquiryEmails,
+} from "@/modules/notifications/email.service";
 import type { z } from "zod";
 import type { contactApiSchema, enquiryApiSchema } from "@/modules/leads/schema";
 
@@ -33,6 +37,13 @@ export async function createContactEnquiry(
     resourceType: "Enquiry",
     resourceId: String(created._id),
     metadata: { type: "contact" },
+  });
+
+  await sendContactEnquiryEmails({
+    customerName: input.name,
+    customerEmail: input.email,
+    subject: input.subject,
+    message: input.message,
   });
 
   return { id: String(created._id) };
@@ -73,6 +84,15 @@ export async function createQuoteEnquiry(
     resourceType: "Enquiry",
     resourceId: String(created._id),
     metadata: { type: "quote" },
+  });
+
+  await sendQuoteEnquiryEmails({
+    customerName: input.name,
+    customerEmail: input.email,
+    company: input.company,
+    serviceName: service.title,
+    budgetRange: input.budget,
+    timeline: input.timeline,
   });
 
   return { id: String(created._id) };

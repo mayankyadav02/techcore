@@ -14,6 +14,9 @@ const envSchema = z
     MONGODB_URI: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     AUTH_SECRET: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     APP_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    EMAIL_FROM: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    ADMIN_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
   })
   .superRefine((data, ctx) => {
     const isProductionBuild =
@@ -57,6 +60,9 @@ function readEnv(): Env {
     MONGODB_URI: process.env.MONGODB_URI,
     AUTH_SECRET: process.env.AUTH_SECRET,
     APP_URL: process.env.APP_URL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   });
 
   if (!parsed.success) {

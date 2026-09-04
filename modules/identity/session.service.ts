@@ -11,6 +11,7 @@ import type { Role } from "@/lib/rbac";
 import { createHash, randomBytes } from "node:crypto";
 
 export type AuthUser = {
+  _id: string;
   id: string;
   email: string;
   name: string;
@@ -120,6 +121,7 @@ export async function resolveSession(
   }
 
   return {
+    _id: String(user._id),
     id: String(user._id),
     email: user.email,
     name: user.name,

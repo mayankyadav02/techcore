@@ -95,6 +95,7 @@ export async function loginWithPassword(input: {
   return {
     token,
     user: {
+      _id: String(user._id),
       id: String(user._id),
       email: user.email,
       name: user.name,
