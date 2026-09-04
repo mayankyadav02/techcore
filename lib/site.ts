@@ -94,6 +94,7 @@ export const adminNav: {
   { href: "/admin/applications", label: "Applications", permission: "leads:read" },
   { href: "/admin/enquiries", label: "Enquiries", permission: "leads:read" },
   { href: "/admin/testimonials", label: "Testimonials", permission: "testimonials:read" },
+  { href: "/admin/users", label: "Users", permission: "users:read" },
   { href: "/admin/settings", label: "Settings", permission: "settings:read" },
 ];
 
