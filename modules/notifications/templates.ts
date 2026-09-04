@@ -225,3 +225,40 @@ export function buildApplicationAdminEmail(input: {
 
   return { subject, text, html };
 }
+
+export function buildPasswordResetOtpEmail(input: {
+  userName: string;
+  otp: string;
+}) {
+  const subject = "TechCore CMS — Password Reset Code";
+  const text = [
+    `Hi ${input.userName},`,
+    "",
+    "You requested a password reset for your TechCore CMS account.",
+    "",
+    `Your verification code is: ${input.otp}`,
+    "",
+    "This code expires in 10 minutes and can only be used once.",
+    "If you did not request a password reset, you can safely ignore this email.",
+    "",
+    "Regards,",
+    "The TechCore team",
+    env.APP_URL || "https://localhost:3000",
+  ].join("\n");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
+      <h2 style="margin-bottom: 12px;">Password Reset Code</h2>
+      <p>Hi ${escapeHtml(input.userName)},</p>
+      <p>You requested a password reset for your TechCore CMS account.</p>
+      <p style="font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0a7c59; margin: 24px 0;">
+        ${escapeHtml(input.otp)}
+      </p>
+      <p>This code expires in <strong>10 minutes</strong> and can only be used once.</p>
+      <p>If you did not request this, you can safely ignore this email.</p>
+      <p>Regards,<br />The TechCore team</p>
+    </div>
+  `;
+
+  return { subject, text, html };
+}

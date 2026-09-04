@@ -1,6 +1,7 @@
 export { User } from "@/modules/identity/user.model";
 export { Session } from "@/modules/identity/session.model";
 export { Lockout } from "@/modules/identity/lockout.model";
+export { PasswordReset } from "@/modules/identity/password-reset.model";
 export { Service } from "@/modules/catalog/service.model";
 export { Solution } from "@/modules/catalog/solution.model";
 export { Industry } from "@/modules/catalog/industry.model";

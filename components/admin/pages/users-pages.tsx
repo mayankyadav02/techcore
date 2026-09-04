@@ -16,8 +16,10 @@ import {
   updateUserAction,
   disableUserAction,
   deleteUserAction,
+  resetUserPasswordAction,
 } from "@/modules/identity/actions";
 import { UserForm } from "@/components/admin/forms/user-form";
+import { PasswordResetForm } from "@/components/admin/forms/password-reset-form";
 
 export async function UsersListPage({
   searchParams,
@@ -167,6 +169,12 @@ export async function UsersDetailPage({ id }: { id: string }) {
           showPassword={false}
         />
       </div>
+
+      {!isOwnAccount && (
+        <div className="max-w-2xl border-t border-line pt-6">
+          <PasswordResetForm action={resetUserPasswordAction.bind(null, id)} />
+        </div>
+      )}
 
       {!isOwnAccount && detail.status !== "disabled" && (
         <div className="max-w-2xl border-t border-line pt-6">

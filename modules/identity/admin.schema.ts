@@ -35,3 +35,7 @@ export const userUpdateSchema = z.object({
 export const userStatusSchema = z.object({
   status: z.enum(userStatuses as unknown as [string, ...string[]]),
 });
+
+export const userPasswordResetSchema = z.object({
+  password: adminPasswordSchema,
+});

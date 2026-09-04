@@ -7,12 +7,14 @@ import { formString } from "@/lib/admin/query";
 import {
   userInputSchema,
   userUpdateSchema,
+  userPasswordResetSchema,
 } from "@/modules/identity/admin.schema";
 import {
   createUser,
   updateUser,
   disableUser,
   deleteUser,
+  resetUserPassword,
 } from "@/modules/identity/admin.service";
 
 function createPayload(formData: FormData) {
@@ -75,5 +77,23 @@ export async function deleteUserAction(id: string) {
     }
     await deleteUser(id, user._id?.toString());
     return { ok: true as const, message: "User deleted." };
+  });
+}
+
+function passwordResetPayload(formData: FormData) {
+  return parseForm(userPasswordResetSchema, {
+    password: formString(formData.get("password")),
+  });
+}
+
+export async function resetUserPasswordAction(id: string, formData: FormData) {
+  return runAdminAction(async () => {
+    const user = await requirePermission("users:write");
+    if (user._id?.toString() === id) {
+      throw new Error("You cannot reset your own password here.");
+    }
+    
+    await resetUserPassword(id, passwordResetPayload(formData), user._id?.toString());
+    return { ok: true as const, message: "Password reset successfully." };
   });
 }

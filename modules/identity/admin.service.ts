@@ -265,3 +265,35 @@ export async function deleteUser(id: string, actorId?: string): Promise<void> {
     },
   });
 }
+
+export async function resetUserPassword(
+  id: string,
+  input: z.infer<typeof import("@/modules/identity/admin.schema").userPasswordResetSchema>,
+  actorId?: string,
+): Promise<void> {
+  await connectMongo();
+
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError("NOT_FOUND", "User not found.");
+  }
+
+  const passwordHash = await hashPassword(input.password);
+  
+  user.passwordHash = passwordHash;
+  user.passwordChangedAt = new Date();
+  await user.save();
+
+  await writeAuditLog({
+    actorId,
+    action: "user_password_reset",
+    resourceType: "User",
+    resourceId: user._id?.toString(),
+    metadata: {
+      email: user.email,
+    },
+  });
+
+  const { destroySessionsForUser } = await import("@/modules/identity/session.service");
+  await destroySessionsForUser(id);
+}

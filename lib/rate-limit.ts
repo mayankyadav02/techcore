@@ -11,6 +11,8 @@ const limits: Record<string, number> = {
   enquiry: 8,
   apply: 5,
   login: 10,
+  forgot_password: 3,
+  reset_password: 5,
 };
 
 function prune(now: number) {

@@ -5,6 +5,7 @@ import {
   buildApplicationCustomerEmail,
   buildContactAdminEmail,
   buildContactCustomerEmail,
+  buildPasswordResetOtpEmail,
   buildQuoteAdminEmail,
   buildQuoteCustomerEmail,
 } from "@/modules/notifications/templates";
@@ -219,4 +220,22 @@ export async function sendApplicationEmails(input: {
     skipped: results.every((result) => result.skipped),
     error: deliverySucceeded ? undefined : results.map((result) => result.error).filter(Boolean).join("; ") || undefined,
   };
+}
+
+export async function sendPasswordResetOtpEmail(input: {
+  to: string;
+  userName: string;
+  otp: string;
+}): Promise<EmailSendResult> {
+  const email = buildPasswordResetOtpEmail({
+    userName: input.userName,
+    otp: input.otp,
+  });
+  return sendEmail({
+    to: input.to,
+    subject: email.subject,
+    text: email.text,
+    html: email.html,
+    context: "auth.password_reset",
+  });
 }
