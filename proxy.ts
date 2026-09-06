@@ -8,7 +8,10 @@ export function proxy(request: NextRequest) {
   requestHeaders.set("x-pathname", pathname);
 
   const hasSession = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
-  const isLogin = pathname === "/admin/login";
+  const isPublicAdminPage =
+  pathname === "/admin/login" ||
+  pathname === "/admin/forgot-password" ||
+  pathname === "/admin/reset-password";
   const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/");
   const isAdminApi = pathname.startsWith("/api/admin");
 
@@ -23,7 +26,7 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  if (isAdminPage && !isLogin && !hasSession) {
+  if (isAdminPage && !isPublicAdminPage && !hasSession) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";
