@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { describe, it, beforeEach } from "node:test";
-import { connectMongo } from "@/lib/db";
+import { describe, it, beforeEach, after } from "node:test";
+import { connectMongo, disconnectMongo } from "@/lib/db";
 import { User } from "@/modules/models";
 import { hashPassword } from "@/modules/identity/password";
 import {
@@ -17,6 +17,10 @@ describe("user management", () => {
   beforeEach(async () => {
     await connectMongo();
     await User.deleteMany({});
+  });
+
+  after(async () => {
+    await disconnectMongo();
   });
 
   describe("authorization", () => {

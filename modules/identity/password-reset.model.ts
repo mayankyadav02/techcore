@@ -8,7 +8,7 @@ const passwordResetSchema = new Schema(
       required: true,
       index: true,
     },
-    /** SHA-256 hash of the 6-digit OTP — never store the raw OTP */
+    /** HMAC-SHA256 hash of the 6-digit OTP — never store the raw OTP */
     tokenHash: { type: String, required: true, unique: true },
     expiresAt: { type: Date, required: true },
     /** Number of failed verification attempts for this token */

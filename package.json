@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
     "seed:admin": "tsx scripts/seed-admin.ts",
-    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts"
+    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/password-reset.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.8.0",

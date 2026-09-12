@@ -1,5 +1,6 @@
-import { createHash, randomInt } from "node:crypto";
+import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import { connectMongo } from "@/lib/db";
+import { env } from "@/lib/env";
 import { AppError } from "@/lib/errors";
 import { writeAuditLog } from "@/lib/audit";
 import { User } from "@/modules/identity/user.model";
@@ -18,7 +19,20 @@ export function generateOtp(): string {
 }
 
 export function hashOtp(otp: string): string {
-  return createHash("sha256").update(otp).digest("hex");
+  if (!env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET is required to hash password reset OTPs.");
+  }
+
+  return createHmac("sha256", env.AUTH_SECRET).update(otp).digest("hex");
+}
+
+function hashesMatch(actual: string, expected: string): boolean {
+  const actualBuffer = Buffer.from(actual, "hex");
+  const expectedBuffer = Buffer.from(expected, "hex");
+  return (
+    actualBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(actualBuffer, expectedBuffer)
+  );
 }
 
 /**
@@ -120,7 +134,7 @@ export async function resetPasswordWithOtp(input: {
   record.attempts += 1;
   await record.save();
 
-  if (record.tokenHash !== tokenHash) {
+  if (!hashesMatch(record.tokenHash, tokenHash)) {
     if (record.attempts >= MAX_ATTEMPTS) {
       // Lock by marking used so the window error message is clear
       record.used = true;
