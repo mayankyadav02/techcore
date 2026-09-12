@@ -23,8 +23,6 @@ export function QuoteForm({
 }: {
   services: { slug: string; title: string }[];
 }) {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -55,8 +53,6 @@ export function QuoteForm({
       onSubmit={handleSubmit(async (values) => {
         setServerError(null);
         setServerMessage(null);
-
-        if (fileError) return;
 
         const result = await postJson("/api/enquiries", values);
 
@@ -237,49 +233,6 @@ export function QuoteForm({
               placeholder="Tell us about the problem, what you want to build, and anything important we should know."
               {...register("description")}
             />
-          </FormField>
-        </div>
-
-        {/* Attachment */}
-        <div className="mt-9 border-t border-line pt-8">
-          <FormField
-            label="Attachment"
-            htmlFor="attachment"
-            hint="Optional PDF or document, up to 5 MB. Include essential details in the project description."
-            error={fileError ?? undefined}
-          >
-            <div className="rounded-[var(--radius-md)] border border-dashed border-line bg-surface/60 p-4 transition-colors hover:border-brand/50 hover:bg-brand/5 sm:p-5">
-              <Input
-                id="attachment"
-                type="file"
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-
-                  setFileError(null);
-
-                  if (!file) {
-                    setFileName(null);
-                    return;
-                  }
-
-                  if (file.size > 5 * 1024 * 1024) {
-                    setFileError("Please choose a file under 5 MB.");
-                    setFileName(null);
-                    event.target.value = "";
-                    return;
-                  }
-
-                  setFileName(file.name);
-                }}
-              />
-
-              {fileName ? (
-                <p className="mt-3 break-all text-xs font-medium text-brand-dark">
-                  Selected: {fileName}
-                </p>
-              ) : null}
-            </div>
           </FormField>
         </div>
 
