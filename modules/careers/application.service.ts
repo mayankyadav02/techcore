@@ -6,6 +6,7 @@ import { Application } from "@/modules/careers/application.model";
 import { writeAuditLog } from "@/lib/audit";
 import { openJobFilter } from "@/modules/careers/public.service";
 import { sendApplicationEmails } from "@/modules/notifications/email.service";
+import { Settings } from "@/modules/content/settings.model";
 import type { z } from "zod";
 import type { applicationApiSchema } from "@/modules/leads/schema";
 
@@ -61,10 +62,15 @@ export async function createApplication(
     resourceId: String(created._id),
   });
 
+  const settings = await Settings.findOne({ key: "global" })
+    .select("contactEmail")
+    .lean();
+
   await sendApplicationEmails({
     applicantName: input.name,
     applicantEmail: input.email,
     jobTitle: job.title,
+    adminEmail: settings?.contactEmail || undefined,
   });
 
   return { id: String(created._id) };

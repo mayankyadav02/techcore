@@ -8,6 +8,7 @@ import {
   sendContactEnquiryEmails,
   sendQuoteEnquiryEmails,
 } from "@/modules/notifications/email.service";
+import { Settings } from "@/modules/content/settings.model";
 import type { z } from "zod";
 import type { contactApiSchema, enquiryApiSchema } from "@/modules/leads/schema";
 
@@ -39,11 +40,16 @@ export async function createContactEnquiry(
     metadata: { type: "contact" },
   });
 
+  const settings = await Settings.findOne({ key: "global" })
+    .select("contactEmail")
+    .lean();
+
   await sendContactEnquiryEmails({
     customerName: input.name,
     customerEmail: input.email,
     subject: input.subject,
     message: input.message,
+    adminEmail: settings?.contactEmail || undefined,
   });
 
   return { id: String(created._id) };
@@ -86,6 +92,10 @@ export async function createQuoteEnquiry(
     metadata: { type: "quote" },
   });
 
+  const settings = await Settings.findOne({ key: "global" })
+    .select("contactEmail")
+    .lean();
+
   await sendQuoteEnquiryEmails({
     customerName: input.name,
     customerEmail: input.email,
@@ -93,6 +103,7 @@ export async function createQuoteEnquiry(
     serviceName: service.title,
     budgetRange: input.budget,
     timeline: input.timeline,
+    adminEmail: settings?.contactEmail || undefined,
   });
 
   return { id: String(created._id) };

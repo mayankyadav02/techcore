@@ -115,10 +115,11 @@ export async function sendContactEnquiryEmails(input: {
   customerEmail: string;
   subject: string;
   message: string;
+  adminEmail?: string;
 }): Promise<EmailSendResult> {
   const customer = buildContactCustomerEmail(input);
   const admin = buildContactAdminEmail(input);
-  const adminEmail = env.ADMIN_EMAIL;
+  const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   const results = await Promise.all([
     sendEmail({
@@ -154,10 +155,11 @@ export async function sendQuoteEnquiryEmails(input: {
   serviceName: string;
   budgetRange: string;
   timeline: string;
+  adminEmail?: string;
 }): Promise<EmailSendResult> {
   const customer = buildQuoteCustomerEmail(input);
   const admin = buildQuoteAdminEmail(input);
-  const adminEmail = env.ADMIN_EMAIL;
+  const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   const results = await Promise.all([
     sendEmail({
@@ -190,10 +192,11 @@ export async function sendApplicationEmails(input: {
   applicantName: string;
   applicantEmail: string;
   jobTitle: string;
+  adminEmail?: string;
 }): Promise<EmailSendResult> {
   const customer = buildApplicationCustomerEmail(input);
   const admin = buildApplicationAdminEmail(input);
-  const adminEmail = env.ADMIN_EMAIL;
+  const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   const results = await Promise.all([
     sendEmail({
