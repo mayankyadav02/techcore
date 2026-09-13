@@ -8,12 +8,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { loadPublicServices } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Services",
-  description:
-    "Web, mobile, custom software, AI, cloud, design, security, and consulting from TechCore.",
-  path: "/services",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["services"] || {};
+  return pageMetadata({
+    title: "Services",
+    description: "Web, mobile, custom software, AI, cloud, design, security, and consulting from TechCore.",
+    path: "/services",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function ServicesPage() {
   const services = await loadPublicServices();

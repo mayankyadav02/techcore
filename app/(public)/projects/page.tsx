@@ -10,12 +10,21 @@ import { loadPublicProjects } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 import { projectFilterTags } from "@/lib/work/portfolio-filters";
 
-export const metadata = pageMetadata({
-  title: "Projects",
-  description:
-    "Fictional TechCore case studies: ShopFlow, CarePlus, FleetPro, LearnHub, EstatePro, FinServe, GymCore, and FoodHub.",
-  path: "/projects",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["projects"] || {};
+  return pageMetadata({
+    title: "Projects",
+    description:
+      "Recent delivery from TechCore, including complex re-platforming and custom enterprise software.",
+    path: "/projects",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function ProjectsPage() {
   const projects = await loadPublicProjects();

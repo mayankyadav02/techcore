@@ -7,12 +7,20 @@ import { Section } from "@/components/marketing/section";
 import { pageMetadata } from "@/lib/seo";
 import { loadPublicServices } from "@/lib/public-content";
 
-export const metadata = pageMetadata({
-  title: "Request a quote",
-  description:
-    "Start a TechCore project enquiry. Describe the work, budget, and timeline.",
-  path: "/quote",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["quote"] || {};
+  return pageMetadata({
+    title: "Request a quote",
+    description: "Start a TechCore project enquiry. Describe the work, budget, and timeline.",
+    path: "/quote",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function QuotePage() {
   const rows = await loadPublicServices();

@@ -8,12 +8,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { loadPublicIndustries } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Industries",
-  description:
-    "TechCore works across healthcare, education, retail, finance, manufacturing, property, logistics, and startups.",
-  path: "/industries",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["industries"] || {};
+  return pageMetadata({
+    title: "Industries",
+    description: "TechCore works across healthcare, education, retail, finance, manufacturing, property, logistics, and startups.",
+    path: "/industries",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function IndustriesPage() {
   const industries = await loadPublicIndustries();

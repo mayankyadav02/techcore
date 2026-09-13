@@ -9,12 +9,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { loadPublicJobs } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Careers",
-  description:
-    "Open roles at TechCore: engineering, design, and quality. Fictional listings for this demonstration site.",
-  path: "/careers",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["careers"] || {};
+  return pageMetadata({
+    title: "Careers",
+    description: "Open roles at TechCore: engineering, design, and quality. Fictional listings for this demonstration site.",
+    path: "/careers",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function CareersPage() {
   const jobs = await loadPublicJobs();

@@ -5,11 +5,20 @@ import { Section } from "@/components/marketing/section";
 import { termsSections } from "@/lib/content/legal";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Terms",
-  description: "Terms of use for the TechCore demonstration website.",
-  path: "/terms",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["terms"] || {};
+  return pageMetadata({
+    title: "Terms",
+    description: "Terms of use for the TechCore demonstration website.",
+    path: "/terms",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default function TermsPage() {
   return (

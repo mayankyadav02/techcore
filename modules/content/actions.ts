@@ -57,3 +57,15 @@ export async function updateAboutAction(formData: FormData) {
     return { ok: true as const, message: "About content saved." };
   });
 }
+
+export async function updatePageSeoAction(formData: FormData) {
+  return runAdminAction(async () => {
+    const { updatePageSeoAdmin } = await import("@/modules/content/admin.service");
+    const { pageSeoInputSchema } = await import("@/modules/content/page-seo.schema");
+    
+    const payload = Object.fromEntries(formData.entries());
+    
+    await updatePageSeoAdmin(parseForm(pageSeoInputSchema, payload));
+    return { ok: true as const, message: "Page SEO saved." };
+  });
+}

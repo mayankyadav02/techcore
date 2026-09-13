@@ -4,6 +4,7 @@ import { cacheTags } from "@/lib/cache-tags";
 import { Settings } from "@/modules/content/settings.model";
 import { HomeContent } from "@/modules/content/home.model";
 import { AboutContent } from "@/modules/content/about.model";
+import { PageSeo } from "@/modules/content/page-seo.model";
 import { site, socialLinks as fallbackSocial, publicNav as fallbackNav, publicCta as fallbackCta, footerGroups as fallbackFooter } from "@/lib/site";
 import { packages as fallbackPackagesList, reasons as fallbackReasonsList, processSteps as fallbackProcessList, homeFaqs as fallbackFaqsList } from "@/lib/content/home";
 import { aboutFaqs as fallbackAboutFaqs, values as fallbackValues } from "@/lib/content/about";
@@ -522,4 +523,29 @@ export function mapAbout(row: Record<string, unknown>): PublicAbout {
     ctaSecondaryLabel: (row.ctaSecondaryLabel as string) || fallbackAbout.ctaSecondaryLabel,
     ctaSecondaryUrl: (row.ctaSecondaryUrl as string) || fallbackAbout.ctaSecondaryUrl,
   };
+}
+
+const loadCachedPageSeo = unstable_cache(
+  async () => {
+    await connectMongo();
+    const rows = await PageSeo.find().lean();
+    const dictionary: Record<string, { seoTitle: string; seoDescription: string }> = {};
+    for (const row of rows) {
+      dictionary[row.page] = {
+        seoTitle: row.seo?.title || "",
+        seoDescription: row.seo?.description || "",
+      };
+    }
+    return dictionary;
+  },
+  ["public-page-seo"],
+  { tags: [cacheTags.pageSeo], revalidate: 3600 },
+);
+
+export async function getAllPublicPageSeo(): Promise<Record<string, { seoTitle: string; seoDescription: string }>> {
+  try {
+    return await loadCachedPageSeo();
+  } catch {
+    return {};
+  }
 }

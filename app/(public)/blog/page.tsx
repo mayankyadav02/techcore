@@ -9,12 +9,20 @@ import { loadPublicPosts, publicBlogCategories } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-export const metadata = pageMetadata({
-  title: "Blog",
-  description:
-    "Notes on delivery, architecture, AI, cloud, and security from the TechCore practice.",
-  path: "/blog",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["blog"] || {};
+  return pageMetadata({
+    title: "Blog",
+    description: "Notes on delivery, architecture, AI, cloud, and security from the TechCore practice.",
+    path: "/blog",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function BlogPage({
   searchParams,

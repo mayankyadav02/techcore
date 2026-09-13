@@ -9,11 +9,20 @@ import { homeFaqs } from "@/lib/content/home";
 import { pageMetadata } from "@/lib/seo";
 import { getPublicCompany } from "@/modules/content/public.service";
 
-export const metadata = pageMetadata({
-  title: "Contact",
-  description: "Contact TechCore about a programme, a role, or a question.",
-  path: "/contact",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["contact"] || {};
+  return pageMetadata({
+    title: "Contact",
+    description: "Contact TechCore about a programme, a role, or a question.",
+    path: "/contact",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function ContactPage({
   searchParams,

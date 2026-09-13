@@ -5,11 +5,20 @@ import { Section } from "@/components/marketing/section";
 import { privacySections } from "@/lib/content/legal";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Privacy Policy",
-  description: "How the TechCore demonstration website would handle personal information.",
-  path: "/privacy",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["privacy"] || {};
+  return pageMetadata({
+    title: "Privacy Policy",
+    description: "How the TechCore demonstration website would handle personal information.",
+    path: "/privacy",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default function PrivacyPage() {
   return (

@@ -8,12 +8,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { loadPublicSolutions } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Solutions",
-  description:
-    "Sector solutions for healthcare, education, commerce, finance, property, and logistics.",
-  path: "/solutions",
-});
+import type { Metadata } from "next";
+import { getAllPublicPageSeo } from "@/modules/content/public.service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allSeo = await getAllPublicPageSeo();
+  const seo = allSeo["solutions"] || {};
+  return pageMetadata({
+    title: "Solutions",
+    description: "Sector solutions for healthcare, education, commerce, finance, property, and logistics.",
+    path: "/solutions",
+    seoTitle: seo.seoTitle,
+    seoDescription: seo.seoDescription,
+  });
+}
 
 export default async function SolutionsPage() {
   const solutions = await loadPublicSolutions();

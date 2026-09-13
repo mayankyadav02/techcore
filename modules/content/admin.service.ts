@@ -12,6 +12,8 @@ import type { z } from "zod";
 import type { settingsInputSchema } from "@/modules/content/admin.schema";
 import type { homeInputSchema } from "@/modules/content/home.schema";
 import type { aboutInputSchema } from "@/modules/content/about.schema";
+import type { pageSeoInputSchema } from "@/modules/content/page-seo.schema";
+import { PageSeo } from "@/modules/content/page-seo.model";
 export async function getSettingsAdmin() {
   await requireAnyPermission(["settings:read", "site:write"]);
   await connectMongo();
@@ -223,5 +225,47 @@ export async function updateAboutAdmin(
   revalidatePublic(
     [cacheTags.about],
     ["/about", "/admin/settings/about"],
+  );
+}
+
+export async function listPageSeoAdmin() {
+  await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const rows = await PageSeo.find().lean();
+  return rows;
+}
+
+export async function updatePageSeoAdmin(
+  input: z.infer<typeof pageSeoInputSchema>,
+) {
+  const user = await requireAnyPermission(["site:write"]);
+  
+  await connectMongo();
+  
+  const updateObj: Record<string, unknown> = {
+    updatedBy: user.id,
+  };
+
+  if (input.seoTitle !== undefined || input.seoDescription !== undefined) {
+    updateObj["seo.title"] = input.seoTitle;
+    updateObj["seo.description"] = input.seoDescription;
+  }
+
+  await PageSeo.findOneAndUpdate(
+    { page: input.page },
+    { $set: updateObj },
+    { upsert: true, setDefaultsOnInsert: true },
+  );
+  
+  await writeAuditLog({
+    actorId: user.id,
+    action: "pageseo.update",
+    resourceType: "PageSeo",
+    resourceId: input.page,
+  });
+  
+  revalidatePublic(
+    [cacheTags.pageSeo],
+    [`/${input.page}`, "/admin/settings/page-seo"],
   );
 }
