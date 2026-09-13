@@ -4,6 +4,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { themeScript } from "@/lib/theme";
+import { getPublicCompany } from "@/modules/content/public.service";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,14 +21,19 @@ const manrope = Manrope({
   weight: ["600", "700"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: `${site.name} — ${site.tagline.replace(/\.$/, "")}`,
-    template: `%s | ${site.name}`,
-  },
-  description: site.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const company = await getPublicCompany();
+  const defaultTitle = company.seoTitle || `${site.name} — ${site.tagline.replace(/\.$/, "")}`;
+  const description = company.description || site.description;
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: defaultTitle,
+      template: `%s | ${site.name}`,
+    },
+    description,
+  };
+}
 
 export default function RootLayout({
   children,

@@ -8,6 +8,7 @@ export type PublicCompany = {
   name: string;
   tagline: string;
   description: string;
+  seoTitle: string;
   email: string;
   phone: string;
   address: string;
@@ -19,6 +20,7 @@ export const fallbackCompany: PublicCompany = {
   name: site.name,
   tagline: site.tagline,
   description: site.description,
+  seoTitle: "",
   email: site.email,
   phone: site.phone,
   address: site.address,
@@ -62,7 +64,7 @@ function mapSettings(row: {
   address?: string | null;
   footerText?: string | null;
   socialLinks?: { linkedin?: string | null; x?: string | null } | null;
-  defaultSeo?: { description?: string | null } | null;
+  defaultSeo?: { title?: string | null; description?: string | null } | null;
 }): PublicCompany {
   const social: { href: string; label: string }[] = [];
   if (row.socialLinks?.linkedin) {
@@ -76,6 +78,7 @@ function mapSettings(row: {
     name: row.companyName || site.name,
     tagline: row.tagline || site.tagline,
     description: row.defaultSeo?.description || site.description,
+    seoTitle: row.defaultSeo?.title || "",
     email: row.contactEmail || site.email,
     phone: row.contactPhone || site.phone,
     address: row.address || site.address,
