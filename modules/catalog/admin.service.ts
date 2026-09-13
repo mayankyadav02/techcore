@@ -323,6 +323,12 @@ export async function setSolutionStatus(id: string, status: ContentStatus) {
   if (status === "published" && !row.publishedAt) row.publishedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "solution.status",
+    resourceType: "Solution",
+    resourceId: id,
+  });
   revalidateCatalog();
 }
 
@@ -334,6 +340,12 @@ export async function deleteSolution(id: string) {
   row.deletedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "solution.delete",
+    resourceType: "Solution",
+    resourceId: id,
+  });
   revalidateCatalog();
 }
 
