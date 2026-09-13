@@ -137,6 +137,12 @@ export async function updatePost(id: string, input: z.infer<typeof blogInputSche
       updatedBy: user.id,
     });
     await existing.save();
+    await writeAuditLog({
+      actorId: user.id,
+      action: "post.update",
+      resourceType: "Post",
+      resourceId: id,
+    });
     revalidate();
     return { id };
   } catch (error) {
@@ -158,6 +164,12 @@ export async function setPostStatus(id: string, status: BlogStatus) {
   if (status === "published" && !row.publishedAt) row.publishedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "post.status",
+    resourceType: "Post",
+    resourceId: id,
+  });
   revalidate();
 }
 
@@ -169,5 +181,11 @@ export async function deletePost(id: string) {
   row.deletedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "post.delete",
+    resourceType: "Post",
+    resourceId: id,
+  });
   revalidate();
 }
