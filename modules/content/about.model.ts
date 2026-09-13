@@ -1,4 +1,5 @@
 import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
+import { seoSchema } from "@/modules/shared/subdocs";
 
 const valueSchema = new Schema(
   {
@@ -78,6 +79,8 @@ const aboutContentSchema = new Schema(
     ctaPrimaryUrl: { type: String, trim: true, maxlength: 200 },
     ctaSecondaryLabel: { type: String, trim: true, maxlength: 40 },
     ctaSecondaryUrl: { type: String, trim: true, maxlength: 200 },
+
+    seo: { type: seoSchema },
 
     updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },

@@ -254,6 +254,22 @@ export function AboutForm({ values }: { values: PublicAbout }) {
     </>
   );
 
+  const seoTab = (
+    <>
+      <FormSection title="SEO Metadata">
+        <div className="md:col-span-2 text-sm text-ink-lighter mb-4">
+          Overrides the default generated metadata for the About page. If left empty, the site&apos;s global SEO settings or content title will be used.
+        </div>
+        <FormField label="SEO Title" htmlFor="seoTitle" className="md:col-span-2">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values.seoTitle} placeholder={values.heroTitle} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values.seoDescription} placeholder={values.heroDescription} />
+        </FormField>
+      </FormSection>
+    </>
+  );
+
   return (
     <MutationForm action={updateAboutAction} submitLabel="Save About Content">
       <Tabs
@@ -263,6 +279,7 @@ export function AboutForm({ values }: { values: PublicAbout }) {
           { id: "values", label: "Values & Approach", panel: valuesApproachTab },
           { id: "expectations", label: "Expectations & FAQ", panel: expectationsFaqTab },
           { id: "cta", label: "Call to Action", panel: ctaTab },
+          { id: "seo", label: "SEO", panel: seoTab },
         ]}
       />
     </MutationForm>

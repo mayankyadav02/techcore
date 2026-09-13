@@ -430,6 +430,22 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
     </>
   );
 
+  const seoTab = (
+    <>
+      <FormSection title="SEO Metadata">
+        <div className="md:col-span-2 text-sm text-ink-lighter mb-4">
+          Overrides the default generated metadata for the public homepage. If left empty, the site&apos;s global SEO settings or content title will be used.
+        </div>
+        <FormField label="SEO Title" htmlFor="seoTitle" className="md:col-span-2">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values.seoTitle} placeholder={values.heroTitle} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values.seoDescription} placeholder={values.heroDescription} />
+        </FormField>
+      </FormSection>
+    </>
+  );
+
   return (
     <MutationForm action={updateHomepageAction} submitLabel="Save Homepage">
       <Tabs
@@ -439,6 +455,7 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
           { id: "process", label: "Process", panel: processTab },
           { id: "reasons", label: "Reasons & FAQ", panel: reasonsFaqTab },
           { id: "intros", label: "Section Intros & CTA", panel: introsCtaTab },
+          { id: "seo", label: "SEO", panel: seoTab },
         ]}
       />
     </MutationForm>

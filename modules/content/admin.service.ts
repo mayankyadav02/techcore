@@ -146,6 +146,13 @@ export async function updateHomepageAdmin(
   updateObj.faqs = input.faqsJson;
   delete updateObj.faqsJson;
 
+  if (input.seoTitle !== undefined || input.seoDescription !== undefined) {
+    updateObj["seo.title"] = input.seoTitle;
+    updateObj["seo.description"] = input.seoDescription;
+  }
+  delete updateObj.seoTitle;
+  delete updateObj.seoDescription;
+
   await HomeContent.findOneAndUpdate(
     { key: "home" },
     { $set: updateObj },
@@ -192,6 +199,13 @@ export async function updateAboutAdmin(
 
   updateObj.faqs = input.faqsJson;
   delete updateObj.faqsJson;
+
+  if (input.seoTitle !== undefined || input.seoDescription !== undefined) {
+    updateObj["seo.title"] = input.seoTitle;
+    updateObj["seo.description"] = input.seoDescription;
+  }
+  delete updateObj.seoTitle;
+  delete updateObj.seoDescription;
 
   await AboutContent.findOneAndUpdate(
     { key: "about" },

@@ -122,4 +122,8 @@ export const homeInputSchema = z.object({
   ctaPrimaryUrl: z.string().trim().max(200).optional(),
   ctaSecondaryLabel: z.string().trim().max(40).optional(),
   ctaSecondaryUrl: z.string().trim().max(200).optional(),
+
+  // SEO
+  seoTitle: z.string().trim().max(160).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });

@@ -62,6 +62,9 @@ export async function getPublicSettings(): Promise<PublicCompany> {
 }
 
 export type PublicHomepage = {
+  seoTitle: string;
+  seoDescription: string;
+  
   heroEyebrow: string;
   heroTitle: string;
   heroDescription: string;
@@ -128,6 +131,9 @@ export type PublicHomepage = {
 };
 
 export const fallbackHomepage: PublicHomepage = {
+  seoTitle: "",
+  seoDescription: "",
+
   heroEyebrow: "IT services & software",
   heroTitle: "Digital Solutions Built for Businesses That Want to Grow.",
   heroDescription: "TechCore designs and develops modern websites, applications and software solutions that help businesses build stronger digital experiences.",
@@ -224,7 +230,11 @@ function mapJsonArray<T>(
 }
 
 export function mapHomepage(row: Record<string, unknown>): PublicHomepage {
+  const seo = (row.seo as { title?: string; description?: string }) || {};
   return {
+    seoTitle: seo.title || fallbackHomepage.seoTitle,
+    seoDescription: seo.description || fallbackHomepage.seoDescription,
+
     heroEyebrow: (row.heroEyebrow as string) || fallbackHomepage.heroEyebrow,
     heroTitle: (row.heroTitle as string) || fallbackHomepage.heroTitle,
     heroDescription: (row.heroDescription as string) || fallbackHomepage.heroDescription,
@@ -348,6 +358,9 @@ function mapSettings(row: {
 }
 
 export type PublicAbout = {
+  seoTitle: string;
+  seoDescription: string;
+
   heroEyebrow: string;
   heroTitle: string;
   heroDescription: string;
@@ -393,6 +406,9 @@ export type PublicAbout = {
 };
 
 export const fallbackAbout: PublicAbout = {
+  seoTitle: "",
+  seoDescription: "",
+
   heroEyebrow: "Company",
   heroTitle: "A serious technology practice.",
   heroDescription: "TechCore is presented as an independent delivery firm. We design and build digital systems that operations teams can run — and that leadership can explain.",
@@ -458,7 +474,11 @@ export async function getPublicAbout(): Promise<PublicAbout> {
 }
 
 export function mapAbout(row: Record<string, unknown>): PublicAbout {
+  const seo = (row.seo as { title?: string; description?: string }) || {};
   return {
+    seoTitle: seo.title || fallbackAbout.seoTitle,
+    seoDescription: seo.description || fallbackAbout.seoDescription,
+
     heroEyebrow: (row.heroEyebrow as string) || fallbackAbout.heroEyebrow,
     heroTitle: (row.heroTitle as string) || fallbackAbout.heroTitle,
     heroDescription: (row.heroDescription as string) || fallbackAbout.heroDescription,

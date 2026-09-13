@@ -37,11 +37,18 @@ import { catalogImage } from "@/lib/public-images";
 import Link from "next/link";
 import Image from "next/image";
 
-export const metadata = pageMetadata({
-  title: "IT Services and Solutions",
-  description: site.description,
-  path: "/",
-});
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const home = await getPublicHomepage();
+  return pageMetadata({
+    title: home.heroTitle || "IT Services and Solutions",
+    description: home.heroDescription || site.description,
+    path: "/",
+    seoTitle: home.seoTitle,
+    seoDescription: home.seoDescription,
+  });
+}
 
 export default async function HomePage() {
   const [company, home, services, industries, projects, testimonials, solutions, posts, jobs] =
