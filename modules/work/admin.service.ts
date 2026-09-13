@@ -133,6 +133,12 @@ export async function updateProject(
       updatedBy: user.id,
     });
     await existing.save();
+    await writeAuditLog({
+      actorId: user.id,
+      action: "project.update",
+      resourceType: "Project",
+      resourceId: id,
+    });
     revalidate();
     return { id };
   } catch (error) {
@@ -153,6 +159,12 @@ export async function toggleProjectFeatured(id: string) {
   row.featured = !row.featured;
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "project.featured",
+    resourceType: "Project",
+    resourceId: id,
+  });
   revalidate();
   return { featured: row.featured };
 }
@@ -166,6 +178,12 @@ export async function setProjectStatus(id: string, status: ContentStatus) {
   if (status === "published" && !row.publishedAt) row.publishedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "project.status",
+    resourceType: "Project",
+    resourceId: id,
+  });
   revalidate();
 }
 
@@ -177,5 +195,11 @@ export async function deleteProject(id: string) {
   row.deletedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "project.delete",
+    resourceType: "Project",
+    resourceId: id,
+  });
   revalidate();
 }
