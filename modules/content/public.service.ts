@@ -3,8 +3,10 @@ import { connectMongo } from "@/lib/db";
 import { cacheTags } from "@/lib/cache-tags";
 import { Settings } from "@/modules/content/settings.model";
 import { HomeContent } from "@/modules/content/home.model";
+import { AboutContent } from "@/modules/content/about.model";
 import { site, socialLinks as fallbackSocial, publicNav as fallbackNav, publicCta as fallbackCta, footerGroups as fallbackFooter } from "@/lib/site";
 import { packages as fallbackPackagesList, reasons as fallbackReasonsList, processSteps as fallbackProcessList, homeFaqs as fallbackFaqsList } from "@/lib/content/home";
+import { aboutFaqs as fallbackAboutFaqs, values as fallbackValues } from "@/lib/content/about";
 export type PublicCompany = {
   name: string;
   tagline: string;
@@ -342,5 +344,162 @@ function mapSettings(row: {
     footerGroups: row.footerGroups?.length 
       ? row.footerGroups 
       : (fallbackFooter as unknown as { title: string; links: { href: string; label: string }[] }[]),
+  };
+}
+
+export type PublicAbout = {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  heroPrimaryLabel: string;
+  heroPrimaryUrl: string;
+  heroSecondaryLabel: string;
+  heroSecondaryUrl: string;
+
+  storyEyebrow: string;
+  storyTitle: string;
+  storyDescription: string;
+  storyBody: string;
+
+  missionTitle: string;
+  missionBody: string;
+  visionTitle: string;
+  visionBody: string;
+
+  valuesEyebrow: string;
+  valuesTitle: string;
+  values: { title: string; body: string }[];
+
+  expertiseEyebrow: string;
+  expertiseTitle: string;
+
+  approachEyebrow: string;
+  approachTitle: string;
+  approachDescription: string;
+
+  expectationsEyebrow: string;
+  expectationsTitle: string;
+
+  faqEyebrow: string;
+  faqTitle: string;
+  faqs: { title: string; content: string }[];
+
+  ctaTitle: string;
+  ctaDescription: string;
+  ctaPrimaryLabel: string;
+  ctaPrimaryUrl: string;
+  ctaSecondaryLabel: string;
+  ctaSecondaryUrl: string;
+};
+
+export const fallbackAbout: PublicAbout = {
+  heroEyebrow: "Company",
+  heroTitle: "A serious technology practice.",
+  heroDescription: "TechCore is presented as an independent delivery firm. We design and build digital systems that operations teams can run — and that leadership can explain.",
+  heroPrimaryLabel: "Contact Us",
+  heroPrimaryUrl: "/contact",
+  heroSecondaryLabel: "Explore Services",
+  heroSecondaryUrl: "/services",
+
+  storyEyebrow: "Story",
+  storyTitle: "Built around delivery, not display.",
+  storyDescription: "The firm exists in this demonstration as a response to a familiar pattern: organisations buy software that looks complete and then spend years teaching it their process.",
+  storyBody: "TechCore’s story, for the purpose of this site, is a practice that grew by staying on programmes after launch. Architecture, design, and engineering sit in one team so the artefact that ships is the artefact that was promised.",
+
+  missionTitle: "Mission",
+  missionBody: "Help organisations replace fragile operational glue with software they can own, inspect, and extend.",
+  visionTitle: "Vision",
+  visionBody: "A standard of digital work in which public websites, internal tools, and integrations are held to the same quality bar.",
+
+  valuesEyebrow: "Values",
+  valuesTitle: "How we choose.",
+  values: [...fallbackValues],
+
+  expertiseEyebrow: "Expertise",
+  expertiseTitle: "Practices, not a catalogue of buzzwords.",
+
+  approachEyebrow: "Approach",
+  approachTitle: "Write the decision, then write the software.",
+  approachDescription: "Discovery produces a recommendation a sponsor can accept or reject. Build work starts when the first release is named.",
+
+  expectationsEyebrow: "Why TechCore",
+  expectationsTitle: "Expectations.",
+
+  faqEyebrow: "FAQ",
+  faqTitle: "Questions we expect.",
+  faqs: [...fallbackAboutFaqs],
+
+  ctaTitle: "Have a project in mind?",
+  ctaDescription: "Share a short brief. We work discovery-first, treat security as default, and will say honestly whether TechCore is the right team — then what a first release could look like.",
+  ctaPrimaryLabel: "Request a Quote",
+  ctaPrimaryUrl: "/quote",
+  ctaSecondaryLabel: "Talk to TechCore",
+  ctaSecondaryUrl: "/contact",
+};
+
+const loadCachedAbout = unstable_cache(
+  async () => {
+    await connectMongo();
+    const row = await AboutContent.findOne({ key: "about" })
+      .select("-updatedBy -__v -createdAt -updatedAt")
+      .lean();
+    return row ? mapAbout(row as Record<string, unknown>) : fallbackAbout;
+  },
+  ["public-about"],
+  { tags: [cacheTags.about], revalidate: 3600 },
+);
+
+export async function getPublicAbout(): Promise<PublicAbout> {
+  try {
+    return await loadCachedAbout();
+  } catch {
+    return fallbackAbout;
+  }
+}
+
+export function mapAbout(row: Record<string, unknown>): PublicAbout {
+  return {
+    heroEyebrow: (row.heroEyebrow as string) || fallbackAbout.heroEyebrow,
+    heroTitle: (row.heroTitle as string) || fallbackAbout.heroTitle,
+    heroDescription: (row.heroDescription as string) || fallbackAbout.heroDescription,
+    heroPrimaryLabel: (row.heroPrimaryLabel as string) || fallbackAbout.heroPrimaryLabel,
+    heroPrimaryUrl: (row.heroPrimaryUrl as string) || fallbackAbout.heroPrimaryUrl,
+    heroSecondaryLabel: (row.heroSecondaryLabel as string) || fallbackAbout.heroSecondaryLabel,
+    heroSecondaryUrl: (row.heroSecondaryUrl as string) || fallbackAbout.heroSecondaryUrl,
+
+    storyEyebrow: (row.storyEyebrow as string) || fallbackAbout.storyEyebrow,
+    storyTitle: (row.storyTitle as string) || fallbackAbout.storyTitle,
+    storyDescription: (row.storyDescription as string) || fallbackAbout.storyDescription,
+    storyBody: (row.storyBody as string) || fallbackAbout.storyBody,
+
+    missionTitle: (row.missionTitle as string) || fallbackAbout.missionTitle,
+    missionBody: (row.missionBody as string) || fallbackAbout.missionBody,
+    visionTitle: (row.visionTitle as string) || fallbackAbout.visionTitle,
+    visionBody: (row.visionBody as string) || fallbackAbout.visionBody,
+
+    valuesEyebrow: (row.valuesEyebrow as string) || fallbackAbout.valuesEyebrow,
+    valuesTitle: (row.valuesTitle as string) || fallbackAbout.valuesTitle,
+    values: Array.isArray(row.values) ? row.values as { title: string; body: string }[] : fallbackAbout.values,
+
+    expertiseEyebrow: (row.expertiseEyebrow as string) || fallbackAbout.expertiseEyebrow,
+    expertiseTitle: (row.expertiseTitle as string) || fallbackAbout.expertiseTitle,
+
+    approachEyebrow: (row.approachEyebrow as string) || fallbackAbout.approachEyebrow,
+    approachTitle: (row.approachTitle as string) || fallbackAbout.approachTitle,
+    approachDescription: (row.approachDescription as string) || fallbackAbout.approachDescription,
+
+    expectationsEyebrow: (row.expectationsEyebrow as string) || fallbackAbout.expectationsEyebrow,
+    expectationsTitle: (row.expectationsTitle as string) || fallbackAbout.expectationsTitle,
+
+    faqEyebrow: (row.faqEyebrow as string) || fallbackAbout.faqEyebrow,
+    faqTitle: (row.faqTitle as string) || fallbackAbout.faqTitle,
+    faqs: Array.isArray(row.faqs) ? row.faqs as { title: string; content: string }[] : fallbackAbout.faqs,
+
+    ctaTitle: (row.ctaTitle as string) || fallbackAbout.ctaTitle,
+    ctaDescription: (row.ctaDescription as string) || fallbackAbout.ctaDescription,
+    ctaPrimaryLabel: (row.ctaPrimaryLabel as string) || fallbackAbout.ctaPrimaryLabel,
+    ctaPrimaryUrl: (row.ctaPrimaryUrl as string) || fallbackAbout.ctaPrimaryUrl,
+    ctaSecondaryLabel: (row.ctaSecondaryLabel as string) || fallbackAbout.ctaSecondaryLabel,
+    ctaSecondaryUrl: (row.ctaSecondaryUrl as string) || fallbackAbout.ctaSecondaryUrl,
   };
 }

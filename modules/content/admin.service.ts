@@ -6,10 +6,12 @@ import { hasPermission } from "@/lib/rbac";
 import { writeAuditLog } from "@/lib/audit";
 import { Settings } from "@/modules/content/settings.model";
 import { HomeContent } from "@/modules/content/home.model";
+import { AboutContent } from "@/modules/content/about.model";
 import { site } from "@/lib/site";
 import type { z } from "zod";
 import type { settingsInputSchema } from "@/modules/content/admin.schema";
 import type { homeInputSchema } from "@/modules/content/home.schema";
+import type { aboutInputSchema } from "@/modules/content/about.schema";
 export async function getSettingsAdmin() {
   await requireAnyPermission(["settings:read", "site:write"]);
   await connectMongo();
@@ -158,7 +160,54 @@ export async function updateHomepageAdmin(
   });
   
   revalidatePublic(
-    [cacheTags.homepage],
-    ["/", "/admin/settings/homepage"],
+    [cacheTags.homepage, cacheTags.about],
+    ["/", "/about", "/admin/settings/homepage"],
+  );
+}
+
+export async function getAboutAdmin() {
+  await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const row = await AboutContent.findOne({ key: "about" }).lean();
+  if (!row) {
+    return null;
+  }
+  return row;
+}
+
+export async function updateAboutAdmin(
+  input: z.infer<typeof aboutInputSchema>,
+) {
+  const user = await requireAnyPermission(["site:write"]);
+  
+  await connectMongo();
+  
+  const updateObj: Record<string, unknown> = {
+    updatedBy: user.id,
+    ...input,
+  };
+
+  updateObj.values = input.valuesJson;
+  delete updateObj.valuesJson;
+
+  updateObj.faqs = input.faqsJson;
+  delete updateObj.faqsJson;
+
+  await AboutContent.findOneAndUpdate(
+    { key: "about" },
+    { $set: updateObj },
+    { upsert: true, setDefaultsOnInsert: true },
+  );
+  
+  await writeAuditLog({
+    actorId: user.id,
+    action: "about.update",
+    resourceType: "AboutContent",
+    resourceId: "about",
+  });
+  
+  revalidatePublic(
+    [cacheTags.about],
+    ["/about", "/admin/settings/about"],
   );
 }

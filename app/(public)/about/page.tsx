@@ -5,8 +5,7 @@ import { CtaBand } from "@/components/marketing/cta-band";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { SectionHeading } from "@/components/marketing/section-heading";
-import { aboutFaqs, values } from "@/lib/content/about";
-import { reasons } from "@/lib/content/home";
+import { getPublicAbout, getPublicHomepage } from "@/modules/content/public.service";
 import { loadPublicServices } from "@/lib/public-content";
 import { EmptyState } from "@/components/ui/empty-state";
 import { pageMetadata } from "@/lib/seo";
@@ -20,19 +19,22 @@ export const metadata = pageMetadata({
 
 export default async function AboutPage() {
   const services = await loadPublicServices();
+  const content = await getPublicAbout();
+  const homeContent = await getPublicHomepage();
+
   return (
     <>
       <PageHero
-        eyebrow="Company"
-        title="A serious technology practice."
-        description="TechCore is presented as an independent delivery firm. We design and build digital systems that operations teams can run — and that leadership can explain."
+        eyebrow={content.heroEyebrow}
+        title={content.heroTitle}
+        description={content.heroDescription}
         actions={
           <>
-            <ButtonLink href="/contact" variant="primary">
-              Contact Us
+            <ButtonLink href={content.heroPrimaryUrl} variant="primary">
+              {content.heroPrimaryLabel}
             </ButtonLink>
-            <ButtonLink href="/services" variant="inverse">
-              Explore Services
+            <ButtonLink href={content.heroSecondaryUrl} variant="inverse">
+              {content.heroSecondaryLabel}
             </ButtonLink>
           </>
         }
@@ -41,15 +43,12 @@ export default async function AboutPage() {
       <Section>
         <Container className="grid gap-12 lg:grid-cols-2">
           <SectionHeading
-            eyebrow="Story"
-            title="Built around delivery, not display."
-            description="The firm exists in this demonstration as a response to a familiar pattern: organisations buy software that looks complete and then spend years teaching it their process."
+            eyebrow={content.storyEyebrow}
+            title={content.storyTitle}
+            description={content.storyDescription}
           />
           <p className="text-sm leading-7 text-ink-muted">
-            TechCore’s story, for the purpose of this site, is a practice that
-            grew by staying on programmes after launch. Architecture, design,
-            and engineering sit in one team so the artefact that ships is the
-            artefact that was promised.
+            {content.storyBody}
           </p>
         </Container>
       </Section>
@@ -57,17 +56,15 @@ export default async function AboutPage() {
       <Section tone="muted">
         <Container className="grid gap-12 md:grid-cols-2">
           <div>
-            <h2 className="text-xl font-semibold text-ink">Mission</h2>
+            <h2 className="text-xl font-semibold text-ink">{content.missionTitle}</h2>
             <p className="mt-3 text-sm leading-7 text-ink-muted">
-              Help organisations replace fragile operational glue with software
-              they can own, inspect, and extend.
+              {content.missionBody}
             </p>
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-ink">Vision</h2>
+            <h2 className="text-xl font-semibold text-ink">{content.visionTitle}</h2>
             <p className="mt-3 text-sm leading-7 text-ink-muted">
-              A standard of digital work in which public websites, internal
-              tools, and integrations are held to the same quality bar.
+              {content.visionBody}
             </p>
           </div>
         </Container>
@@ -75,9 +72,9 @@ export default async function AboutPage() {
 
       <Section>
         <Container>
-          <SectionHeading eyebrow="Values" title="How we choose." />
+          <SectionHeading eyebrow={content.valuesEyebrow} title={content.valuesTitle} />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {values.map((item) => (
+            {content.values.map((item) => (
               <div
                 key={item.title}
                 className="rounded-[var(--radius-lg)] border border-line bg-elevated p-6"
@@ -93,8 +90,8 @@ export default async function AboutPage() {
       <Section tone="muted">
         <Container>
           <SectionHeading
-            eyebrow="Expertise"
-            title="Practices, not a catalogue of buzzwords."
+            eyebrow={content.expertiseEyebrow}
+            title={content.expertiseTitle}
           />
           {services.length === 0 ? (
             <div className="mt-8">
@@ -121,14 +118,14 @@ export default async function AboutPage() {
       <Section>
         <Container className="grid gap-12 lg:grid-cols-2">
           <SectionHeading
-            eyebrow="Approach"
-            title="Write the decision, then write the software."
-            description="Discovery produces a recommendation a sponsor can accept or reject. Build work starts when the first release is named."
+            eyebrow={content.approachEyebrow}
+            title={content.approachTitle}
+            description={content.approachDescription}
           />
           <div>
-            <SectionHeading eyebrow="Why TechCore" title="Expectations." />
+            <SectionHeading eyebrow={content.expectationsEyebrow} title={content.expectationsTitle} />
             <ul className="mt-8 space-y-4">
-              {reasons.map((item) => (
+              {homeContent.reasons.map((item) => (
                 <li key={item.title}>
                   <p className="text-sm font-medium text-ink">{item.title}</p>
                   <p className="mt-1 text-sm text-ink-muted">{item.body}</p>
@@ -141,11 +138,18 @@ export default async function AboutPage() {
 
       <Section tone="muted">
         <Container className="max-w-3xl">
-          <Accordion items={aboutFaqs} />
+          <Accordion items={content.faqs} />
         </Container>
       </Section>
 
-      <CtaBand />
+      <CtaBand
+        title={content.ctaTitle}
+        description={content.ctaDescription}
+        primaryLabel={content.ctaPrimaryLabel}
+        primaryHref={content.ctaPrimaryUrl}
+        secondaryLabel={content.ctaSecondaryLabel}
+        secondaryHref={content.ctaSecondaryUrl}
+      />
     </>
   );
 }

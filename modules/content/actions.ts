@@ -45,3 +45,15 @@ export async function updateHomepageAction(formData: FormData) {
     return { ok: true as const, message: "Homepage content saved." };
   });
 }
+
+export async function updateAboutAction(formData: FormData) {
+  return runAdminAction(async () => {
+    const { updateAboutAdmin } = await import("@/modules/content/admin.service");
+    const { aboutInputSchema } = await import("@/modules/content/about.schema");
+    
+    const payload = Object.fromEntries(formData.entries());
+    
+    await updateAboutAdmin(parseForm(aboutInputSchema, payload));
+    return { ok: true as const, message: "About content saved." };
+  });
+}
