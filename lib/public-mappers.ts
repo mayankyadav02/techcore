@@ -112,6 +112,8 @@ export type PublicPost = Post & {
 export type PublicJob = Job & {
   id: string;
   benefits?: string[];
+  createdAt: string;
+  closesAt?: string;
   seoTitle?: string;
   seoDescription?: string;
 };
@@ -313,6 +315,8 @@ export function mapJob(doc: Record<string, unknown>): PublicJob {
     requirements: asStringArray(doc.requirements),
     skills: asStringArray(doc.skills),
     benefits: asStringArray(doc.benefits),
+    createdAt: formatPublicDate(doc.createdAt),
+    closesAt: doc.closesAt ? formatPublicDate(doc.closesAt) : undefined,
     ...seoFields(doc),
   };
 }

@@ -34,6 +34,10 @@ export async function generateMetadata({
   });
 }
 
+import { jsonLd } from "@/lib/json-ld";
+import { siteUrl } from "@/lib/seo";
+import { getPublicCompany } from "@/modules/content/public.service";
+
 export default async function BlogDetailPage({
   params,
 }: {
@@ -44,9 +48,38 @@ export default async function BlogDetailPage({
   if (!post) notFound();
   const all = await loadPublicPosts();
   const related = relatedPublicPosts(all, post.slug, post.category);
+  
+  const company = await getPublicCompany();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt,
+            datePublished: post.date,
+            author: post.authorName
+              ? {
+                  "@type": "Person",
+                  name: post.authorName,
+                }
+              : undefined,
+            publisher: {
+              "@type": "Organization",
+              name: company.name,
+              sameAs: siteUrl,
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `${siteUrl}/blog/${post.slug}`,
+            },
+          }),
+        }}
+      />
       <PageHero
         eyebrow={post.category}
         title={post.title}

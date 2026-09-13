@@ -30,6 +30,10 @@ export async function generateMetadata({
   });
 }
 
+import { jsonLd } from "@/lib/json-ld";
+import { siteUrl } from "@/lib/seo";
+import { getPublicCompany } from "@/modules/content/public.service";
+
 export default async function JobDetailPage({
   params,
 }: {
@@ -38,9 +42,37 @@ export default async function JobDetailPage({
   const { slug } = await params;
   const job = await loadPublicJob(slug);
   if (!job) notFound();
+  
+  const company = await getPublicCompany();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            title: job.title,
+            description: job.description,
+            datePosted: job.createdAt,
+            ...(job.closesAt && { validThrough: job.closesAt }),
+            employmentType: job.employmentType,
+            hiringOrganization: {
+              "@type": "Organization",
+              name: company.name,
+              sameAs: siteUrl,
+            },
+            jobLocation: {
+              "@type": "Place",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: job.location,
+              },
+            },
+          }),
+        }}
+      />
       <PageHero
         eyebrow={job.department}
         title={job.title}
