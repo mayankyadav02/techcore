@@ -99,6 +99,12 @@ export async function updateTestimonial(
   if (!existing) throw new AppError("NOT_FOUND", "Testimonial not found.");
   existing.set({ ...input, updatedBy: user.id });
   await existing.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "testimonial.update",
+    resourceType: "Testimonial",
+    resourceId: id,
+  });
   revalidate();
   return { id };
 }
@@ -114,6 +120,12 @@ export async function setTestimonialStatus(id: string, status: ContentStatus) {
   row.status = status;
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "testimonial.status",
+    resourceType: "Testimonial",
+    resourceId: id,
+  });
   revalidate();
 }
 
@@ -128,5 +140,11 @@ export async function deleteTestimonial(id: string) {
   row.deletedAt = new Date();
   row.updatedBy = user.id as unknown as typeof row.updatedBy;
   await row.save();
+  await writeAuditLog({
+    actorId: user.id,
+    action: "testimonial.delete",
+    resourceType: "Testimonial",
+    resourceId: id,
+  });
   revalidate();
 }
