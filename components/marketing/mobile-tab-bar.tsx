@@ -18,7 +18,9 @@ function tabActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function MobileTabBar() {
+import type { PublicCompany } from "@/modules/content/public.service";
+
+export function MobileTabBar({ company: _company }: { company?: PublicCompany }) {
   const pathname = usePathname();
 
   return (

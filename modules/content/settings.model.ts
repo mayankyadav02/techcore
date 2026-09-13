@@ -1,5 +1,5 @@
 import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
-import { seoSchema, socialLinksSchema } from "@/modules/shared/subdocs";
+import { seoSchema, socialLinksSchema, navItemSchema, footerGroupSchema } from "@/modules/shared/subdocs";
 
 const settingsSchema = new Schema(
   {
@@ -13,6 +13,12 @@ const settingsSchema = new Schema(
     companyName: { type: String, required: true, trim: true, maxlength: 80 },
     tagline: { type: String, trim: true, maxlength: 160 },
     logoId: { type: Schema.Types.ObjectId },
+    logoType: { type: String, enum: ["image", "text"], default: "image" },
+    logoText: { type: String, trim: true, maxlength: 40 },
+    navigation: { type: [navItemSchema] },
+    ctaLabel: { type: String, trim: true, maxlength: 40 },
+    ctaUrl: { type: String, trim: true, maxlength: 200 },
+    footerGroups: { type: [footerGroupSchema] },
     contactEmail: {
       type: String,
       required: true,

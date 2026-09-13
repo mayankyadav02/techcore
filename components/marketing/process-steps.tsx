@@ -1,6 +1,6 @@
-import { processSteps } from "@/lib/content/home";
+import type { PublicHomepage } from "@/modules/content/public.service";
 
-export function ProcessSteps() {
+export function ProcessSteps({ steps }: { steps: PublicHomepage["processSteps"] }) {
   return (
     <div className="relative mt-10 sm:mt-12">
       {/* Desktop connector */}
@@ -16,7 +16,7 @@ export function ProcessSteps() {
       />
 
       <ol className="grid gap-7 xl:grid-cols-7 xl:gap-3">
-        {processSteps.map((step, index) => (
+        {steps.map((step, index) => (
           <li
             key={step.title}
             className="group relative flex min-w-0 gap-4 xl:flex-col xl:items-center xl:gap-0 xl:text-center"

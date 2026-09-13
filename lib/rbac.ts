@@ -22,6 +22,7 @@ export const permissions = [
   "users:write",
   "users:delete",
   "audit_logs:read",
+  "site:write",
 ] as const;
 
 export type Permission = (typeof permissions)[number];
@@ -39,6 +40,7 @@ const rolePermissions: Record<Role, readonly Permission[]> = {
     "testimonials:write",
     "settings:read",
     "settings:write",
+    "site:write",
   ],
   editor: [
     "dashboard:read",
@@ -47,6 +49,7 @@ const rolePermissions: Record<Role, readonly Permission[]> = {
     "content:publish",
     "testimonials:read",
     "testimonials:write",
+    "site:write",
   ],
   viewer: [
     "dashboard:read",

@@ -58,6 +58,22 @@ export function maxNotes(limit = 50) {
   };
 }
 
+export const navItemSchema = new Schema(
+  {
+    label: { type: String, required: true, trim: true, maxlength: 40 },
+    href: { type: String, required: true, trim: true, maxlength: 200 },
+  },
+  { _id: false },
+);
+
+export const footerGroupSchema = new Schema(
+  {
+    title: { type: String, required: true, trim: true, maxlength: 40 },
+    links: { type: [navItemSchema], default: [] },
+  },
+  { _id: false },
+);
+
 export type SeoFields = {
   title?: string;
   description?: string;

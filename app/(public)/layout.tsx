@@ -19,13 +19,13 @@ export default async function PublicLayout({
       >
         Skip to content
       </a>
-      <Navbar />
+      <Navbar company={company} />
       <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       <Footer company={company} />
       <ScrollToTop />
-      <MobileTabBar />
+      <MobileTabBar company={company} />
     </div>
   );
 }

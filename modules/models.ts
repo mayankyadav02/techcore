@@ -12,4 +12,5 @@ export { Application } from "@/modules/careers/application.model";
 export { Enquiry } from "@/modules/leads/enquiry.model";
 export { Testimonial } from "@/modules/social-proof/testimonial.model";
 export { Settings } from "@/modules/content/settings.model";
+export { HomeContent } from "@/modules/content/home.model";
 export { AuditLog } from "@/modules/shared/audit-log.model";

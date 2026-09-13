@@ -19,7 +19,6 @@ import { Card } from "@/components/ui/card";
 import { jsonLd } from "@/lib/json-ld";
 import { pageMetadata, siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
-import { homeFaqs, reasons } from "@/lib/content/home";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   featuredThenFill,
@@ -32,7 +31,7 @@ import {
   loadPublicSolutions,
 } from "@/lib/public-content";
 import { formatCountStat, StatsStrip } from "@/components/marketing/stats-strip";
-import { getPublicCompany } from "@/modules/content/public.service";
+import { getPublicCompany, getPublicHomepage } from "@/modules/content/public.service";
 import { CoverMedia } from "@/components/marketing/cover-media";
 import { catalogImage } from "@/lib/public-images";
 import Link from "next/link";
@@ -45,9 +44,10 @@ export const metadata = pageMetadata({
 });
 
 export default async function HomePage() {
-  const [company, services, industries, projects, testimonials, solutions, posts, jobs] =
+  const [company, home, services, industries, projects, testimonials, solutions, posts, jobs] =
     await Promise.all([
       getPublicCompany(),
+      getPublicHomepage(),
       loadPublicServices(),
       loadPublicIndustries(),
       loadPublicProjects(),
@@ -193,7 +193,7 @@ export default async function HomePage() {
           dark:text-brand-bright
         "
       >
-        IT services &amp; software
+        {home.heroEyebrow}
       </p>
 
       {/* Heading */}
@@ -209,7 +209,7 @@ export default async function HomePage() {
           dark:text-white
         "
       >
-        Digital Solutions Built for Businesses That Want to Grow.
+        {home.heroTitle}
       </h1>
 
       {/* Description */}
@@ -224,9 +224,7 @@ export default async function HomePage() {
           dark:text-white/75
         "
       >
-        TechCore designs and develops modern websites, applications and
-        software solutions that help businesses build stronger digital
-        experiences.
+        {home.heroDescription}
       </p>
 
       {/* CTA Buttons */}
@@ -239,52 +237,37 @@ export default async function HomePage() {
           sm:flex-wrap
         "
       >
-        <ButtonLink
-          href="/quote"
-          variant="primary"
-          size="lg"
-          className="w-full sm:w-auto"
-        >
-          Request a Quote
-        </ButtonLink>
+        {home.heroPrimaryLabel && home.heroPrimaryUrl && (
+          <ButtonLink
+            href={home.heroPrimaryUrl}
+            variant="primary"
+            size="lg"
+            className="w-full sm:w-auto"
+          >
+            {home.heroPrimaryLabel}
+          </ButtonLink>
+        )}
 
-        <ButtonLink
-          href="/services"
-          variant="inverse"
-          size="lg"
-          className="
-            w-full sm:w-auto
-            border-navy-950/20
-            bg-white/35
-            text-navy-950
-            hover:bg-white/55
-            dark:border-white/20
-            dark:bg-transparent
-            dark:text-white
-            dark:hover:bg-white/10
-          "
-        >
-          Explore Services
-        </ButtonLink>
-
-        <ButtonLink
-          href="/projects"
-          variant="inverse"
-          size="lg"
-          className="
-            w-full sm:w-auto
-            border-navy-950/20
-            bg-white/35
-            text-navy-950
-            hover:bg-white/55
-            dark:border-white/20
-            dark:bg-transparent
-            dark:text-white
-            dark:hover:bg-white/10
-          "
-        >
-          View Projects
-        </ButtonLink>
+        {home.heroSecondaryLabel && home.heroSecondaryUrl && (
+          <ButtonLink
+            href={home.heroSecondaryUrl}
+            variant="inverse"
+            size="lg"
+            className="
+              w-full sm:w-auto
+              border-navy-950/20
+              bg-white/35
+              text-navy-950
+              hover:bg-white/55
+              dark:border-white/20
+              dark:bg-transparent
+              dark:text-white
+              dark:hover:bg-white/10
+            "
+          >
+            {home.heroSecondaryLabel}
+          </ButtonLink>
+        )}
       </div>
     </div>
   </Container>
@@ -298,9 +281,9 @@ export default async function HomePage() {
           {/* Left — About Content */}
           <div className="order-1">
             <SectionHeading
-              eyebrow="About"
-              title="Technology should solve business problems, not create new ones."
-              description="TechCore is a technology practice for organisations that need websites, applications, and operational software they can actually run. We listen first, then design systems around how the work happens."
+              eyebrow={home.aboutEyebrow}
+              title={home.aboutTitle}
+              description={home.aboutDescription}
             />
 
             {/* Mobile image */}
@@ -316,18 +299,17 @@ export default async function HomePage() {
 
             <div className="mt-7">
               <p className="max-w-2xl text-sm leading-7 text-ink-muted sm:text-base">
-                Who we are: a delivery team spanning product engineering, design,
-                cloud, and assurance. Why it matters: growth stalls when digital
-                work is treated as decoration. We stay until the first release is
-                usable — and document how the next one should land.
+                {home.aboutBody}
               </p>
 
-              <Link
-                href="/about"
-                className="mt-6 inline-flex min-h-11 items-center text-sm font-medium text-brand-dark transition-colors hover:text-brand hover:underline"
-              >
-                Know More About TechCore
-              </Link>
+              {home.aboutLinkLabel && home.aboutLinkUrl && (
+                <Link
+                  href={home.aboutLinkUrl}
+                  className="mt-6 inline-flex min-h-11 items-center text-sm font-medium text-brand-dark transition-colors hover:text-brand hover:underline"
+                >
+                  {home.aboutLinkLabel}
+                </Link>
+              )}
             </div>
           </div>
 
@@ -349,9 +331,9 @@ export default async function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-12">
             <div className="min-w-0">
               <SectionHeading
-                eyebrow="Services"
-                title="What we build for growing businesses."
-                description="Eight practices under one engineering standard. Each can stand alone or form a programme."
+                eyebrow={home.servicesEyebrow}
+                title={home.servicesTitle}
+                description={home.servicesDescription}
               />
             </div>
 
@@ -393,9 +375,9 @@ export default async function HomePage() {
           <div className="relative">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <SectionHeading
-                eyebrow="Solutions"
-                title="Software shaped by how the work actually runs."
-                description="Sector patterns we see repeatedly. Each page describes the problem, the approach, and the kind of system that follows."
+                eyebrow={home.solutionsEyebrow}
+                title={home.solutionsTitle}
+                description={home.solutionsDescription}
               />
 
               <Link
@@ -431,26 +413,28 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section>
-        <Container>
-          <FadeIn>
-            <SectionHeading
-              eyebrow="Packages"
-              title="Start with the shape of the work, not a catalogue price."
-              description="These packages describe typical engagement shapes. They are not live offers with published fees — a Custom Quote follows a real brief."
-            />
-            <PackageCards />
-          </FadeIn>
-        </Container>
-      </Section>
+      {home.packages.length > 0 && (
+        <Section>
+          <Container>
+            <FadeIn>
+              <SectionHeading
+                eyebrow={home.packagesEyebrow}
+                title={home.packagesTitle}
+                description={home.packagesDescription}
+              />
+              <PackageCards packages={home.packages} />
+            </FadeIn>
+          </Container>
+        </Section>
+      )}
 
       <Section tone="muted">
         <Container>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
-              eyebrow="Projects"
-              title="Featured programmes."
-              description="ShopFlow, CarePlus, FleetPro, LearnHub, EstatePro, FinServe, GymCore, and FoodHub are fictional cases used to show how TechCore would structure delivery. They are not live client brands."
+              eyebrow={home.projectsEyebrow}
+              title={home.projectsTitle}
+              description={home.projectsDescription}
             />
 
             <Link
@@ -489,61 +473,65 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow="Why TechCore"
-            title="What you should expect from us."
-          />
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {reasons.map((item, index) => (
-              <div
-                key={item.title}
-                className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-line bg-elevated p-6 shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[var(--shadow-md)]"
-              >
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100"
-                />
-
-                <p className="font-heading text-2xl font-semibold tracking-tight text-brand-dark transition-transform duration-300 group-hover:translate-x-0.5">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-
-                <h3 className="mt-5 text-lg font-semibold tracking-tight text-ink">
-                  {item.title}
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-ink-muted">
-                  {item.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      <Section tone="muted">
-        <Container>
-          <FadeIn>
+      {home.reasons.length > 0 && (
+        <Section>
+          <Container>
             <SectionHeading
-              eyebrow="Process"
-              title="How a programme typically runs."
-              description="From the first conversation through support after launch."
+              eyebrow={home.reasonsEyebrow}
+              title={home.reasonsTitle}
             />
-            <ProcessSteps />
-          </FadeIn>
-        </Container>
-      </Section>
+
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {home.reasons.map((item, index) => (
+                <div
+                  key={item.title}
+                  className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-line bg-elevated p-6 shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[var(--shadow-md)]"
+                >
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100"
+                  />
+
+                  <p className="font-heading text-2xl font-semibold tracking-tight text-brand-dark transition-transform duration-300 group-hover:translate-x-0.5">
+                    {String(index + 1).padStart(2, "0")}
+                  </p>
+
+                  <h3 className="mt-5 text-lg font-semibold tracking-tight text-ink">
+                    {item.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-ink-muted">
+                    {item.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {home.processSteps.length > 0 && (
+        <Section tone="muted">
+          <Container>
+            <FadeIn>
+              <SectionHeading
+                eyebrow={home.processEyebrow}
+                title={home.processTitle}
+                description={home.processDescription}
+              />
+              <ProcessSteps steps={home.processSteps} />
+            </FadeIn>
+          </Container>
+        </Section>
+      )}
 
       <Section>
         <Container>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
-              eyebrow="Industries"
-              title="Context before tooling."
-              description="We do not claim to operate these businesses. We claim to listen to how they run before we write software."
+              eyebrow={home.industriesEyebrow}
+              title={home.industriesTitle}
+              description={home.industriesDescription}
             />
 
             <Link
@@ -603,9 +591,9 @@ export default async function HomePage() {
         <Container>
           <FadeIn>
             <SectionHeading
-              eyebrow="Testimonials"
-              title="What a serious buyer would say."
-              description="These quotations are fictional and labelled as such. They illustrate tone, not named client results."
+              eyebrow={home.testimonialsEyebrow}
+              title={home.testimonialsTitle}
+              description={home.testimonialsDescription}
             />
 
             {shownTestimonials.length === 0 ? (
@@ -626,9 +614,9 @@ export default async function HomePage() {
         <Container>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <SectionHeading
-              eyebrow="Insights"
-              title="Writing for people who have to ship."
-              description="Short pieces on delivery and architecture from the practice."
+              eyebrow={home.insightsEyebrow}
+              title={home.insightsTitle}
+              description={home.insightsDescription}
             />
 
             <Link
@@ -750,46 +738,55 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section>
-        <Container className="max-w-4xl">
-          <FadeIn>
-            <div className="text-center">
-              <SectionHeading
-                eyebrow="FAQ"
-                title="Questions we expect."
-                align="center"
-              />
-            </div>
+      {home.faqs.length > 0 && (
+        <Section>
+          <Container className="max-w-4xl">
+            <FadeIn>
+              <div className="text-center">
+                <SectionHeading
+                  eyebrow={home.faqEyebrow}
+                  title={home.faqTitle}
+                  align="center"
+                />
+              </div>
 
-            <div
-              className="
-                relative mt-10 overflow-hidden
-                rounded-[var(--radius-xl)]
-                border border-line
-                bg-elevated/80
-                p-3
-                shadow-[var(--shadow-sm)]
-                sm:mt-12 sm:p-4
-              "
-            >
               <div
                 className="
-                  pointer-events-none absolute -right-24 -top-24
-                  h-56 w-56 rounded-full
-                  bg-brand/8 blur-3xl
+                  relative mt-10 overflow-hidden
+                  rounded-[var(--radius-xl)]
+                  border border-line
+                  bg-elevated/80
+                  p-3
+                  shadow-[var(--shadow-sm)]
+                  sm:mt-12 sm:p-4
                 "
-                aria-hidden="true"
-              />
+              >
+                <div
+                  className="
+                    pointer-events-none absolute -right-24 -top-24
+                    h-56 w-56 rounded-full
+                    bg-brand/8 blur-3xl
+                  "
+                  aria-hidden="true"
+                />
 
-              <div className="relative">
-                <Accordion items={homeFaqs} />
+                <div className="relative">
+                  <Accordion items={home.faqs} />
+                </div>
               </div>
-            </div>
-          </FadeIn>
-        </Container>
-      </Section>
+            </FadeIn>
+          </Container>
+        </Section>
+      )}
 
-      <CtaBand />
+      <CtaBand 
+        title={home.ctaTitle}
+        description={home.ctaDescription}
+        primaryLabel={home.ctaPrimaryLabel}
+        primaryHref={home.ctaPrimaryUrl}
+        secondaryLabel={home.ctaSecondaryLabel}
+        secondaryHref={home.ctaSecondaryUrl}
+      />
     </>
   );
 }

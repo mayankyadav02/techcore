@@ -39,9 +39,27 @@ export async function requirePermission(permission: Permission) {
   return user;
 }
 
+export async function requireAnyPermission(permissions: Permission[]) {
+  const user = await requireUser();
+  const hasAccess = permissions.some((p) => hasPermission(user.role, p));
+  if (!hasAccess) {
+    throw new AppError("FORBIDDEN", "You do not have access to this resource.");
+  }
+  return user;
+}
+
 export async function requirePagePermission(permission: Permission) {
   const user = await requireAdminPage();
   if (!hasPermission(user.role, permission)) {
+    forbidden();
+  }
+  return user;
+}
+
+export async function requireAnyPagePermission(permissions: Permission[]) {
+  const user = await requireAdminPage();
+  const hasAccess = permissions.some((p) => hasPermission(user.role, p));
+  if (!hasAccess) {
     forbidden();
   }
   return user;

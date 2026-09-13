@@ -6,20 +6,23 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Menu, X } from "lucide-react";
 
-import { desktopNav, publicCta } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Logo } from "@/components/marketing/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import type { PublicCompany } from "@/modules/content/public.service";
 
 function navActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Navbar() {
+export function Navbar({ company }: { company: PublicCompany }) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
+  
+  const desktopNav = company.navigation.filter((item) => item.href !== "/");
+  const publicCta = company.cta;
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -131,6 +134,7 @@ className={cn(
           <div className="shrink-0">
             {/* Light mode logo */}
             <Logo
+              company={company}
               inverted={false}
               className={cn(
                 "min-w-0 transition-transform duration-200 hover:scale-[1.025] motion-reduce:hover:scale-100",
@@ -142,6 +146,7 @@ className={cn(
 
             {/* Dark / transparent hero logo */}
             <Logo
+              company={company}
               inverted
               className={cn(
                 "min-w-0 transition-transform duration-200 hover:scale-[1.025] motion-reduce:hover:scale-100",

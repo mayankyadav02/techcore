@@ -14,19 +14,24 @@ const sizes = {
   lg: { className: "h-10 w-auto max-w-[10.5rem] sm:h-11 sm:max-w-[11.75rem]", width: 188, height: 47 },
 } as const;
 
+import type { PublicCompany } from "@/modules/content/public.service";
+
 export function Logo({
   inverted = false,
   className,
-  name = site.name,
+  name,
   size = "md",
   priority = false,
+  company,
 }: {
   inverted?: boolean;
   className?: string;
   name?: string;
   size?: keyof typeof sizes;
   priority?: boolean;
+  company?: PublicCompany;
 }) {
+  const displayName = name || company?.name || site.name;
   const dim = sizes[size];
   const imageClass = cn(
     dim.className,
@@ -36,16 +41,24 @@ export function Logo({
   return (
     <Link
       href="/"
-      aria-label={name}
+      aria-label={displayName}
       className={cn(
         "inline-flex min-w-0 shrink-0 items-center rounded-[var(--radius-sm)] transition-[transform,box-shadow] duration-200 hover:scale-[1.03] hover:shadow-[0_0_22px_rgb(0_200_120_/_0.28)] motion-reduce:hover:scale-100 motion-reduce:hover:shadow-none",
         className,
       )}
     >
-      {inverted ? (
+      {company?.logoType === "text" ? (
+        <span className={cn(
+          "font-bold tracking-tight whitespace-nowrap",
+          size === "sm" ? "text-lg" : size === "md" ? "text-xl lg:text-2xl" : "text-2xl sm:text-3xl",
+          inverted ? "text-white" : "text-navy-950 dark:text-white"
+        )}>
+          {company.logoText || displayName}
+        </span>
+      ) : inverted ? (
         <Image
           src="/logo.dark.png"
-          alt={name}
+          alt={displayName}
           width={dim.width}
           height={dim.height}
           priority={priority}
@@ -55,7 +68,7 @@ export function Logo({
         <>
           <Image
             src="/logo.light.png"
-            alt={name}
+            alt={displayName}
             width={dim.width}
             height={dim.height}
             priority={priority}

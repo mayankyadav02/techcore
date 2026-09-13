@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button-link";
 import { cn } from "@/lib/utils";
-import { packages } from "@/lib/content/home";
+import type { PublicHomepage } from "@/modules/content/public.service";
 
-export function PackageCards() {
+export function PackageCards({ packages }: { packages: PublicHomepage["packages"] }) {
   return (
     <div className="mt-10 grid gap-6 md:grid-cols-2 lg:mt-12 lg:grid-cols-3">
       {packages.map((item, index) => (

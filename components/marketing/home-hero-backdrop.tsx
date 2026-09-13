@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function HomeHeroBackdrop({
   images,
@@ -32,12 +33,9 @@ export function HomeHeroBackdrop({
       {images.map((src, imageIndex) => (
         <div
           key={src}
-          className="
-            absolute inset-0
-            transition-opacity
-            duration-[1400ms]
-            ease-in-out
-          "
+          className={cn(
+            "absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
+          )}
           style={{
             opacity: imageIndex === index ? 1 : 0,
           }}
@@ -55,16 +53,10 @@ export function HomeHeroBackdrop({
 
       {/* Overall readability overlay */}
       <div
-        className="
-          absolute inset-0
-          bg-gradient-to-r
-          from-white/25
-          via-transparent
-          to-transparent
-          dark:from-navy-950/45
-          dark:via-navy-950/15
-          dark:to-transparent
-        "
+        className={cn(
+          "absolute inset-0 bg-gradient-to-r from-white/25 via-transparent to-transparent",
+          "dark:from-navy-950/45 dark:via-navy-950/15 dark:to-transparent"
+        )}
       />
     </div>
   );

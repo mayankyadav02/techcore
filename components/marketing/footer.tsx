@@ -1,6 +1,5 @@
 
 import Link from "next/link";
-import { footerGroups, publicCta } from "@/lib/site";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/marketing/logo";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -139,6 +138,7 @@ export function Footer({ company }: { company: PublicCompany }) {
               {/* Light mode logo */}
               <div className="dark:hidden">
                 <Logo
+                  company={company}
                   inverted={false}
                   name={company.name}
                   size="lg"
@@ -148,6 +148,7 @@ export function Footer({ company }: { company: PublicCompany }) {
               {/* Dark mode logo */}
               <div className="hidden dark:block">
                 <Logo
+                  company={company}
                   inverted
                   name={company.name}
                   size="lg"
@@ -182,12 +183,12 @@ export function Footer({ company }: { company: PublicCompany }) {
 
             <div className="shrink-0">
               <ButtonLink
-                href={publicCta.href}
+                href={company.cta.href}
                 variant="secondary"
                 size="lg"
                 className="w-full sm:w-auto"
               >
-                {publicCta.label}
+                {company.cta.label}
               </ButtonLink>
             </div>
           </div>
@@ -207,7 +208,7 @@ export function Footer({ company }: { company: PublicCompany }) {
             dark:border-white/10
           "
         >
-          {footerGroups.map((group) => (
+          {company.footerGroups.map((group) => (
             <div key={group.title}>
               <p
                 className="
