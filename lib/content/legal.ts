@@ -5,7 +5,7 @@ export const privacySections = [
   },
   {
     title: "Information we would collect",
-    body: "Contact and quote forms would collect name, email, phone, company, and message content. Career applications would collect CV files and role interest. Technical logs may include IP address and user agent for security.",
+    body: "Contact and quote forms would collect name, email, phone, company, and message content. Career applications would collect role interest and experience details. Technical logs may include IP address and user agent for security.",
   },
   {
     title: "How we would use it",

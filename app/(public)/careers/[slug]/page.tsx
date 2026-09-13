@@ -81,8 +81,7 @@ export default async function JobDetailPage({
           <div className="mt-12" id="apply">
             <h2 className="text-xl font-semibold text-ink">Apply</h2>
             <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-              Applications are stored for the hiring team. Resume files are
-              validated but not kept on disk until media storage is enabled.
+              Applications are stored for the hiring team. Resume files are not accepted; please include relevant experience in your cover note.
             </p>
             <div className="mt-6 max-w-xl rounded-[var(--radius-lg)] border border-line bg-elevated p-5 shadow-[var(--shadow-sm)] sm:p-6">
               <ApplicationForm jobId={job.id} />
