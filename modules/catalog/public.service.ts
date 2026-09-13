@@ -35,8 +35,8 @@ export async function getPublishedService(slug: string) {
 
 export async function listPublishedServiceSlugs() {
   await connectMongo();
-  const rows = await Service.find(published).select("slug").sort({ sortOrder: 1 }).lean();
-  return rows.map((row) => ({ slug: row.slug }));
+  const rows = await Service.find(published).select("slug updatedAt").sort({ sortOrder: 1 }).lean();
+  return rows.map((row) => ({ slug: row.slug, updatedAt: row.updatedAt as Date }));
 }
 
 export async function listPublishedSolutions() {
@@ -61,8 +61,8 @@ export async function getPublishedSolution(slug: string) {
 
 export async function listPublishedSolutionSlugs() {
   await connectMongo();
-  const rows = await Solution.find(published).select("slug").sort({ sortOrder: 1 }).lean();
-  return rows.map((row) => ({ slug: row.slug }));
+  const rows = await Solution.find(published).select("slug updatedAt").sort({ sortOrder: 1 }).lean();
+  return rows.map((row) => ({ slug: row.slug, updatedAt: row.updatedAt as Date }));
 }
 
 export async function listPublishedIndustries() {
@@ -87,8 +87,8 @@ export async function getPublishedIndustry(slug: string) {
 
 export async function listPublishedIndustrySlugs() {
   await connectMongo();
-  const rows = await Industry.find(published).select("slug").sort({ sortOrder: 1 }).lean();
-  return rows.map((row) => ({ slug: row.slug }));
+  const rows = await Industry.find(published).select("slug updatedAt").sort({ sortOrder: 1 }).lean();
+  return rows.map((row) => ({ slug: row.slug, updatedAt: row.updatedAt as Date }));
 }
 
 export async function findPublishedServiceBySlug(slug: string) {

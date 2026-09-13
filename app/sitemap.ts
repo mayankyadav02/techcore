@@ -36,17 +36,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       loadListOrEmpty(listPublishedPostSlugs),
     ]);
 
-  const dynamic = [
-    ...serviceSlugs.map((item) => `/services/${item.slug}`),
-    ...solutionSlugs.map((item) => `/solutions/${item.slug}`),
-    ...industrySlugs.map((item) => `/industries/${item.slug}`),
-    ...projectSlugs.map((item) => `/projects/${item.slug}`),
-    ...jobSlugs.map((item) => `/careers/${item.slug}`),
-    ...postSlugs.map((item) => `/blog/${item.slug}`),
-  ];
-
-  return [...staticPaths, ...dynamic].map((path) => ({
+  const staticSitemap = staticPaths.map((path) => ({
     url: `${siteUrl}${path}`,
     lastModified: new Date(),
   }));
+
+  const dynamicSitemap = [
+    ...serviceSlugs.map((item) => ({ url: `${siteUrl}/services/${item.slug}`, lastModified: item.updatedAt })),
+    ...solutionSlugs.map((item) => ({ url: `${siteUrl}/solutions/${item.slug}`, lastModified: item.updatedAt })),
+    ...industrySlugs.map((item) => ({ url: `${siteUrl}/industries/${item.slug}`, lastModified: item.updatedAt })),
+    ...projectSlugs.map((item) => ({ url: `${siteUrl}/projects/${item.slug}`, lastModified: item.updatedAt })),
+    ...jobSlugs.map((item) => ({ url: `${siteUrl}/careers/${item.slug}`, lastModified: item.updatedAt })),
+    ...postSlugs.map((item) => ({ url: `${siteUrl}/blog/${item.slug}`, lastModified: item.updatedAt })),
+  ];
+
+  return [...staticSitemap, ...dynamicSitemap];
 }

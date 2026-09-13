@@ -39,8 +39,8 @@ export async function getPublishedPost(slug: string) {
 export async function listPublishedPostSlugs() {
   await connectMongo();
   const rows = await BlogPost.find(published)
-    .select("slug")
+    .select("slug updatedAt")
     .sort({ publishedAt: -1 })
     .lean();
-  return rows.map((row) => ({ slug: row.slug }));
+  return rows.map((row) => ({ slug: row.slug, updatedAt: row.updatedAt as Date }));
 }

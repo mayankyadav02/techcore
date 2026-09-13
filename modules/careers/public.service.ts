@@ -52,6 +52,6 @@ export async function getOpenJob(idOrSlug: string) {
 
 export async function listOpenJobSlugs() {
   await connectMongo();
-  const rows = await Job.find(openJobFilter()).select("slug").sort({ updatedAt: -1 }).lean();
-  return rows.map((row) => ({ slug: row.slug }));
+  const rows = await Job.find(openJobFilter()).select("slug updatedAt").sort({ updatedAt: -1 }).lean();
+  return rows.map((row) => ({ slug: row.slug, updatedAt: row.updatedAt as Date }));
 }
