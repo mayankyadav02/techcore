@@ -27,6 +27,8 @@ function payload(formData: FormData) {
     status: formString(formData.get("status")),
     featured: formChecked(formData.get("featured")),
     publishedAt: formString(formData.get("publishedAt")),
+    seoTitle: formString(formData.get("seoTitle")),
+    seoDescription: formString(formData.get("seoDescription")),
   });
 }
 

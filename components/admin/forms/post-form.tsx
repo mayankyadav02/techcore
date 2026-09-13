@@ -19,6 +19,7 @@ type Values = {
   status?: string;
   featured?: boolean;
   publishedAt?: Date | string;
+  seo?: { title?: string; description?: string };
 };
 
 function dateValue(value?: Date | string) {
@@ -72,6 +73,14 @@ export function PostForm({
         </FormField>
         <FormField label="Featured image URL" htmlFor="heroImageUrl" className="md:col-span-2">
           <Input id="heroImageUrl" name="heroImageUrl" defaultValue={values?.heroImageUrl} />
+        </FormField>
+      </FormSection>
+      <FormSection title="SEO">
+        <FormField label="SEO Title" htmlFor="seoTitle" hint="Leave blank to use default title.">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values?.seo?.title} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" hint="Leave blank to use summary." className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values?.seo?.description} />
         </FormField>
       </FormSection>
       <FormSection title="Publishing">

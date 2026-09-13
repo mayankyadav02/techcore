@@ -19,6 +19,7 @@ type Values = {
   status?: string;
   featured?: boolean;
   sortOrder?: number;
+  seo?: { title?: string; description?: string };
 };
 
 export function SolutionForm({
@@ -65,6 +66,14 @@ export function SolutionForm({
         </FormField>
         <FormField label="Technology" htmlFor="technology" hint="One per line." className="md:col-span-2">
           <Textarea id="technology" name="technology" rows={4} defaultValue={values?.technology?.join("\n")} />
+        </FormField>
+      </FormSection>
+      <FormSection title="SEO">
+        <FormField label="SEO Title" htmlFor="seoTitle" hint="Leave blank to use default title.">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values?.seo?.title} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" hint="Leave blank to use summary." className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values?.seo?.description} />
         </FormField>
       </FormSection>
       <FormSection title="Publishing">

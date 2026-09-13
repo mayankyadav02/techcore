@@ -18,4 +18,6 @@ export const jobInputSchema = z.object({
   responsibilities: z.array(z.string().trim().min(1).max(240)).max(30),
   skills: z.array(z.string().trim().min(1).max(80)).max(30),
   status: z.enum(jobStatuses),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });

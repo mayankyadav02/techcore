@@ -100,6 +100,7 @@ export async function createPost(input: z.infer<typeof blogInputSchema>) {
     const created = await BlogPost.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: publishedAtFrom(input.publishedAt, input.status),
       createdBy: user.id,
       updatedBy: user.id,
@@ -133,6 +134,7 @@ export async function updatePost(id: string, input: z.infer<typeof blogInputSche
     existing.set({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: publishedAtFrom(input.publishedAt, input.status, existing.publishedAt ?? undefined),
       updatedBy: user.id,
     });

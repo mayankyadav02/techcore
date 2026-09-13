@@ -24,6 +24,7 @@ type Values = {
   status?: string;
   featured?: boolean;
   sortOrder?: number;
+  seo?: { title?: string; description?: string };
 };
 
 export function ProjectForm({
@@ -90,6 +91,14 @@ export function ProjectForm({
         </FormField>
         <FormField label="Gallery URLs" htmlFor="galleryUrls" hint="One URL per line." className="md:col-span-2">
           <Textarea id="galleryUrls" name="galleryUrls" rows={4} defaultValue={values?.galleryUrls?.join("\n")} />
+        </FormField>
+      </FormSection>
+      <FormSection title="SEO">
+        <FormField label="SEO Title" htmlFor="seoTitle" hint="Leave blank to use default title.">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values?.seo?.title} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" hint="Leave blank to use summary." className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values?.seo?.description} />
         </FormField>
       </FormSection>
       <FormSection title="Publishing">

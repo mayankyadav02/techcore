@@ -91,6 +91,7 @@ export async function createJob(input: z.infer<typeof jobInputSchema>) {
     const created = await Job.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       createdBy: user.id,
       updatedBy: user.id,
     });
@@ -120,7 +121,12 @@ export async function updateJob(id: string, input: z.infer<typeof jobInputSchema
   if (!existing) throw new AppError("NOT_FOUND", "Role not found.");
   const slug = ensureSlug(input.title, input.slug);
   try {
-    existing.set({ ...input, slug, updatedBy: user.id });
+    existing.set({
+      ...input,
+      slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
+      updatedBy: user.id,
+    });
     await existing.save();
     revalidateJobs();
     return { id };

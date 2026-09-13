@@ -38,6 +38,8 @@ function servicePayload(formData: FormData) {
     status: formString(formData.get("status")),
     featured: formChecked(formData.get("featured")),
     sortOrder: Number(formString(formData.get("sortOrder")) || "0"),
+    seoTitle: formString(formData.get("seoTitle")),
+    seoDescription: formString(formData.get("seoDescription")),
   });
 }
 
@@ -55,6 +57,8 @@ function solutionPayload(formData: FormData) {
     status: formString(formData.get("status")),
     featured: formChecked(formData.get("featured")),
     sortOrder: Number(formString(formData.get("sortOrder")) || "0"),
+    seoTitle: formString(formData.get("seoTitle")),
+    seoDescription: formString(formData.get("seoDescription")),
   });
 }
 
@@ -130,6 +134,8 @@ function industryPayload(formData: FormData) {
     status: formString(formData.get("status")),
     featured: formChecked(formData.get("featured")),
     sortOrder: Number(formString(formData.get("sortOrder")) || "0"),
+    seoTitle: formString(formData.get("seoTitle")),
+    seoDescription: formString(formData.get("seoDescription")),
   });
 }
 

@@ -22,6 +22,8 @@ export const serviceInputSchema = z.object({
   status: z.enum(contentStatuses),
   featured: z.boolean(),
   sortOrder: z.number().int().min(0).max(9999),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });
 
 export const solutionInputSchema = z.object({
@@ -37,6 +39,8 @@ export const solutionInputSchema = z.object({
   status: z.enum(contentStatuses),
   featured: z.boolean(),
   sortOrder: z.number().int().min(0).max(9999),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });
 
 export const industryInputSchema = z.object({
@@ -48,6 +52,8 @@ export const industryInputSchema = z.object({
   status: z.enum(contentStatuses),
   featured: z.boolean(),
   sortOrder: z.number().int().min(0).max(9999),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });
 
 export const projectInputSchema = z.object({
@@ -68,4 +74,6 @@ export const projectInputSchema = z.object({
   status: z.enum(contentStatuses),
   featured: z.boolean(),
   sortOrder: z.number().int().min(0).max(9999),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });

@@ -90,6 +90,7 @@ export async function createProject(input: z.infer<typeof projectInputSchema>) {
     const created = await Project.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: input.status === "published" ? new Date() : undefined,
       createdBy: user.id,
       updatedBy: user.id,
@@ -126,6 +127,7 @@ export async function updateProject(
     existing.set({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt:
         input.status === "published"
           ? existing.publishedAt ?? new Date()

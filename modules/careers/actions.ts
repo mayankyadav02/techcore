@@ -29,6 +29,8 @@ function payload(formData: FormData) {
     responsibilities: splitLines(formData.get("responsibilities")),
     skills: splitLines(formData.get("skills")),
     status: formString(formData.get("status")),
+    seoTitle: formString(formData.get("seoTitle")),
+    seoDescription: formString(formData.get("seoDescription")),
   });
 }
 

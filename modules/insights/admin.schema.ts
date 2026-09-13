@@ -19,4 +19,6 @@ export const blogInputSchema = z.object({
   status: z.enum(blogStatuses),
   featured: z.boolean(),
   publishedAt: z.string().optional(),
+  seoTitle: z.string().trim().max(120).optional(),
+  seoDescription: z.string().trim().max(320).optional(),
 });

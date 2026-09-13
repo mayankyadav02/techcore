@@ -109,6 +109,7 @@ export async function createService(input: z.infer<typeof serviceInputSchema>) {
     const created = await Service.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: input.status === "published" ? new Date() : undefined,
       createdBy: user.id,
       updatedBy: user.id,
@@ -147,6 +148,7 @@ export async function updateService(
     existing.set({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt:
         input.status === "published"
           ? existing.publishedAt ?? new Date()
@@ -253,6 +255,7 @@ export async function createSolution(input: z.infer<typeof solutionInputSchema>)
     const created = await Solution.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: input.status === "published" ? new Date() : undefined,
       createdBy: user.id,
       updatedBy: user.id,
@@ -289,6 +292,7 @@ export async function updateSolution(
     existing.set({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt:
         input.status === "published"
           ? existing.publishedAt ?? new Date()
@@ -394,6 +398,7 @@ export async function createIndustry(input: z.infer<typeof industryInputSchema>)
     const created = await Industry.create({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt: input.status === "published" ? new Date() : undefined,
       createdBy: user.id,
       updatedBy: user.id,
@@ -430,6 +435,7 @@ export async function updateIndustry(
     existing.set({
       ...input,
       slug,
+      seo: { title: input.seoTitle, description: input.seoDescription },
       publishedAt:
         input.status === "published"
           ? existing.publishedAt ?? new Date()

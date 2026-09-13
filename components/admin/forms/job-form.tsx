@@ -19,6 +19,7 @@ type Values = {
   responsibilities?: string[];
   skills?: string[];
   status?: string;
+  seo?: { title?: string; description?: string };
 };
 
 export function JobForm({
@@ -76,6 +77,14 @@ export function JobForm({
         </FormField>
         <FormField label="Skills" htmlFor="skills" hint="One per line.">
           <Textarea id="skills" name="skills" rows={5} defaultValue={values?.skills?.join("\n")} />
+        </FormField>
+      </FormSection>
+      <FormSection title="SEO">
+        <FormField label="SEO Title" htmlFor="seoTitle" hint="Leave blank to use default title.">
+          <Input id="seoTitle" name="seoTitle" defaultValue={values?.seo?.title} />
+        </FormField>
+        <FormField label="SEO Description" htmlFor="seoDescription" hint="Leave blank to use summary." className="md:col-span-2">
+          <Textarea id="seoDescription" name="seoDescription" rows={3} defaultValue={values?.seo?.description} />
         </FormField>
       </FormSection>
       <FormSection title="Status">
