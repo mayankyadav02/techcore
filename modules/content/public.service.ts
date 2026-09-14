@@ -73,11 +73,16 @@ export type PublicHomepage = {
   heroPrimaryUrl: string;
   heroSecondaryLabel: string;
   heroSecondaryUrl: string;
+  heroIntro?: string;
+  heroImageIds?: string[];
+  heroMedia?: { url: string; altText: string }[];
 
   aboutEyebrow: string;
   aboutTitle: string;
   aboutDescription: string;
   aboutBody: string;
+  aboutImageId?: string;
+  aboutMedia?: { url: string; altText: string };
   aboutLinkLabel: string;
   aboutLinkUrl: string;
 
@@ -205,6 +210,8 @@ const loadCachedHomepage = unstable_cache(
     await connectMongo();
     const row = await HomeContent.findOne({ key: "home" })
       .select("-updatedBy -__v -createdAt -updatedAt")
+      .populate("heroImageIds", "url altText")
+      .populate("aboutImageId", "url altText")
       .lean();
     return row ? mapHomepage(row as Record<string, unknown>) : fallbackHomepage;
   },
@@ -243,11 +250,24 @@ export function mapHomepage(row: Record<string, unknown>): PublicHomepage {
     heroPrimaryUrl: (row.heroPrimaryUrl as string) || fallbackHomepage.heroPrimaryUrl,
     heroSecondaryLabel: (row.heroSecondaryLabel as string) || fallbackHomepage.heroSecondaryLabel,
     heroSecondaryUrl: (row.heroSecondaryUrl as string) || fallbackHomepage.heroSecondaryUrl,
+    heroIntro: (row.heroIntro as string) || "",
+    heroImageIds: Array.isArray(row.heroImageIds)
+      ? row.heroImageIds.map((id: any) => id?._id?.toString() || id?.toString()).filter(Boolean)
+      : undefined,
+    heroMedia: Array.isArray(row.heroImageIds)
+      ? row.heroImageIds
+          .filter((img: any) => img && typeof img === "object" && img.url)
+          .map((img: any) => ({ url: img.url as string, altText: img.altText as string }))
+      : undefined,
 
     aboutEyebrow: (row.aboutEyebrow as string) || fallbackHomepage.aboutEyebrow,
     aboutTitle: (row.aboutTitle as string) || fallbackHomepage.aboutTitle,
     aboutDescription: (row.aboutDescription as string) || fallbackHomepage.aboutDescription,
     aboutBody: (row.aboutBody as string) || fallbackHomepage.aboutBody,
+    aboutImageId: row.aboutImageId ? (row.aboutImageId as any)?._id?.toString() || row.aboutImageId?.toString() : undefined,
+    aboutMedia: row.aboutImageId && typeof row.aboutImageId === "object" && (row.aboutImageId as any).url
+      ? { url: (row.aboutImageId as any).url as string, altText: (row.aboutImageId as any).altText as string }
+      : undefined,
     aboutLinkLabel: (row.aboutLinkLabel as string) || fallbackHomepage.aboutLinkLabel,
     aboutLinkUrl: (row.aboutLinkUrl as string) || fallbackHomepage.aboutLinkUrl,
 

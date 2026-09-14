@@ -19,6 +19,8 @@ export type Post = {
   body: string[];
   tags?: string[];
   authorName?: string;
+  heroImageId?: string;
+  heroMedia?: { url: string; altText: string };
   seoTitle?: string;
   seoDescription?: string;
   publishedAt?: string;

@@ -20,6 +20,7 @@ export async function listPublishedPosts(category?: string) {
     category ? { ...published, category } : published,
   )
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .sort({ publishedAt: -1, createdAt: -1 })
     .limit(100)
     .lean();
@@ -31,6 +32,7 @@ export async function getPublishedPost(slug: string) {
   await connectMongo();
   const row = await BlogPost.findOne({ ...published, slug: parsed })
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .lean();
   if (!row) throw new AppError("NOT_FOUND", "Article not found.");
   return mapDoc(row);

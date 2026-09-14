@@ -15,6 +15,7 @@ export async function listPublishedProjects() {
   await connectMongo();
   const rows = await Project.find(published)
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .sort({ sortOrder: 1, year: -1 })
     .limit(100)
     .lean();
@@ -26,6 +27,7 @@ export async function getPublishedProject(slug: string) {
   await connectMongo();
   const row = await Project.findOne({ ...published, slug: parsed })
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .lean();
   if (!row) throw new AppError("NOT_FOUND", "Project not found.");
   return mapDoc(row);

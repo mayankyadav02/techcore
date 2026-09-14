@@ -30,6 +30,8 @@ export type Project = {
   industrySlug?: string;
   solutionSlug?: string;
   serviceSlugs?: string[];
+  heroImageId?: string;
+  heroMedia?: { url: string; altText: string };
   seoTitle?: string;
   seoDescription?: string;
 };

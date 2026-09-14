@@ -7,6 +7,7 @@ import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
 import { updateHomepageAction } from "@/modules/content/actions";
 import { Tabs } from "@/components/ui/tabs";
+import { MediaSelector } from "@/components/admin/media/media-selector";
 import type { PublicHomepage } from "@/modules/content/public.service";
 
 export function HomeForm({ values }: { values: PublicHomepage }) {
@@ -14,6 +15,11 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
   const [reasons, setReasons] = useState(values.reasons || []);
   const [steps, setSteps] = useState(values.processSteps || []);
   const [faqs, setFaqs] = useState(values.faqs || []);
+
+  const [heroImage1, setHeroImage1] = useState(values.heroImageIds?.[0] || "");
+  const [heroImage2, setHeroImage2] = useState(values.heroImageIds?.[1] || "");
+  const [heroImage3, setHeroImage3] = useState(values.heroImageIds?.[2] || "");
+  const [aboutImage, setAboutImage] = useState(values.aboutImageId || "");
 
   const heroAboutTab = (
     <>
@@ -41,6 +47,18 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Secondary Button URL" htmlFor="heroSecondaryUrl">
           <Input id="heroSecondaryUrl" name="heroSecondaryUrl" defaultValue={values.heroSecondaryUrl} />
         </FormField>
+        
+        <div className="col-span-1 md:col-span-2 pt-4">
+          <h4 className="text-sm font-medium mb-4">Hero Carousel Images</h4>
+          <input type="hidden" name="heroImageIds" value={heroImage1} />
+          <input type="hidden" name="heroImageIds" value={heroImage2} />
+          <input type="hidden" name="heroImageIds" value={heroImage3} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <MediaSelector value={heroImage1} onChange={(id) => setHeroImage1(id)} label="Select Image 1" />
+            <MediaSelector value={heroImage2} onChange={(id) => setHeroImage2(id)} label="Select Image 2" />
+            <MediaSelector value={heroImage3} onChange={(id) => setHeroImage3(id)} label="Select Image 3" />
+          </div>
+        </div>
       </FormSection>
 
       <FormSection title="About Section">
@@ -62,6 +80,12 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Link URL" htmlFor="aboutLinkUrl">
           <Input id="aboutLinkUrl" name="aboutLinkUrl" defaultValue={values.aboutLinkUrl} />
         </FormField>
+        
+        <div className="col-span-1 md:col-span-2 pt-4">
+          <h4 className="text-sm font-medium mb-4">About Image</h4>
+          <input type="hidden" name="aboutImageId" value={aboutImage} />
+          <MediaSelector value={aboutImage} onChange={(id) => setAboutImage(id)} label="Select About Image" />
+        </div>
       </FormSection>
     </>
   );

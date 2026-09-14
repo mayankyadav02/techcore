@@ -5,13 +5,13 @@ import { catalogImage } from "@/lib/public-images";
 export function SolutionCard({
   item,
 }: {
-  item: { slug: string; title: string; summary: string };
+  item: { slug: string; title: string; summary: string; heroMedia?: { url: string; altText: string } };
 }) {
-  const image = catalogImage("solutions", item.slug);
+  const image = item.heroMedia?.url || catalogImage("solutions", item.slug);
 
   return (
     <Card interactive className="flex h-full flex-col overflow-hidden p-0">
-      <CoverMedia src={image} alt={item.title} icon="software" className="rounded-none" />
+      <CoverMedia src={image} alt={item.heroMedia?.altText || item.title} icon="software" className="rounded-none" />
       <div className="flex flex-1 flex-col p-6">
         <h3 className="text-[1.25rem] font-semibold text-ink">
           <Link href={`/solutions/${item.slug}`} className="hover:text-brand-dark">

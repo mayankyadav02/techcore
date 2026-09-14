@@ -4,6 +4,8 @@ import { FormField } from "@/components/forms/form-field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
+import { MediaSelector } from "@/components/admin/media/media-selector";
+import { useState } from "react";
 import type { ActionResult } from "@/lib/admin/action";
 
 type Values = {
@@ -14,6 +16,7 @@ type Values = {
   authorName?: string;
   category?: string;
   tags?: string[];
+  heroImageId?: string;
   heroImageUrl?: string;
   readTime?: string;
   status?: string;
@@ -32,12 +35,14 @@ function dateValue(value?: Date | string) {
 export function PostForm({
   action,
   values,
-  submitLabel,
+  submitLabel = "Save",
 }: {
-  action: (formData: FormData) => Promise<ActionResult>;
+  action: (data: FormData) => Promise<ActionResult>;
   values?: Values;
-  submitLabel: string;
+  submitLabel?: string;
 }) {
+  const [heroImage, setHeroImage] = useState(values?.heroImageId || "");
+
   return (
     <MutationForm
       action={action}
@@ -71,9 +76,18 @@ export function PostForm({
         <FormField label="Read time" htmlFor="readTime">
           <Input id="readTime" name="readTime" defaultValue={values?.readTime} />
         </FormField>
-        <FormField label="Featured image URL" htmlFor="heroImageUrl" className="md:col-span-2">
-          <Input id="heroImageUrl" name="heroImageUrl" defaultValue={values?.heroImageUrl} />
-        </FormField>
+        
+        <div className="md:col-span-2 space-y-4">
+          <h4 className="text-sm font-medium">Hero Image</h4>
+          <input type="hidden" name="heroImageId" value={heroImage} />
+          <MediaSelector value={heroImage} onChange={setHeroImage} label="Select Hero Image from Media Library" />
+          
+          <div className="pt-4 border-t border-line mt-4">
+            <FormField label="Legacy / External Image URL" htmlFor="heroImageUrl">
+              <Input id="heroImageUrl" name="heroImageUrl" defaultValue={values?.heroImageUrl} placeholder="/images/hero.webp" />
+            </FormField>
+          </div>
+        </div>
       </FormSection>
       <FormSection title="SEO">
         <FormField label="SEO Title" htmlFor="seoTitle" hint="Leave blank to use default title.">

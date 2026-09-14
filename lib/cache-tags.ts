@@ -12,6 +12,7 @@ export const cacheTags = {
   homepage: "homepage",
   about: "about",
   pageSeo: "page-seo",
+  media: "media",
 } as const;
 
 export type CacheTag = (typeof cacheTags)[keyof typeof cacheTags];

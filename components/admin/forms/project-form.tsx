@@ -4,6 +4,8 @@ import { FormField } from "@/components/forms/form-field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
+import { MediaSelector } from "@/components/admin/media/media-selector";
+import { useState } from "react";
 import type { ActionResult } from "@/lib/admin/action";
 
 type Values = {
@@ -18,6 +20,7 @@ type Values = {
   results?: string[];
   features?: string[];
   technology?: string[];
+  heroImageId?: string;
   heroImageUrl?: string;
   galleryUrls?: string[];
   year?: number;
@@ -36,6 +39,8 @@ export function ProjectForm({
   values?: Values;
   submitLabel: string;
 }) {
+  const [heroImage, setHeroImage] = useState(values?.heroImageId || "");
+
   return (
     <MutationForm
       action={action}
@@ -86,9 +91,17 @@ export function ProjectForm({
         </FormField>
       </FormSection>
       <FormSection title="Images" description="Use https URLs until media storage is enabled.">
-        <FormField label="Hero image URL" htmlFor="heroImageUrl" className="md:col-span-2">
-          <Input id="heroImageUrl" name="heroImageUrl" defaultValue={values?.heroImageUrl} />
-        </FormField>
+        <div className="md:col-span-2 space-y-4">
+          <h4 className="text-sm font-medium">Hero Image</h4>
+          <input type="hidden" name="heroImageId" value={heroImage} />
+          <MediaSelector value={heroImage} onChange={setHeroImage} label="Select Hero Image from Media Library" />
+          
+          <div className="pt-4 border-t border-line mt-4">
+            <FormField label="Legacy / External Image URL" htmlFor="heroImageUrl">
+              <Input id="heroImageUrl" name="heroImageUrl" defaultValue={values?.heroImageUrl} />
+            </FormField>
+          </div>
+        </div>
         <FormField label="Gallery URLs" htmlFor="galleryUrls" hint="One URL per line." className="md:col-span-2">
           <Textarea id="galleryUrls" name="galleryUrls" rows={4} defaultValue={values?.galleryUrls?.join("\n")} />
         </FormField>

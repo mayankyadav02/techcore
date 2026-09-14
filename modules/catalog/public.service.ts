@@ -17,6 +17,7 @@ export async function listPublishedServices() {
   await connectMongo();
   const rows = await Service.find(published)
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .sort({ sortOrder: 1, title: 1 })
     .limit(100)
     .lean();
@@ -28,6 +29,7 @@ export async function getPublishedService(slug: string) {
   await connectMongo();
   const row = await Service.findOne({ ...published, slug: parsed })
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .lean();
   if (!row) throw new AppError("NOT_FOUND", "Service not found.");
   return mapDoc(row);
@@ -43,6 +45,7 @@ export async function listPublishedSolutions() {
   await connectMongo();
   const rows = await Solution.find(published)
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .sort({ sortOrder: 1, title: 1 })
     .limit(100)
     .lean();
@@ -54,6 +57,7 @@ export async function getPublishedSolution(slug: string) {
   await connectMongo();
   const row = await Solution.findOne({ ...published, slug: parsed })
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .lean();
   if (!row) throw new AppError("NOT_FOUND", "Solution not found.");
   return mapDoc(row);
@@ -69,6 +73,7 @@ export async function listPublishedIndustries() {
   await connectMongo();
   const rows = await Industry.find(published)
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .sort({ sortOrder: 1, title: 1 })
     .limit(100)
     .lean();
@@ -80,6 +85,7 @@ export async function getPublishedIndustry(slug: string) {
   await connectMongo();
   const row = await Industry.findOne({ ...published, slug: parsed })
     .select(publicCatalogSelect)
+    .populate("heroImageId", "url altText")
     .lean();
   if (!row) throw new AppError("NOT_FOUND", "Industry not found.");
   return mapDoc(row);

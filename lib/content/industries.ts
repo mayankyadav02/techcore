@@ -5,6 +5,8 @@ export type Industry = {
   body: string;
   focus: string[];
   relatedServiceSlugs?: string[];
+  heroImageId?: string;
+  heroMedia?: { url: string; altText: string };
   seoTitle?: string;
   seoDescription?: string;
 };

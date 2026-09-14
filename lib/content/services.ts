@@ -10,6 +10,8 @@ export type Service = {
   process: string[];
   faqs: { title: string; content: string }[];
   icon: IconName;
+  heroImageId?: string;
+  heroMedia?: { url: string; altText: string };
   seoTitle?: string;
   seoDescription?: string;
 };

@@ -8,6 +8,8 @@ export type Solution = {
   features: string[];
   technology: string[];
   benefits: string[];
+  heroImageId?: string;
+  heroMedia?: { url: string; altText: string };
   seoTitle?: string;
   seoDescription?: string;
 };

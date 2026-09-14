@@ -8,13 +8,13 @@ export function IndustryGrid({
   industries,
   className,
 }: {
-  industries: { slug: string; title: string; summary: string }[];
+  industries: { slug: string; title: string; summary: string; heroMedia?: { url: string; altText: string } }[];
   className?: string;
 }) {
   return (
     <ul className={cn("grid gap-5 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {industries.map((item, index) => {
-        const image = catalogImage("industries", item.slug);
+        const image = item.heroMedia?.url || catalogImage("industries", item.slug);
 
         return (
           <li key={item.slug} className="group">
@@ -33,7 +33,7 @@ export function IndustryGrid({
               <div className="relative overflow-hidden">
                 <CoverMedia
                   src={image}
-                  alt={item.title}
+                  alt={item.heroMedia?.altText || item.title}
                   className="
                     rounded-none
                     transition-transform duration-500

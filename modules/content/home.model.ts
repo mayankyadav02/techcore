@@ -54,12 +54,14 @@ const homeContentSchema = new Schema(
     heroPrimaryUrl: { type: String, trim: true, maxlength: 200 },
     heroSecondaryLabel: { type: String, trim: true, maxlength: 40 },
     heroSecondaryUrl: { type: String, trim: true, maxlength: 200 },
+    heroImageIds: [{ type: Schema.Types.ObjectId, ref: "Media" }],
 
     // About
     aboutEyebrow: { type: String, trim: true, maxlength: 80 },
     aboutTitle: { type: String, trim: true, maxlength: 160 },
     aboutDescription: { type: String, trim: true, maxlength: 320 },
     aboutBody: { type: String, trim: true, maxlength: 1000 },
+    aboutImageId: { type: Schema.Types.ObjectId, ref: "Media" },
     aboutLinkLabel: { type: String, trim: true, maxlength: 40 },
     aboutLinkUrl: { type: String, trim: true, maxlength: 200 },
 

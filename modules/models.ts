@@ -16,3 +16,4 @@ export { HomeContent } from "@/modules/content/home.model";
 export { AboutContent } from "@/modules/content/about.model";
 export { PageSeo } from "@/modules/content/page-seo.model";
 export { AuditLog } from "@/modules/shared/audit-log.model";
+export { Media } from "@/modules/media/media.model";

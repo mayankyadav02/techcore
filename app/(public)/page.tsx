@@ -72,11 +72,13 @@ export default async function HomePage() {
   const shownPosts = featuredThenFill(posts, 3);
 
   // Hero section slider images enabled
-  const homeHeroImages = ["hero-01", "hero-02", "hero-03"]
-    .map((slug) => catalogImage("home", slug))
-    .filter((src): src is string => Boolean(src));
+  const homeHeroImages = home.heroMedia?.length
+    ? home.heroMedia.map((m: { url: string; altText: string }) => m.url)
+    : ["hero-01", "hero-02", "hero-03"]
+        .map((slug) => catalogImage("home", slug))
+        .filter((src): src is string => Boolean(src));
 
-  const aboutImage = catalogImage("home", "digital-transformation");
+  const aboutImage = home.aboutMedia?.url || catalogImage("home", "digital-transformation");
   const servicesImage = catalogImage("home", "software-development");
   const technologyImage = catalogImage("home", "technology");
 
