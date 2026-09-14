@@ -5,7 +5,7 @@ import { IndustryGrid } from "@/components/marketing/industry-grid";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadPublicIndustries } from "@/lib/public-content";
+import { loadPublicIndustries, loadPublicPageContent } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
 import type { Metadata } from "next";
@@ -24,24 +24,25 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function IndustriesPage() {
+  const pageContent = await loadPublicPageContent("industries");
   const industries = await loadPublicIndustries();
 
   return (
     <>
       <PageHero
-        eyebrow="Industries"
-        title="We learn the operating model first."
-        description="Industry pages on this site describe the kinds of work we take on. They are not claims that we run hospitals, banks, or factories."
-        actions={
-          <>
-            <ButtonLink href="#industries" variant="primary">
-              Explore Industry
-            </ButtonLink>
-            <ButtonLink href="/contact" variant="inverse">
-              Contact Us
-            </ButtonLink>
-          </>
-        }
+          eyebrow={pageContent?.heroEyebrow || "Industries"}
+          title={pageContent?.heroTitle || "We learn the operating model first."}
+          description={pageContent?.heroDescription || "Industry pages on this site describe the kinds of work we take on. They are not claims that we run hospitals, banks, or factories."}
+          actions={
+            <>
+              <ButtonLink href={pageContent?.primaryCta?.href || "#industries"} variant="primary">
+                {pageContent?.primaryCta?.label || "Explore Industry"}
+              </ButtonLink>
+              <ButtonLink href={pageContent?.secondaryCta?.href || "/contact"} variant="inverse">
+                {pageContent?.secondaryCta?.label || "Contact Us"}
+              </ButtonLink>
+            </>
+          }
       />
       <Section>
         <Container>

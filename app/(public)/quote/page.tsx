@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { pageMetadata } from "@/lib/seo";
-import { loadPublicServices } from "@/lib/public-content";
+import { loadPublicServices, loadPublicPageContent } from "@/lib/public-content";
 
 import type { Metadata } from "next";
 import { getAllPublicPageSeo } from "@/modules/content/public.service";
@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function QuotePage() {
+  const pageContent = await loadPublicPageContent("quote");
   const rows = await loadPublicServices();
   const services = rows.map((item) => ({
     slug: item.slug,
@@ -32,17 +33,19 @@ export default async function QuotePage() {
   return (
     <>
       <PageHero
-        eyebrow="Engage"
-        title="Start a project."
-        description="Tell us the outcome you need. A valid submission is stored as an enquiry for the TechCore team. We treat security as default and start with a written first release."
+        eyebrow={pageContent?.heroEyebrow || "Engage"}
+        title={pageContent?.heroTitle || "Start a project."}
+        description={pageContent?.heroDescription || "Tell us the outcome you need. A valid submission is stored as an enquiry for the TechCore team. We treat security as default and start with a written first release."}
         actions={
           <>
-            <ButtonLink href="#quote" variant="primary">
-              Request a Quote
+            <ButtonLink href={pageContent?.primaryCta?.href || "#quote"} variant="primary">
+              {pageContent?.primaryCta?.label || "Request a Quote"}
             </ButtonLink>
-            <ButtonLink href="/contact" variant="inverse">
-              Talk to TechCore
-            </ButtonLink>
+            {pageContent?.secondaryCta?.href && pageContent?.secondaryCta?.label && (
+              <ButtonLink href={pageContent?.secondaryCta?.href} variant="inverse">
+                {pageContent?.secondaryCta?.label}
+              </ButtonLink>
+            )}
           </>
         }
       />

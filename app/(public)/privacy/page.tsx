@@ -3,6 +3,7 @@ import { CtaBand } from "@/components/marketing/cta-band";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { privacySections } from "@/lib/content/legal";
+import { loadPublicLegalPage } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
 import type { Metadata } from "next";
@@ -20,13 +21,16 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const legal = await loadPublicLegalPage("privacy");
+  const sections = privacySections;
+
   return (
     <>
-      <PageHero eyebrow="Legal" title="Privacy Policy" />
+      <PageHero eyebrow="Legal" title={legal?.content ? "Privacy Policy" : "Privacy Policy"} />
       <Section>
         <Container className="max-w-3xl space-y-10 rounded-[var(--radius-lg)] border border-line bg-elevated p-6 sm:p-10">
-          {privacySections.map((item) => (
+          {sections.map((item) => (
             <section key={item.title}>
               <h2 className="text-xl font-semibold text-ink">{item.title}</h2>
               <p className="mt-3 text-sm leading-7 text-ink-muted">{item.body}</p>

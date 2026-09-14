@@ -5,7 +5,7 @@ import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { CtaBand } from "@/components/marketing/cta-band";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadPublicPosts, publicBlogCategories } from "@/lib/public-content";
+import { loadPublicPosts, publicBlogCategories, loadPublicPageContent } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,7 @@ export default async function BlogPage({
   searchParams: Promise<{ category?: string }>;
 }) {
   const { category } = await searchParams;
+  const pageContent = await loadPublicPageContent("blog");
   const allPosts = await loadPublicPosts();
   const categories = publicBlogCategories(allPosts);
   const active = categories.find((item) => item === category);
@@ -42,13 +43,20 @@ export default async function BlogPage({
   return (
     <>
       <PageHero
-        eyebrow="Insights"
-        title="Writing for people who have to ship."
-        description="Short pieces on delivery and architecture. Not a content mill."
+        eyebrow={pageContent?.heroEyebrow || "Insights"}
+        title={pageContent?.heroTitle || "Writing for people who have to ship."}
+        description={pageContent?.heroDescription || "Short pieces on delivery and architecture. Not a content mill."}
         actions={
-          <ButtonLink href="/contact" variant="inverse">
-            Contact Us
-          </ButtonLink>
+          <>
+            <ButtonLink href={pageContent?.primaryCta?.href || "/contact"} variant="primary">
+              {pageContent?.primaryCta?.label || "Contact Us"}
+            </ButtonLink>
+            {pageContent?.secondaryCta?.href && pageContent?.secondaryCta?.label && (
+              <ButtonLink href={pageContent?.secondaryCta?.href} variant="inverse">
+                {pageContent?.secondaryCta?.label}
+              </ButtonLink>
+            )}
+          </>
         }
       />
       <Section>

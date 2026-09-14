@@ -7,6 +7,7 @@ import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { homeFaqs } from "@/lib/content/home";
 import { pageMetadata } from "@/lib/seo";
+import { loadPublicPageContent } from "@/lib/public-content";
 import { getPublicCompany } from "@/modules/content/public.service";
 
 import type { Metadata } from "next";
@@ -30,17 +31,18 @@ export default async function ContactPage({
   searchParams: Promise<{ subject?: string }>;
 }) {
   const { subject } = await searchParams;
+  const pageContent = await loadPublicPageContent("contact");
   const company = await getPublicCompany();
 
   return (
     <>
       <PageHero
-        eyebrow="Contact"
-        title="Write to the practice."
-        description="Share enough context for a useful reply. A valid submission is stored as an enquiry for the TechCore team."
+        eyebrow={pageContent?.heroEyebrow || "Contact"}
+        title={pageContent?.heroTitle || "Write to the practice."}
+        description={pageContent?.heroDescription || "Share enough context for a useful reply. A valid submission is stored as an enquiry for the TechCore team."}
         actions={
-          <ButtonLink href="#enquiry" variant="primary">
-            Send Enquiry
+          <ButtonLink href={pageContent?.primaryCta?.href || "#enquiry"} variant="primary">
+            {pageContent?.primaryCta?.label || "Send Enquiry"}
           </ButtonLink>
         }
       />

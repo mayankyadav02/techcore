@@ -5,7 +5,7 @@ import { SolutionCard } from "@/components/marketing/solution-card";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadPublicSolutions } from "@/lib/public-content";
+import { loadPublicSolutions, loadPublicPageContent } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
 import type { Metadata } from "next";
@@ -24,21 +24,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SolutionsPage() {
+  const pageContent = await loadPublicPageContent("solutions");
   const solutions = await loadPublicSolutions();
 
   return (
     <>
       <PageHero
-        eyebrow="Solutions"
-        title="Software shaped by the operating model."
-        description="Each solution describes a problem we see repeatedly, the approach we take, and the kind of system that follows."
+        eyebrow={pageContent?.heroEyebrow || "Solutions"}
+        title={pageContent?.heroTitle || "Software shaped by the operating model."}
+        description={pageContent?.heroDescription || "Each solution describes a problem we see repeatedly, the approach we take, and the kind of system that follows."}
         actions={
           <>
-            <ButtonLink href="#solutions" variant="primary">
-              View Solutions
+            <ButtonLink href={pageContent?.primaryCta?.href || "#solutions"} variant="primary">
+              {pageContent?.primaryCta?.label || "View Solutions"}
             </ButtonLink>
-            <ButtonLink href="/contact" variant="inverse">
-              Contact Us
+            <ButtonLink href={pageContent?.secondaryCta?.href || "/contact"} variant="inverse">
+              {pageContent?.secondaryCta?.label || "Contact Us"}
             </ButtonLink>
           </>
         }

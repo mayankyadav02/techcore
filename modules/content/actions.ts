@@ -70,3 +70,25 @@ export async function updatePageSeoAction(formData: FormData) {
     return { ok: true as const, message: "Page SEO saved." };
   });
 }
+
+// Page Content admin action
+export async function updatePageContentAction(formData: FormData) {
+  return runAdminAction(async () => {
+    const { updatePageContentAdmin } = await import("@/modules/content/admin.service");
+    const { pageContentSchema } = await import("@/modules/content/page-content.schema");
+    const payload = Object.fromEntries(formData.entries());
+    await updatePageContentAdmin(parseForm(pageContentSchema, payload));
+    return { ok: true as const, message: "Page content saved." };
+  });
+}
+
+// Legal Page admin action
+export async function updateLegalPageAction(formData: FormData) {
+  return runAdminAction(async () => {
+    const { updateLegalPageAdmin } = await import("@/modules/content/admin.service");
+    const { legalPageSchema } = await import("@/modules/content/legal-page.schema");
+    const payload = Object.fromEntries(formData.entries());
+    await updateLegalPageAdmin(parseForm(legalPageSchema, payload));
+    return { ok: true as const, message: "Legal page saved." };
+  });
+}

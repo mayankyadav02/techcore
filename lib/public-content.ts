@@ -169,6 +169,39 @@ export async function loadPublicProject(slug: string): Promise<PublicProject | u
   return loadOneOrEmpty(async () => cachedProject(slug));
 }
 
+// Load PageContent for public pages (queries model directly — no auth required)
+const cachedPageContent = unstable_cache(
+  async (key: string) => {
+    const { connectMongo } = await import("@/lib/db");
+    const { PageContent } = await import("@/modules/content/page-content.model");
+    await connectMongo();
+    return PageContent.findOne({ key } as any).select("-updatedBy -__v").lean();
+  },
+  ["public-page-content"],
+  { tags: [cacheTags.pageContent], revalidate: 3600 },
+);
+
+export async function loadPublicPageContent(key: string) {
+  return loadOneOrEmpty(async () => cachedPageContent(key));
+}
+
+// Load LegalPage for public pages (queries model directly — no auth required)
+const cachedLegalPage = unstable_cache(
+  async (key: string) => {
+    const { connectMongo } = await import("@/lib/db");
+    const { LegalPage } = await import("@/modules/content/legal-page.model");
+    await connectMongo();
+    return LegalPage.findOne({ key } as any).select("-updatedBy -__v").lean();
+  },
+  ["public-legal-page"],
+  { tags: [cacheTags.legalPage], revalidate: 3600 },
+);
+
+export async function loadPublicLegalPage(key: string) {
+  return loadOneOrEmpty(async () => cachedLegalPage(key));
+}
+
+
 export async function loadPublicPosts(category?: string): Promise<PublicPost[]> {
   const posts = await loadListOrEmpty(cachedPosts);
   return category ? posts.filter((post) => post.category === category) : posts;

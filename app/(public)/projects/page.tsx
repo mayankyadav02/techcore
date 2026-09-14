@@ -6,7 +6,7 @@ import { Section } from "@/components/marketing/section";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProjectFilterIsland } from "@/components/work/project-filter-island";
 import { ProjectTile } from "@/components/work/project-tile";
-import { loadPublicProjects } from "@/lib/public-content";
+import { loadPublicProjects, loadPublicPageContent } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 import { projectFilterTags } from "@/lib/work/portfolio-filters";
 
@@ -27,21 +27,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
+  const pageContent = await loadPublicPageContent("projects");
   const projects = await loadPublicProjects();
 
   return (
     <>
       <PageHero
-        eyebrow="Projects"
-        title="How the work would look."
-        description="These programmes are fictional. They exist to show structure, not to imply named clients. Filter the grid by the kind of product — labels are mapped from existing sectors and services, not a second category taxonomy."
+        eyebrow={pageContent?.heroEyebrow || "Projects"}
+        title={pageContent?.heroTitle || "How the work would look."}
+        description={pageContent?.heroDescription || "These programmes are fictional. They exist to show structure, not to imply named clients. Filter the grid by the kind of product — labels are mapped from existing sectors and services, not a second category taxonomy."}
         actions={
           <>
-            <ButtonLink href="/projects" variant="primary">
-              View Case Study
+            <ButtonLink href={pageContent?.primaryCta?.href || "/projects"} variant="primary">
+              {pageContent?.primaryCta?.label || "View Case Study"}
             </ButtonLink>
-            <ButtonLink href="/contact" variant="inverse">
-              Contact Us
+            <ButtonLink href={pageContent?.secondaryCta?.href || "/contact"} variant="inverse">
+              {pageContent?.secondaryCta?.label || "Contact Us"}
             </ButtonLink>
           </>
         }

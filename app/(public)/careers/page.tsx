@@ -6,7 +6,7 @@ import { CtaBand } from "@/components/marketing/cta-band";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Section } from "@/components/marketing/section";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadPublicJobs } from "@/lib/public-content";
+import { loadPublicJobs, loadPublicPageContent } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
 import type { Metadata } from "next";
@@ -25,18 +25,26 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CareersPage() {
+  const pageContent = await loadPublicPageContent("careers");
   const jobs = await loadPublicJobs();
 
   return (
     <>
       <PageHero
-        eyebrow="Careers"
-        title="Work with people who finish things."
-        description="These roles describe the kind of team TechCore would hire. Applications are stored for the hiring team."
+        eyebrow={pageContent?.heroEyebrow || "Careers"}
+        title={pageContent?.heroTitle || "Work with people who finish things."}
+        description={pageContent?.heroDescription || "These roles describe the kind of team TechCore would hire. Applications are stored for the hiring team."}
         actions={
-          <ButtonLink href="#open-positions" variant="primary">
-            View Openings
-          </ButtonLink>
+          <>
+            <ButtonLink href={pageContent?.primaryCta?.href || "#open-positions"} variant="primary">
+              {pageContent?.primaryCta?.label || "View Openings"}
+            </ButtonLink>
+            {pageContent?.secondaryCta?.href && pageContent?.secondaryCta?.label && (
+              <ButtonLink href={pageContent?.secondaryCta?.href} variant="inverse">
+                {pageContent?.secondaryCta?.label}
+              </ButtonLink>
+            )}
+          </>
         }
       />
       <Section>

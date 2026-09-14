@@ -3,8 +3,12 @@ import { clearPublicSettingsCache } from "@/modules/content/public.service";
 import { connectMongo } from "@/lib/db";
 import { requireAnyPermission } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
-import { writeAuditLog } from "@/lib/audit";
 import { Settings } from "@/modules/content/settings.model";
+import { writeAuditLog } from "@/lib/audit";
+import { PageContent } from "@/modules/content/page-content.model";
+import { LegalPage } from "@/modules/content/legal-page.model";
+import { pageContentSchema } from "@/modules/content/page-content.schema";
+import { legalPageSchema } from "@/modules/content/legal-page.schema";
 import { HomeContent } from "@/modules/content/home.model";
 import { AboutContent } from "@/modules/content/about.model";
 import { site } from "@/lib/site";
@@ -299,4 +303,50 @@ export async function updatePageSeoAdmin(
     [cacheTags.pageSeo],
     [`/${input.page}`, "/admin/settings/page-seo"],
   );
+}
+
+// Page Content (shared hero/content) admin functions
+export async function getPageContentAdmin(key: string) {
+  await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const row = await PageContent.findOne({ key } as any).lean();
+  if (!row) return null;
+  return row;
+}
+
+export async function updatePageContentAdmin(input: z.infer<typeof pageContentSchema>) {
+  const user = await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const updateObj = { updatedBy: user.id, ...input };
+  await PageContent.findOneAndUpdate({ key: input.key }, { $set: updateObj }, { upsert: true, setDefaultsOnInsert: true });
+  await writeAuditLog({
+    actorId: user.id,
+    action: "page_content.update",
+    resourceType: "PageContent",
+    resourceId: input.key,
+  });
+  revalidatePublic([cacheTags.pageContent], [`/${input.key}`, "/admin/settings/page-content"]);
+}
+
+// Legal Page admin functions
+export async function getLegalPageAdmin(key: string) {
+  await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const row = await LegalPage.findOne({ key } as any).lean();
+  if (!row) return null;
+  return row;
+}
+
+export async function updateLegalPageAdmin(input: z.infer<typeof legalPageSchema>) {
+  const user = await requireAnyPermission(["site:write"]);
+  await connectMongo();
+  const updateObj = { updatedBy: user.id, ...input };
+  await LegalPage.findOneAndUpdate({ key: input.key }, { $set: updateObj }, { upsert: true, setDefaultsOnInsert: true });
+  await writeAuditLog({
+    actorId: user.id,
+    action: "legal_page.update",
+    resourceType: "LegalPage",
+    resourceId: input.key,
+  });
+  revalidatePublic([cacheTags.legalPage], [`/${input.key}`, "/admin/settings/legal"]);
 }
