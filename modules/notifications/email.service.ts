@@ -263,3 +263,15 @@ export async function sendPasswordResetOtpEmail(input: {
     context: "auth.password_reset",
   });
 }
+
+export async function sendTestEmail(input: {
+  to: string;
+}): Promise<EmailSendResult> {
+  return sendEmail({
+    to: input.to,
+    subject: "TechCore Email Configuration Test",
+    text: "This is a test email from the TechCore admin panel. If you are receiving this, your email configuration is working correctly.",
+    html: "<p>This is a test email from the TechCore admin panel. If you are receiving this, your email configuration is working correctly.</p>",
+    context: "admin.test_email",
+  });
+}

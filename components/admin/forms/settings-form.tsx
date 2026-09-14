@@ -1,16 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FormField } from "@/components/forms/form-field";
 import { Input, Textarea } from "@/components/ui/input";
 import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
 import { updateSettingsAction } from "@/modules/content/actions";
+import { sendTestEmailAction } from "@/modules/notifications/actions";
 import { Tabs } from "@/components/ui/tabs";
 import { MediaSelector } from "@/components/admin/media/media-selector";
 
 type NavItem = { label: string; href: string };
 type FooterGroup = { title: string; links: NavItem[] };
+
+function TestEmailButton() {
+  const [isPending, startTransition] = useTransition();
+  const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
+
+  return (
+    <div className="md:col-span-2 mt-2 p-4 bg-surface rounded-xl border border-line">
+      <h3 className="text-sm font-semibold mb-2">Test Email Configuration</h3>
+      <p className="text-sm text-ink/70 mb-4">Send a test email to your account email address to verify Resend and domain settings.</p>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            setMessage(null);
+            startTransition(async () => {
+              try {
+                const res = await sendTestEmailAction();
+                if (res.success) {
+                  setMessage({ text: "Test email sent successfully.", error: false });
+                } else {
+                  setMessage({ text: res.error || "Failed to send test email.", error: true });
+                }
+              } catch (err) {
+                setMessage({ text: "An unexpected error occurred.", error: true });
+              }
+            });
+          }}
+          className="text-sm font-medium px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 transition-colors disabled:opacity-50"
+        >
+          {isPending ? "Sending..." : "Send Test Email"}
+        </button>
+        {message && (
+          <p className={`text-sm ${message.error ? "text-red-500" : "text-green-600"}`}>
+            {message.text}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function SettingsForm(values: {
   companyName: string;
@@ -65,6 +107,7 @@ export function SettingsForm(values: {
       <FormField label="Email" htmlFor="contactEmail">
         <Input id="contactEmail" name="contactEmail" type="email" required defaultValue={values.contactEmail} />
       </FormField>
+      <TestEmailButton />
       <FormField label="Phone" htmlFor="contactPhone">
         <Input id="contactPhone" name="contactPhone" defaultValue={values.contactPhone} />
       </FormField>
