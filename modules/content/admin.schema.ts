@@ -17,7 +17,7 @@ export const settingsInputSchema = z.object({
   contactEmail: z.email(),
   contactPhone: z.string().trim().max(40).optional(),
   address: z.string().trim().max(240).optional(),
-  
+  logoId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid ID").optional().or(z.literal("")),
   logoType: z.enum(["image", "text"]).default("image"),
   logoText: z.string().trim().max(40).optional(),
   

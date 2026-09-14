@@ -55,6 +55,15 @@ export function Logo({
         )}>
           {company.logoText || displayName}
         </span>
+      ) : company?.logoMedia?.url ? (
+        <Image
+          src={company.logoMedia.url}
+          alt={company.logoMedia.altText || displayName}
+          width={dim.width}
+          height={dim.height}
+          priority={priority}
+          className={imageClass}
+        />
       ) : inverted ? (
         <Image
           src="/logo.dark.png"

@@ -4,6 +4,8 @@ import { FormField } from "@/components/forms/form-field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
+import { MediaSelector } from "@/components/admin/media/media-selector";
+import { useState } from "react";
 import type { ActionResult } from "@/lib/admin/action";
 
 type IndustryValues = {
@@ -11,6 +13,7 @@ type IndustryValues = {
   slug?: string;
   summary?: string;
   body?: string;
+  heroImageId?: string;
   focus?: string[];
   status?: string;
   featured?: boolean;
@@ -27,12 +30,21 @@ export function IndustryForm({
   values?: IndustryValues;
   submitLabel: string;
 }) {
+  const [heroImageId, setHeroImageId] = useState(values?.heroImageId || "");
+
   return (
     <MutationForm
       action={action}
       submitLabel={submitLabel}
       onSuccessPath={(id) => `/admin/industries/${id}`}
     >
+      <FormSection title="Media" description="Imagery for the industry listing and detail page.">
+        <input type="hidden" name="heroImageId" value={heroImageId} />
+        <FormField label="Hero Image" htmlFor="heroImageId">
+          <MediaSelector value={heroImageId} onChange={setHeroImageId} label="Select Hero Image" />
+        </FormField>
+      </FormSection>
+
       <FormSection title="Basics">
         <FormField label="Title" htmlFor="title">
           <Input id="title" name="title" required defaultValue={values?.title} />

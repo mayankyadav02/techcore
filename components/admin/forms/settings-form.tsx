@@ -7,6 +7,7 @@ import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
 import { updateSettingsAction } from "@/modules/content/actions";
 import { Tabs } from "@/components/ui/tabs";
+import { MediaSelector } from "@/components/admin/media/media-selector";
 
 type NavItem = { label: string; href: string };
 type FooterGroup = { title: string; links: NavItem[] };
@@ -17,6 +18,7 @@ export function SettingsForm(values: {
   contactEmail: string;
   contactPhone: string;
   address: string;
+  logoId?: string;
   logoType: string;
   logoText: string;
   navigation: NavItem[];
@@ -32,6 +34,7 @@ export function SettingsForm(values: {
 }) {
   const [nav, setNav] = useState<NavItem[]>(values.navigation || []);
   const [footer, setFooter] = useState<FooterGroup[]>(values.footerGroups || []);
+  const [logoId, setLogoId] = useState(values.logoId || "");
 
   const brandingTab = (
     <FormSection title="Company & Branding">
@@ -48,9 +51,13 @@ export function SettingsForm(values: {
           defaultValue={values.logoType}
           className="flex h-11 w-full rounded-xl border border-line bg-surface px-4 py-2 text-sm text-ink transition-colors focus-visible:border-brand focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="image">Image (Hardcoded Assets)</option>
+          <option value="image">Image (CMS / Hardcoded Assets)</option>
           <option value="text">Text Logo</option>
         </select>
+      </FormField>
+      <input type="hidden" name="logoId" value={logoId} />
+      <FormField label="Logo Image (if image type)" htmlFor="logoId">
+        <MediaSelector value={logoId} onChange={(id) => setLogoId(id)} label="Select Logo" />
       </FormField>
       <FormField label="Logo text (if text type)" htmlFor="logoText">
         <Input id="logoText" name="logoText" defaultValue={values.logoText} />

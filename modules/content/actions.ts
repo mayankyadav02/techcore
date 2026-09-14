@@ -15,6 +15,7 @@ export async function updateSettingsAction(formData: FormData) {
         contactEmail: formString(formData.get("contactEmail")),
         contactPhone: formString(formData.get("contactPhone")),
         address: formString(formData.get("address")),
+        logoId: formString(formData.get("logoId")),
         logoType: formString(formData.get("logoType")),
         logoText: formString(formData.get("logoText")),
         navigationJson: formString(formData.get("navigationJson")),

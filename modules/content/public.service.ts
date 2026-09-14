@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { connectMongo } from "@/lib/db";
+import { mapMedia } from "@/lib/public-mappers";
 import { cacheTags } from "@/lib/cache-tags";
 import { Settings } from "@/modules/content/settings.model";
 import { HomeContent } from "@/modules/content/home.model";
@@ -20,6 +21,7 @@ export type PublicCompany = {
   social: { href: string; label: string }[];
   logoType: "image" | "text";
   logoText: string;
+  logoMedia?: { url: string; altText: string };
   navigation: { href: string; label: string }[];
   cta: { href: string; label: string };
   footerGroups: { title: string; links: { href: string; label: string }[] }[];
@@ -46,6 +48,7 @@ const loadCachedSettings = unstable_cache(
   async () => {
     await connectMongo();
     const row = await Settings.findOne({ key: "global" })
+      .populate("logoId")
       .select("-updatedBy -__v")
       .lean();
     return row ? mapSettings(row) : fallbackCompany;
@@ -337,6 +340,7 @@ function mapSettings(row: {
   contactPhone?: string | null;
   address?: string | null;
   footerText?: string | null;
+  logoId?: unknown;
   logoType?: string | null;
   logoText?: string | null;
   navigation?: { href: string; label: string }[] | null;
@@ -370,6 +374,7 @@ function mapSettings(row: {
     social: social.length ? social : [...fallbackSocial],
     logoType: (row.logoType as "image" | "text") || "image",
     logoText: row.logoText || row.companyName || site.name,
+    logoMedia: mapMedia(row as Record<string, unknown>, "logoId"),
     navigation: row.navigation?.length ? row.navigation : [...fallbackNav],
     cta,
     footerGroups: row.footerGroups?.length 
