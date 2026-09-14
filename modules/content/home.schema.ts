@@ -67,6 +67,8 @@ export const homeInputSchema = z.object({
   aboutBody: z.string().trim().max(1000).optional(),
   aboutLinkLabel: z.string().trim().max(40).optional(),
   aboutLinkUrl: z.string().trim().max(200).optional(),
+  aboutImageId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid ID").optional().or(z.literal("")),
+  heroImageIds: z.array(z.string().regex(/^[a-f\d]{24}$/i, "Invalid ID").optional().or(z.literal(""))).optional(),
 
   // Packages
   packagesEyebrow: z.string().trim().max(80).optional(),

@@ -131,6 +131,11 @@ export async function updatePost(id: string, input: z.infer<typeof blogInputSche
   if (!existing) throw new AppError("NOT_FOUND", "Post not found.");
   const slug = ensureSlug(input.title, input.slug);
   try {
+    if (input.heroImageId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.heroImageId });
+      if (!exists) throw new AppError("VALIDATION_ERROR", "The selected hero media does not exist.");
+    }
     existing.set({
       ...input,
       slug,

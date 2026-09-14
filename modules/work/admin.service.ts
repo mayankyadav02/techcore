@@ -124,6 +124,11 @@ export async function updateProject(
   if (!existing) throw new AppError("NOT_FOUND", "Project not found.");
   const slug = ensureSlug(input.title, input.slug);
   try {
+    if (input.heroImageId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.heroImageId });
+      if (!exists) throw new AppError("VALIDATION_ERROR", "The selected hero media does not exist.");
+    }
     existing.set({
       ...input,
       slug,

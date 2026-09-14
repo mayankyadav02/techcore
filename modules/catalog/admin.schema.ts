@@ -72,6 +72,7 @@ export const projectInputSchema = z.object({
   features: z.array(z.string().trim().min(1).max(200)).max(20),
   technology: z.array(z.string().trim().min(1).max(80)).max(30),
   heroImageUrl: optionalUrl.optional(),
+  heroImageId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid ID").optional().or(z.literal("")),
   galleryUrls: z.array(z.string().url().max(500)).max(12),
   year: z.number().int().min(2000).max(2100).optional(),
   status: z.enum(contentStatuses),

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { updateMediaAction } from "@/modules/media/actions";
+import { updateMediaAction, uploadMediaAction } from "@/modules/media/actions";
+import { useRouter } from "next/navigation";
 
 type MediaItem = {
   _id: string;
@@ -23,6 +24,9 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
   const [altText, setAltText] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const filteredItems = items.filter((item) =>
     item.filename.toLowerCase().includes(search.toLowerCase())
@@ -39,6 +43,51 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
       setEditingAlt(false);
     } else {
       alert(res.error || "Failed to update alt text");
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const MAX_FILE_SIZE = 4 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File exceeds 4MB limit");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      alert("Unsupported MIME type");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await uploadMediaAction(formData);
+    
+    if (res.success && res.item) {
+      const newItem: MediaItem = {
+        _id: res.item._id,
+        url: res.item.url,
+        filename: file.name,
+        mimeType: file.type,
+        sizeBytes: file.size,
+        altText: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
+      };
+      setItems([newItem, ...items]);
+      router.refresh();
+    } else {
+      alert(res.error || "Failed to upload media");
+    }
+
+    setUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -59,6 +108,22 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full max-w-sm rounded-[var(--radius-sm)] border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-brand"
         />
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept="image/jpeg, image/png, image/webp, image/avif"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            aria-label="Upload media file"
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? "Uploading..." : "Upload Media"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
@@ -167,6 +232,28 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
                     </Button>
                   </div>
                 )}
+              </div>
+              <div className="border-t border-line mt-auto pt-4 flex justify-end">
+                <Button 
+                  size="sm" 
+                  variant="danger"
+                  disabled={saving}
+                  onClick={async () => {
+                    if (!window.confirm("Are you sure you want to delete this media?")) return;
+                    setSaving(true);
+                    const { deleteMediaAction } = await import("@/modules/media/actions");
+                    const res = await deleteMediaAction(selected._id);
+                    setSaving(false);
+                    if (res.success) {
+                      setItems(items.filter(i => i._id !== selected._id));
+                      setSelected(null);
+                    } else {
+                      alert(res.error || "Failed to delete media");
+                    }
+                  }}
+                >
+                  {saving ? "Deleting..." : "Delete Media"}
+                </Button>
               </div>
             </div>
           </div>

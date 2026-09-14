@@ -15,6 +15,7 @@ export const blogInputSchema = z.object({
   category: z.string().trim().min(2).max(40),
   tags: z.array(z.string().trim().min(1).max(40)).max(20),
   heroImageUrl: optionalUrl.optional(),
+  heroImageId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid ID").optional().or(z.literal("")),
   readTime: z.string().trim().max(20).optional(),
   status: z.enum(blogStatuses),
   featured: z.boolean(),

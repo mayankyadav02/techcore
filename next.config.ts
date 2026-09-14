@@ -8,7 +8,7 @@ const csp = [
     ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
     : "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com",
   "font-src 'self' data:",
   "connect-src 'self'",
   "object-src 'none'",
@@ -33,6 +33,15 @@ const nextConfig: NextConfig = {
   // Next.js treats localhost and 127.0.0.1 as different origins in development
   // and 403s /_next assets + HMR unless the loopback IP is allowlisted.
   allowedDevOrigins: ["localhost", "127.0.0.1"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+        port: "",
+      },
+    ],
+  },
   experimental: {
     authInterrupts: true,
   },

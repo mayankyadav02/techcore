@@ -145,6 +145,11 @@ export async function updateService(
   const existing = await Service.findOne({ _id: parseObjectId(id), ...notDeleted });
   if (!existing) throw new AppError("NOT_FOUND", "Service not found.");
   try {
+    if (input.heroImageId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.heroImageId });
+      if (!exists) throw new AppError("VALIDATION_ERROR", "The selected hero media does not exist.");
+    }
     existing.set({
       ...input,
       slug,
@@ -289,6 +294,11 @@ export async function updateSolution(
   const existing = await Solution.findOne({ _id: parseObjectId(id), ...notDeleted });
   if (!existing) throw new AppError("NOT_FOUND", "Solution not found.");
   try {
+    if (input.heroImageId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.heroImageId });
+      if (!exists) throw new AppError("VALIDATION_ERROR", "The selected hero media does not exist.");
+    }
     existing.set({
       ...input,
       slug,
@@ -432,6 +442,11 @@ export async function updateIndustry(
   const existing = await Industry.findOne({ _id: parseObjectId(id), ...notDeleted });
   if (!existing) throw new AppError("NOT_FOUND", "Industry not found.");
   try {
+    if (input.heroImageId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.heroImageId });
+      if (!exists) throw new AppError("VALIDATION_ERROR", "The selected hero media does not exist.");
+    }
     existing.set({
       ...input,
       slug,

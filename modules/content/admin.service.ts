@@ -79,6 +79,18 @@ export async function updateSettingsAdmin(
     updateObj.address = input.address;
     updateObj.logoType = input.logoType;
     updateObj.logoText = input.logoText;
+    
+    if (input.logoId) {
+      const { Media } = await import("@/modules/media/media.model");
+      const exists = await Media.exists({ _id: input.logoId });
+      if (!exists) {
+        throw new Error("Validation Error: The selected logo media does not exist.");
+      }
+      updateObj.logoId = input.logoId;
+    } else if (input.logoId === "") {
+      updateObj.logoId = null;
+    }
+
     updateObj.navigation = input.navigationJson;
     updateObj.ctaLabel = input.ctaLabel;
     updateObj.ctaUrl = input.ctaUrl;
@@ -154,6 +166,25 @@ export async function updateHomepageAdmin(
   }
   delete updateObj.seoTitle;
   delete updateObj.seoDescription;
+
+  const { Media } = await import("@/modules/media/media.model");
+  
+  if (input.aboutImageId) {
+    const exists = await Media.exists({ _id: input.aboutImageId });
+    if (!exists) {
+      throw new Error("Validation Error: The selected about media does not exist.");
+    }
+  }
+
+  if (input.heroImageIds && input.heroImageIds.length > 0) {
+    const uniqueIds = Array.from(new Set(input.heroImageIds.filter(Boolean)));
+    if (uniqueIds.length > 0) {
+      const count = await Media.countDocuments({ _id: { $in: uniqueIds } });
+      if (count !== uniqueIds.length) {
+        throw new Error("Validation Error: One or more selected hero media do not exist.");
+      }
+    }
+  }
 
   await HomeContent.findOneAndUpdate(
     { key: "home" },
