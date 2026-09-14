@@ -45,13 +45,14 @@ export type EmailSendResult = {
   error?: string;
 };
 
-function logEmailFailure(context: string, error: unknown) {
+function logEmailFailure(context: string, error: unknown, attempt?: number) {
   const detail = error instanceof Error ? error.message : "Unknown email error";
   console.error(
     JSON.stringify({
       level: "error",
       code: "EMAIL_SEND_FAILED",
       context,
+      attempt,
       message: detail,
     }),
   );
@@ -75,39 +76,86 @@ async function sendEmail(input: {
     return { success: false, skipped: true, error: "Email provider not configured." };
   }
 
-  try {
-    const resend = getResendClient();
-    if (!resend) {
-      return {
-        success: false,
-        skipped: true,
-        error: "Email provider not configured.",
-      };
-    }
-
-    const response = await resend.emails.send({
-      from: env.EMAIL_FROM,
-      to: [input.to],
-      subject: input.subject,
-      text: input.text,
-      html: input.html,
-    });
-
-    if (response.error) {
-      throw new Error(response.error.message || "Resend rejected the message.");
-    }
-
-    return {
-      success: true,
-      providerId: response.data?.id,
-    };
-  } catch (error) {
-    logEmailFailure(input.context, error);
+  const resend = getResendClient();
+  if (!resend) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown email error",
+      skipped: true,
+      error: "Email provider not configured.",
     };
   }
+
+  const MAX_ATTEMPTS = 3;
+  let lastError: unknown;
+  let attempt = 1;
+
+  for (; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await resend.emails.send({
+        from: env.EMAIL_FROM,
+        to: [input.to],
+        subject: input.subject,
+        text: input.text,
+        html: input.html,
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || "Resend rejected the message.");
+      }
+
+      return {
+        success: true,
+        providerId: response.data?.id,
+      };
+    } catch (error) {
+      lastError = error;
+      const errorMessage = error instanceof Error ? error.message.toLowerCase() : "";
+      
+      const isTransient =
+        errorMessage.includes("timeout") ||
+        errorMessage.includes("fetch failed") ||
+        errorMessage.includes("econnreset") ||
+        errorMessage.includes("rate limit") ||
+        errorMessage.includes("429") ||
+        errorMessage.includes("500") ||
+        errorMessage.includes("502") ||
+        errorMessage.includes("503") ||
+        errorMessage.includes("504");
+
+      if (!isTransient || attempt === MAX_ATTEMPTS) {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+    }
+  }
+
+  logEmailFailure(input.context, lastError, attempt);
+  return {
+    success: false,
+    error: lastError instanceof Error ? lastError.message : "Unknown email error",
+  };
+}
+
+async function dispatchCustomerAndAdminEmails(
+  customerInput: { to: string; subject: string; text: string; html: string; context: string },
+  adminInput: { to?: string; subject: string; text: string; html: string; context: string },
+): Promise<EmailSendResult> {
+  const results = await Promise.all([
+    sendEmail(customerInput),
+    adminInput.to
+      ? sendEmail({ ...adminInput, to: adminInput.to })
+      : { success: false, skipped: true, error: "Admin email not configured." },
+  ]);
+
+  const deliverySucceeded = results.some((result) => result.success);
+  return {
+    success: deliverySucceeded,
+    skipped: results.every((result) => result.skipped),
+    error: deliverySucceeded
+      ? undefined
+      : results.map((result) => result.error).filter(Boolean).join("; ") || undefined,
+  };
 }
 
 export async function sendContactEnquiryEmails(input: {
@@ -121,31 +169,22 @@ export async function sendContactEnquiryEmails(input: {
   const admin = buildContactAdminEmail(input);
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
-  const results = await Promise.all([
-    sendEmail({
+  return dispatchCustomerAndAdminEmails(
+    {
       to: input.customerEmail,
       subject: customer.subject,
       text: customer.text,
       html: customer.html,
       context: "contact.customer",
-    }),
-    adminEmail
-      ? sendEmail({
-          to: adminEmail,
-          subject: admin.subject,
-          text: admin.text,
-          html: admin.html,
-          context: "contact.admin",
-        })
-      : { success: false, skipped: true, error: "Admin email not configured." },
-  ]);
-
-  const deliverySucceeded = results.some((result) => result.success);
-  return {
-    success: deliverySucceeded,
-    skipped: results.every((result) => result.skipped),
-    error: deliverySucceeded ? undefined : results.map((result) => result.error).filter(Boolean).join("; ") || undefined,
-  };
+    },
+    {
+      to: adminEmail,
+      subject: admin.subject,
+      text: admin.text,
+      html: admin.html,
+      context: "contact.admin",
+    },
+  );
 }
 
 export async function sendQuoteEnquiryEmails(input: {
@@ -161,31 +200,22 @@ export async function sendQuoteEnquiryEmails(input: {
   const admin = buildQuoteAdminEmail(input);
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
-  const results = await Promise.all([
-    sendEmail({
+  return dispatchCustomerAndAdminEmails(
+    {
       to: input.customerEmail,
       subject: customer.subject,
       text: customer.text,
       html: customer.html,
       context: "quote.customer",
-    }),
-    adminEmail
-      ? sendEmail({
-          to: adminEmail,
-          subject: admin.subject,
-          text: admin.text,
-          html: admin.html,
-          context: "quote.admin",
-        })
-      : { success: false, skipped: true, error: "Admin email not configured." },
-  ]);
-
-  const deliverySucceeded = results.some((result) => result.success);
-  return {
-    success: deliverySucceeded,
-    skipped: results.every((result) => result.skipped),
-    error: deliverySucceeded ? undefined : results.map((result) => result.error).filter(Boolean).join("; ") || undefined,
-  };
+    },
+    {
+      to: adminEmail,
+      subject: admin.subject,
+      text: admin.text,
+      html: admin.html,
+      context: "quote.admin",
+    },
+  );
 }
 
 export async function sendApplicationEmails(input: {
@@ -198,31 +228,22 @@ export async function sendApplicationEmails(input: {
   const admin = buildApplicationAdminEmail(input);
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
-  const results = await Promise.all([
-    sendEmail({
+  return dispatchCustomerAndAdminEmails(
+    {
       to: input.applicantEmail,
       subject: customer.subject,
       text: customer.text,
       html: customer.html,
       context: "application.customer",
-    }),
-    adminEmail
-      ? sendEmail({
-          to: adminEmail,
-          subject: admin.subject,
-          text: admin.text,
-          html: admin.html,
-          context: "application.admin",
-        })
-      : { success: false, skipped: true, error: "Admin email not configured." },
-  ]);
-
-  const deliverySucceeded = results.some((result) => result.success);
-  return {
-    success: deliverySucceeded,
-    skipped: results.every((result) => result.skipped),
-    error: deliverySucceeded ? undefined : results.map((result) => result.error).filter(Boolean).join("; ") || undefined,
-  };
+    },
+    {
+      to: adminEmail,
+      subject: admin.subject,
+      text: admin.text,
+      html: admin.html,
+      context: "application.admin",
+    },
+  );
 }
 
 export async function sendPasswordResetOtpEmail(input: {

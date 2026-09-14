@@ -1,13 +1,24 @@
 import assert from "node:assert/strict";
-import { afterEach, before, describe, it } from "node:test";
+import { after, afterEach, before, describe, it } from "node:test";
 
 process.env.RESEND_API_KEY ??= "test_resend_key";
 process.env.EMAIL_FROM ??= "TechCore <noreply@example.com>";
 process.env.ADMIN_EMAIL ??= "admin@example.com";
 
 const sendCalls: Array<{ to: string[] | string; subject: string }> = [];
+let mockFailures: Array<Error | { message: string }> = [];
+
 const sendMock = async (payload: { to: string[] | string; subject: string }) => {
   sendCalls.push(payload);
+
+  const failure = mockFailures.shift();
+  if (failure) {
+    if (failure instanceof Error) {
+      throw failure;
+    }
+    return { data: null, error: failure };
+  }
+
   return {
     data: { id: `resend_${Array.isArray(payload.to) ? payload.to.join("-") : payload.to}` },
     error: null,
@@ -23,12 +34,21 @@ const sendMock = async (payload: { to: string[] | string; subject: string }) => 
 let emailService: typeof import("../modules/notifications/email.service");
 
 describe("transactional email service", () => {
+  let originalSetTimeout: typeof global.setTimeout;
+
   before(async () => {
     emailService = await import("../modules/notifications/email.service");
+    originalSetTimeout = global.setTimeout;
+    (global.setTimeout as any) = (cb: Function) => originalSetTimeout(cb, 0);
   });
 
   afterEach(() => {
     sendCalls.length = 0;
+    mockFailures = [];
+  });
+
+  after(() => {
+    global.setTimeout = originalSetTimeout;
   });
 
   it("sends a customer confirmation and admin alert for a contact enquiry", async () => {
@@ -70,5 +90,55 @@ describe("transactional email service", () => {
 
     assert.equal(result.success, true);
     assert.equal(sendCalls.length, 2);
+  });
+
+  it("retries transient failures up to 3 times and succeeds", async () => {
+    mockFailures = [new Error("fetch failed"), new Error("timeout")];
+    const result = await emailService.sendPasswordResetOtpEmail({
+      to: "test@example.com",
+      userName: "Test",
+      otp: "123456",
+    });
+    assert.equal(result.success, true);
+    assert.equal(sendCalls.length, 3);
+  });
+
+  it("fails gracefully after maximum retries for transient errors", async () => {
+    mockFailures = [
+      new Error("fetch failed"),
+      new Error("fetch failed"),
+      new Error("fetch failed"),
+    ];
+    
+    const result = await emailService.sendPasswordResetOtpEmail({
+      to: "test@example.com",
+      userName: "Test",
+      otp: "123456",
+    });
+    
+    assert.equal(result.success, false);
+    assert.equal(sendCalls.length, 3);
+  });
+
+  it("does not retry non-transient configuration/validation errors", async () => {
+    mockFailures = [{ message: "invalid_to_address" }];
+    const result = await emailService.sendPasswordResetOtpEmail({
+      to: "test@example.com",
+      userName: "Test",
+      otp: "123456",
+    });
+    assert.equal(result.success, false);
+    assert.equal(sendCalls.length, 1);
+  });
+
+  it("does not retry generic errors that are not explicitly transient", async () => {
+    mockFailures = [new Error("Generic exception that is not a timeout")];
+    const result = await emailService.sendPasswordResetOtpEmail({
+      to: "test@example.com",
+      userName: "Test",
+      otp: "123456",
+    });
+    assert.equal(result.success, false);
+    assert.equal(sendCalls.length, 1);
   });
 });
