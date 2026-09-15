@@ -12,7 +12,7 @@ const settingsSchema = new Schema(
     },
     companyName: { type: String, required: true, trim: true, maxlength: 80 },
     tagline: { type: String, trim: true, maxlength: 160 },
-    logoId: { type: Schema.Types.ObjectId },
+    logoId: { type: Schema.Types.ObjectId, ref: "Media" },
     logoType: { type: String, enum: ["image", "text"], default: "image" },
     logoText: { type: String, trim: true, maxlength: 40 },
     navigation: { type: [navItemSchema] },
