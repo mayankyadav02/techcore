@@ -58,6 +58,17 @@ projectSchema.index({ status: 1, sortOrder: 1 });
 projectSchema.index({ deletedAt: 1, status: 1 });
 projectSchema.index({ featured: 1, status: 1 });
 projectSchema.index({ year: 1 });
+projectSchema.index(
+  {
+    title: "text",
+    summary: "text",
+    overview: "text",
+    challenge: "text",
+    solution: "text",
+    sector: "text",
+  },
+  { name: "project_text_idx" }
+);
 
 export type Project = InferSchemaType<typeof projectSchema>;
 export type ProjectModel = Model<Project>;

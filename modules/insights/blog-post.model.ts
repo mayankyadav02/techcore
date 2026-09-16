@@ -40,6 +40,15 @@ const blogPostSchema = new Schema(
 blogPostSchema.index({ status: 1, publishedAt: -1 });
 blogPostSchema.index({ deletedAt: 1, status: 1 });
 blogPostSchema.index({ category: 1, status: 1 });
+blogPostSchema.index(
+  {
+    title: "text",
+    excerpt: "text",
+    body: "text",
+    category: "text",
+  },
+  { name: "blog_post_text_idx" }
+);
 
 export type BlogPost = InferSchemaType<typeof blogPostSchema>;
 export type BlogPostModel = Model<BlogPost>;

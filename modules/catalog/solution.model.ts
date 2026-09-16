@@ -42,6 +42,16 @@ const solutionSchema = new Schema(
 
 solutionSchema.index({ status: 1, sortOrder: 1 });
 solutionSchema.index({ deletedAt: 1, status: 1 });
+solutionSchema.index(
+  {
+    title: "text",
+    summary: "text",
+    body: "text",
+    problem: "text",
+    approach: "text",
+  },
+  { name: "solution_text_idx" }
+);
 
 export type Solution = InferSchemaType<typeof solutionSchema>;
 export type SolutionModel = Model<Solution>;

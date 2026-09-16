@@ -38,6 +38,14 @@ const industrySchema = new Schema(
 
 industrySchema.index({ status: 1, sortOrder: 1 });
 industrySchema.index({ deletedAt: 1, status: 1 });
+industrySchema.index(
+  {
+    title: "text",
+    summary: "text",
+    body: "text",
+  },
+  { name: "industry_text_idx" }
+);
 
 export type Industry = InferSchemaType<typeof industrySchema>;
 export type IndustryModel = Model<Industry>;

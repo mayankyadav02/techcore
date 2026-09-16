@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Logo } from "@/components/marketing/logo";
+import { SearchInput } from "@/components/marketing/search-input";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { PublicCompany } from "@/modules/content/public.service";
 
@@ -228,6 +229,10 @@ className={cn(
               )}
             >
               <ThemeToggle invert />
+            </div>
+
+            <div className="mx-2 hidden md:block">
+              <SearchInput className="w-40 xl:w-48" />
             </div>
 
             <ButtonLink
@@ -538,6 +543,15 @@ className={cn(
                 </ul>
 
                 <div className="mt-3 border-t border-line pt-3 dark:border-white/10">
+                  <Link
+                    href="/search"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium text-ink-muted hover:bg-brand/5 hover:text-ink dark:text-white/65 dark:hover:text-white transition-all duration-200 mb-2"
+                  >
+                    <Search size={16} />
+                    <span>Search Site</span>
+                  </Link>
+
                   <ButtonLink
                     href={publicCta.href}
                     variant="primary"

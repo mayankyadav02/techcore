@@ -49,6 +49,15 @@ const jobSchema = new Schema(
 
 jobSchema.index({ status: 1, updatedAt: -1 });
 jobSchema.index({ deletedAt: 1, status: 1 });
+jobSchema.index(
+  {
+    title: "text",
+    department: "text",
+    description: "text",
+    requirements: "text",
+  },
+  { name: "job_text_idx" }
+);
 
 export type Job = InferSchemaType<typeof jobSchema>;
 export type JobModel = Model<Job>;

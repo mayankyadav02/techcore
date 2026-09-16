@@ -11,7 +11,7 @@
     "seed": "tsx scripts/seed.ts",
     "seed:admin": "tsx scripts/seed-admin.ts",
     "seed:media": "tsx scripts/seed-media.ts",
-    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/password-reset.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts tests/media-upload.test.ts tests/media-delete.test.ts"
+    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/password-reset.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts tests/media-upload.test.ts tests/media-delete.test.ts tests/search.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.8.0",

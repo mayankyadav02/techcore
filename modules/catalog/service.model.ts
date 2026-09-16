@@ -45,6 +45,14 @@ const serviceSchema = new Schema(
 serviceSchema.index({ status: 1, sortOrder: 1 });
 serviceSchema.index({ deletedAt: 1, status: 1 });
 serviceSchema.index({ featured: 1, status: 1 });
+serviceSchema.index(
+  {
+    title: "text",
+    summary: "text",
+    body: "text",
+  },
+  { name: "service_text_idx" }
+);
 
 export type Service = InferSchemaType<typeof serviceSchema>;
 export type ServiceModel = Model<Service>;
