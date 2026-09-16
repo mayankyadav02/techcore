@@ -289,14 +289,39 @@ export function SettingsForm(values: {
 
   return (
     <MutationForm action={updateSettingsAction} submitLabel="Save settings">
-      <Tabs
-        tabs={[
-          { id: "branding", label: "Branding", panel: brandingTab },
-          { id: "navigation", label: "Navigation", panel: navTab },
-          { id: "footer", label: "Footer", panel: footerTab },
-          { id: "social", label: "Social & SEO", panel: socialTab },
-        ]}
-      />
+      {({ fieldErrors }) => {
+        const hasError = (keys: string[]) => keys.some((k) => !!fieldErrors[k]);
+        return (
+          <Tabs
+            tabs={[
+              {
+                id: "branding",
+                label: "Branding",
+                panel: brandingTab,
+                error: hasError(["companyName", "tagline", "logoType", "logoId", "logoText", "contactEmail", "contactPhone", "address"])
+              },
+              {
+                id: "navigation",
+                label: "Navigation",
+                panel: navTab,
+                error: hasError(["navigationJson", "ctaLabel", "ctaUrl"])
+              },
+              {
+                id: "footer",
+                label: "Footer",
+                panel: footerTab,
+                error: hasError(["footerText", "footerGroupsJson"])
+              },
+              {
+                id: "social",
+                label: "Social & SEO",
+                panel: socialTab,
+                error: hasError(["linkedin", "x", "seoTitle", "seoDescription"])
+              },
+            ]}
+          />
+        );
+      }}
     </MutationForm>
   );
 }

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function Tabs({
   tabs,
 }: {
-  tabs: { id: string; label: string; panel: React.ReactNode }[];
+  tabs: { id: string; label: string; panel: React.ReactNode; error?: boolean }[];
 }) {
   const [active, setActive] = useState(tabs[0]?.id);
   const baseId = useId();
@@ -15,7 +15,7 @@ export function Tabs({
 
   return (
     <div>
-      <div role="tablist" aria-label="Content sections" className="flex gap-1 border-b border-line">
+      <div role="tablist" aria-label="Content sections" className="flex gap-1 border-b border-line overflow-x-auto [-webkit-overflow-scrolling:touch]">
         {tabs.map((tab) => {
           const selected = tab.id === active;
           return (
@@ -27,8 +27,9 @@ export function Tabs({
               aria-selected={selected}
               aria-controls={`${baseId}-panel-${tab.id}`}
               tabIndex={selected ? 0 : -1}
+              aria-label={tab.error ? `${tab.label} (Contains validation errors)` : undefined}
               className={cn(
-                "-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                "-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",
                 selected
                   ? "border-brand text-ink"
                   : "border-transparent text-ink-muted hover:text-ink",
@@ -36,6 +37,9 @@ export function Tabs({
               onClick={() => setActive(tab.id)}
             >
               {tab.label}
+              {tab.error && (
+                <span className="flex h-2 w-2 rounded-full bg-danger" aria-hidden="true" title="Contains validation errors" />
+              )}
             </button>
           );
         })}

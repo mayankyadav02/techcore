@@ -25,14 +25,14 @@ export function AboutForm({ values }: { values: PublicAbout }) {
         <FormField label="Description" htmlFor="heroDescription" className="md:col-span-2">
           <Textarea id="heroDescription" name="heroDescription" rows={3} defaultValue={values.heroDescription} />
         </FormField>
-        
+
         <FormField label="Primary Button Label" htmlFor="heroPrimaryLabel">
           <Input id="heroPrimaryLabel" name="heroPrimaryLabel" defaultValue={values.heroPrimaryLabel} />
         </FormField>
         <FormField label="Primary Button URL" htmlFor="heroPrimaryUrl">
           <Input id="heroPrimaryUrl" name="heroPrimaryUrl" defaultValue={values.heroPrimaryUrl} />
         </FormField>
-        
+
         <FormField label="Secondary Button Label" htmlFor="heroSecondaryLabel">
           <Input id="heroSecondaryLabel" name="heroSecondaryLabel" defaultValue={values.heroSecondaryLabel} />
         </FormField>
@@ -179,7 +179,7 @@ export function AboutForm({ values }: { values: PublicAbout }) {
         <FormField label="Title" htmlFor="faqTitle" className="md:col-span-2">
           <Input id="faqTitle" name="faqTitle" defaultValue={values.faqTitle} />
         </FormField>
-        
+
         <div className="md:col-span-2 space-y-4 mt-4">
           <input type="hidden" name="faqsJson" value={JSON.stringify(faqs)} />
           {faqs.map((faq, idx) => (
@@ -236,14 +236,14 @@ export function AboutForm({ values }: { values: PublicAbout }) {
         <FormField label="CTA Description" htmlFor="ctaDescription" className="md:col-span-2">
           <Textarea id="ctaDescription" name="ctaDescription" rows={3} defaultValue={values.ctaDescription} />
         </FormField>
-        
+
         <FormField label="Primary Button Label" htmlFor="ctaPrimaryLabel">
           <Input id="ctaPrimaryLabel" name="ctaPrimaryLabel" defaultValue={values.ctaPrimaryLabel} />
         </FormField>
         <FormField label="Primary Button URL" htmlFor="ctaPrimaryUrl">
           <Input id="ctaPrimaryUrl" name="ctaPrimaryUrl" defaultValue={values.ctaPrimaryUrl} />
         </FormField>
-        
+
         <FormField label="Secondary Button Label" htmlFor="ctaSecondaryLabel">
           <Input id="ctaSecondaryLabel" name="ctaSecondaryLabel" defaultValue={values.ctaSecondaryLabel} />
         </FormField>
@@ -272,16 +272,51 @@ export function AboutForm({ values }: { values: PublicAbout }) {
 
   return (
     <MutationForm action={updateAboutAction} submitLabel="Save About Content">
-      <Tabs
-        tabs={[
-          { id: "hero", label: "Hero & Story", panel: heroStoryTab },
-          { id: "mission", label: "Mission & Vision", panel: missionVisionTab },
-          { id: "values", label: "Values & Approach", panel: valuesApproachTab },
-          { id: "expectations", label: "Expectations & FAQ", panel: expectationsFaqTab },
-          { id: "cta", label: "Call to Action", panel: ctaTab },
-          { id: "seo", label: "SEO", panel: seoTab },
-        ]}
-      />
+      {({ fieldErrors }) => {
+        const hasError = (keys: string[]) => keys.some((k) => !!fieldErrors[k]);
+        return (
+          <Tabs
+            tabs={[
+              {
+                id: "hero",
+                label: "Hero & Story",
+                panel: heroStoryTab,
+                error: hasError(["heroEyebrow", "heroTitle", "heroDescription", "heroPrimaryLabel", "heroPrimaryUrl", "heroSecondaryLabel", "heroSecondaryUrl", "storyEyebrow", "storyTitle", "storyDescription", "storyBody"])
+              },
+              {
+                id: "mission",
+                label: "Mission & Vision",
+                panel: missionVisionTab,
+                error: hasError(["missionTitle", "missionBody", "visionTitle", "visionBody"])
+              },
+              {
+                id: "values",
+                label: "Values & Approach",
+                panel: valuesApproachTab,
+                error: hasError(["valuesEyebrow", "valuesTitle", "valuesJson", "expertiseEyebrow", "expertiseTitle", "approachEyebrow", "approachTitle", "approachDescription"])
+              },
+              {
+                id: "expectations",
+                label: "Expectations & FAQ",
+                panel: expectationsFaqTab,
+                error: hasError(["expectationsEyebrow", "expectationsTitle", "faqEyebrow", "faqTitle", "faqsJson"])
+              },
+              {
+                id: "cta",
+                label: "Call to Action",
+                panel: ctaTab,
+                error: hasError(["ctaTitle", "ctaDescription", "ctaPrimaryLabel", "ctaPrimaryUrl", "ctaSecondaryLabel", "ctaSecondaryUrl"])
+              },
+              {
+                id: "seo",
+                label: "SEO",
+                panel: seoTab,
+                error: hasError(["seoTitle", "seoDescription"])
+              },
+            ]}
+          />
+        );
+      }}
     </MutationForm>
   );
 }

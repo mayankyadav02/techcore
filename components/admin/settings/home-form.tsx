@@ -33,21 +33,21 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Description" htmlFor="heroDescription" className="md:col-span-2">
           <Textarea id="heroDescription" name="heroDescription" rows={3} defaultValue={values.heroDescription} />
         </FormField>
-        
+
         <FormField label="Primary Button Label" htmlFor="heroPrimaryLabel">
           <Input id="heroPrimaryLabel" name="heroPrimaryLabel" defaultValue={values.heroPrimaryLabel} />
         </FormField>
         <FormField label="Primary Button URL" htmlFor="heroPrimaryUrl">
           <Input id="heroPrimaryUrl" name="heroPrimaryUrl" defaultValue={values.heroPrimaryUrl} />
         </FormField>
-        
+
         <FormField label="Secondary Button Label" htmlFor="heroSecondaryLabel">
           <Input id="heroSecondaryLabel" name="heroSecondaryLabel" defaultValue={values.heroSecondaryLabel} />
         </FormField>
         <FormField label="Secondary Button URL" htmlFor="heroSecondaryUrl">
           <Input id="heroSecondaryUrl" name="heroSecondaryUrl" defaultValue={values.heroSecondaryUrl} />
         </FormField>
-        
+
         <div className="col-span-1 md:col-span-2 pt-4">
           <h4 className="text-sm font-medium mb-4">Hero Carousel Images</h4>
           <input type="hidden" name="heroImageIds" value={heroImage1} />
@@ -80,7 +80,7 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Link URL" htmlFor="aboutLinkUrl">
           <Input id="aboutLinkUrl" name="aboutLinkUrl" defaultValue={values.aboutLinkUrl} />
         </FormField>
-        
+
         <div className="col-span-1 md:col-span-2 pt-4">
           <h4 className="text-sm font-medium mb-4">About Image</h4>
           <input type="hidden" name="aboutImageId" value={aboutImage} />
@@ -261,7 +261,7 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Title" htmlFor="reasonsTitle" className="md:col-span-2">
           <Input id="reasonsTitle" name="reasonsTitle" defaultValue={values.reasonsTitle} />
         </FormField>
-        
+
         <div className="md:col-span-2 space-y-4 mt-4">
           <input type="hidden" name="reasonsJson" value={JSON.stringify(reasons)} />
           {reasons.map((reason, idx) => (
@@ -314,7 +314,7 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="Title" htmlFor="faqTitle" className="md:col-span-2">
           <Input id="faqTitle" name="faqTitle" defaultValue={values.faqTitle} />
         </FormField>
-        
+
         <div className="md:col-span-2 space-y-4 mt-4">
           <input type="hidden" name="faqsJson" value={JSON.stringify(faqs)} />
           {faqs.map((faq, idx) => (
@@ -436,14 +436,14 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
         <FormField label="CTA Description" htmlFor="ctaDescription" className="md:col-span-2">
           <Textarea id="ctaDescription" name="ctaDescription" rows={3} defaultValue={values.ctaDescription} />
         </FormField>
-        
+
         <FormField label="Primary Button Label" htmlFor="ctaPrimaryLabel">
           <Input id="ctaPrimaryLabel" name="ctaPrimaryLabel" defaultValue={values.ctaPrimaryLabel} />
         </FormField>
         <FormField label="Primary Button URL" htmlFor="ctaPrimaryUrl">
           <Input id="ctaPrimaryUrl" name="ctaPrimaryUrl" defaultValue={values.ctaPrimaryUrl} />
         </FormField>
-        
+
         <FormField label="Secondary Button Label" htmlFor="ctaSecondaryLabel">
           <Input id="ctaSecondaryLabel" name="ctaSecondaryLabel" defaultValue={values.ctaSecondaryLabel} />
         </FormField>
@@ -472,16 +472,59 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
 
   return (
     <MutationForm action={updateHomepageAction} submitLabel="Save Homepage">
-      <Tabs
-        tabs={[
-          { id: "hero", label: "Hero & About", panel: heroAboutTab },
-          { id: "packages", label: "Packages", panel: packagesTab },
-          { id: "process", label: "Process", panel: processTab },
-          { id: "reasons", label: "Reasons & FAQ", panel: reasonsFaqTab },
-          { id: "intros", label: "Section Intros & CTA", panel: introsCtaTab },
-          { id: "seo", label: "SEO", panel: seoTab },
-        ]}
-      />
+      {({ fieldErrors }) => {
+        const hasError = (keys: string[]) => keys.some((k) => !!fieldErrors[k]);
+        return (
+          <Tabs
+            tabs={[
+              {
+                id: "hero",
+                label: "Hero & About",
+                panel: heroAboutTab,
+                error: hasError(["heroEyebrow", "heroTitle", "heroDescription", "heroPrimaryLabel", "heroPrimaryUrl", "heroSecondaryLabel", "heroSecondaryUrl", "heroImageIds", "aboutEyebrow", "aboutTitle", "aboutDescription", "aboutBody", "aboutLinkLabel", "aboutLinkUrl", "aboutImageId"])
+              },
+              {
+                id: "packages",
+                label: "Packages",
+                panel: packagesTab,
+                error: hasError(["packagesEyebrow", "packagesTitle", "packagesDescription", "packagesJson"])
+              },
+              {
+                id: "process",
+                label: "Process",
+                panel: processTab,
+                error: hasError(["processEyebrow", "processTitle", "processDescription", "processStepsJson"])
+              },
+              {
+                id: "reasons",
+                label: "Reasons & FAQ",
+                panel: reasonsFaqTab,
+                error: hasError(["reasonsEyebrow", "reasonsTitle", "reasonsJson", "faqEyebrow", "faqTitle", "faqsJson"])
+              },
+              {
+                id: "intros",
+                label: "Section Intros & CTA",
+                panel: introsCtaTab,
+                error: hasError([
+                  "servicesEyebrow", "servicesTitle", "servicesDescription",
+                  "solutionsEyebrow", "solutionsTitle", "solutionsDescription",
+                  "projectsEyebrow", "projectsTitle", "projectsDescription",
+                  "industriesEyebrow", "industriesTitle", "industriesDescription",
+                  "testimonialsEyebrow", "testimonialsTitle", "testimonialsDescription",
+                  "insightsEyebrow", "insightsTitle", "insightsDescription",
+                  "ctaTitle", "ctaDescription", "ctaPrimaryLabel", "ctaPrimaryUrl", "ctaSecondaryLabel", "ctaSecondaryUrl"
+                ])
+              },
+              {
+                id: "seo",
+                label: "SEO",
+                panel: seoTab,
+                error: hasError(["seoTitle", "seoDescription"])
+              },
+            ]}
+          />
+        );
+      }}
     </MutationForm>
   );
 }

@@ -17,7 +17,7 @@ export function MutationForm({
   onContinuePath,
 }: {
   action: (formData: FormData) => Promise<ActionResult>;
-  children: React.ReactNode;
+  children: React.ReactNode | ((context: { fieldErrors: Record<string, string> }) => React.ReactNode);
   submitLabel: string;
   className?: string;
   onSuccessPath?: string | ((id: string) => string);
@@ -41,12 +41,12 @@ export function MutationForm({
         const form = event.currentTarget;
         const data = new FormData(form);
         const intent = submitIntent; // capture current state
-        
+
         setError(null);
         setFieldErrors({});
         startTransition(async () => {
           const result = await action(data);
-          
+
           if (!result.ok) {
             setError(result.message);
             setFieldErrors(result.fields ?? {});
@@ -57,15 +57,15 @@ export function MutationForm({
             });
             return;
           }
-          
+
           // CRITICAL: clear dirty state before any navigation
           setDirty(false);
-          
+
           notify({
             title: result.message ?? "Saved",
             tone: "success",
           });
-          
+
           const savedId =
             result.data &&
             typeof result.data === "object" &&
@@ -82,7 +82,7 @@ export function MutationForm({
               return;
             }
           }
-          
+
           if (intent === "continue" && onContinuePath) {
             const path = typeof onContinuePath === "function" && savedId ? onContinuePath(savedId) : (typeof onContinuePath === "string" ? onContinuePath : null);
             if (path) {
@@ -116,15 +116,14 @@ export function MutationForm({
           ))}
         </ul>
       ) : null}
-      
-      {children}
-      
+      {typeof children === "function" ? children({ fieldErrors }) : children}
+
       {error ? (
         <p className="text-sm text-danger" role="alert">
           {error}
         </p>
       ) : null}
-      
+
       <div className="flex flex-wrap items-center gap-3">
         {onClosePath || onContinuePath ? (
           <>
@@ -145,8 +144,8 @@ export function MutationForm({
             </Button>
           </>
         ) : (
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={pending}
             onClick={() => setSubmitIntent("default")}
           >
