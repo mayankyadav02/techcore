@@ -6,6 +6,7 @@ import { LoginForm } from "@/components/admin/login-form";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { getSession } from "@/lib/auth";
 import { safeCallbackUrl } from "@/lib/auth-constants";
+import { getPublicCompany } from "@/modules/content/public.service";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -13,6 +14,7 @@ export default async function AdminLoginPage({
   searchParams: Promise<{ callbackUrl?: string }>;
 }) {
   const user = await getSession();
+  const company = await getPublicCompany();
   const { callbackUrl } = await searchParams;
 
   if (user) {
@@ -156,7 +158,7 @@ export default async function AdminLoginPage({
                   dark:text-brand-bright
                 "
               >
-                TechCore CMS
+                {company.name} CMS
               </p>
 
               <h1
@@ -180,7 +182,7 @@ export default async function AdminLoginPage({
                   dark:text-white/60
                 "
               >
-                Staff access only. Sign in to manage TechCore content and
+                Staff access only. Sign in to manage {company.name} content and
                 operations.
               </p>
             </div>
@@ -203,7 +205,7 @@ export default async function AdminLoginPage({
             dark:text-white/40
           "
         >
-          Secure staff access · TechCore
+          Secure staff access · {company.name}
         </p>
       </div>
     </main>

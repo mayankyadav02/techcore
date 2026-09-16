@@ -16,7 +16,9 @@ function Prose({ children }: { children: string }) {
   return <p className="mt-4 text-sm leading-7 text-ink-muted">{children}</p>;
 }
 
-export function CaseStudyView({
+import { getPublicCompany } from "@/modules/content/public.service";
+
+export async function CaseStudyView({
   project,
   related,
   catalogues,
@@ -29,6 +31,7 @@ export function CaseStudyView({
     services: PublicService[];
   };
 }) {
+  const company = await getPublicCompany();
   const kind = project.kind ?? "Fictional Case Study";
   const category = primaryFilterLabel(project);
   const industry = catalogues.industries.find((item) => item.slug === project.industrySlug);
@@ -51,7 +54,7 @@ export function CaseStudyView({
               Discuss Similar Project
             </ButtonLink>
             <ButtonLink href="/contact" variant="inverse">
-              Talk to TechCore
+              Talk to {company.name}
             </ButtonLink>
           </>
         }
@@ -275,7 +278,7 @@ export function CaseStudyView({
 
       <CtaBand
         title="Start a similar programme"
-        description="Share a brief. We will tell you whether TechCore is the right team — these cases are fictional demonstrations, not proof of named customers."
+        description={`Share a brief. We will tell you whether ${company.name} is the right team — these cases are fictional demonstrations, not proof of named customers.`}
         primaryHref="/quote"
         primaryLabel="Discuss Similar Project"
       />
@@ -286,7 +289,7 @@ export function CaseStudyView({
             <SectionHeading
               eyebrow="More work"
               title="Related projects"
-              description="Other fictional programmes in the TechCore portfolio."
+              description={`Other fictional programmes in the ${company.name} portfolio.`}
             />
             <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {related.map((item) => (

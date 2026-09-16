@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { env } from "@/lib/env";
+import { getPublicCompany } from "@/modules/content/public.service";
 import {
   buildApplicationAdminEmail,
   buildApplicationCustomerEmail,
@@ -165,8 +166,10 @@ export async function sendContactEnquiryEmails(input: {
   message: string;
   adminEmail?: string;
 }): Promise<EmailSendResult> {
-  const customer = buildContactCustomerEmail(input);
-  const admin = buildContactAdminEmail(input);
+  const company = await getPublicCompany();
+  const companyName = company.name;
+  const customer = buildContactCustomerEmail({ ...input, companyName });
+  const admin = buildContactAdminEmail({ ...input, companyName });
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   return dispatchCustomerAndAdminEmails(
@@ -196,8 +199,10 @@ export async function sendQuoteEnquiryEmails(input: {
   timeline: string;
   adminEmail?: string;
 }): Promise<EmailSendResult> {
-  const customer = buildQuoteCustomerEmail(input);
-  const admin = buildQuoteAdminEmail(input);
+  const comp = await getPublicCompany();
+  const companyName = comp.name;
+  const customer = buildQuoteCustomerEmail({ ...input, companyName });
+  const admin = buildQuoteAdminEmail({ ...input, companyName });
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   return dispatchCustomerAndAdminEmails(
@@ -224,8 +229,10 @@ export async function sendApplicationEmails(input: {
   jobTitle: string;
   adminEmail?: string;
 }): Promise<EmailSendResult> {
-  const customer = buildApplicationCustomerEmail(input);
-  const admin = buildApplicationAdminEmail(input);
+  const comp = await getPublicCompany();
+  const companyName = comp.name;
+  const customer = buildApplicationCustomerEmail({ ...input, companyName });
+  const admin = buildApplicationAdminEmail({ ...input, companyName });
   const adminEmail = input.adminEmail || env.ADMIN_EMAIL;
 
   return dispatchCustomerAndAdminEmails(
@@ -251,9 +258,12 @@ export async function sendPasswordResetOtpEmail(input: {
   userName: string;
   otp: string;
 }): Promise<EmailSendResult> {
+  const comp = await getPublicCompany();
+  const companyName = comp.name;
   const email = buildPasswordResetOtpEmail({
     userName: input.userName,
     otp: input.otp,
+    companyName,
   });
   return sendEmail({
     to: input.to,
@@ -267,11 +277,13 @@ export async function sendPasswordResetOtpEmail(input: {
 export async function sendTestEmail(input: {
   to: string;
 }): Promise<EmailSendResult> {
+  const comp = await getPublicCompany();
+  const companyName = comp.name;
   return sendEmail({
     to: input.to,
-    subject: "TechCore Email Configuration Test",
-    text: "This is a test email from the TechCore admin panel. If you are receiving this, your email configuration is working correctly.",
-    html: "<p>This is a test email from the TechCore admin panel. If you are receiving this, your email configuration is working correctly.</p>",
+    subject: `${companyName} Email Configuration Test`,
+    text: `This is a test email from the ${companyName} admin panel. If you are receiving this, your email configuration is working correctly.`,
+    html: `<p>This is a test email from the ${companyName} admin panel. If you are receiving this, your email configuration is working correctly.</p>`,
     context: "admin.test_email",
   });
 }

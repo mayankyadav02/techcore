@@ -1,6 +1,6 @@
 export function ErrorState({
   title = "Something went wrong",
-  description = "Please try again. If the problem continues, contact the TechCore team.",
+  description = "Please try again. If the problem continues, contact support.",
 }: {
   title?: string;
   description?: string;

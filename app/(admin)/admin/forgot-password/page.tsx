@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ForgotPasswordForm } from "@/components/admin/forgot-password-form";
 import { getSession } from "@/lib/auth";
+import { getPublicCompany } from "@/modules/content/public.service";
 
 export const metadata = {
   title: "Forgot Password — TechCore CMS",
@@ -11,6 +12,7 @@ export const metadata = {
 
 export default async function ForgotPasswordPage() {
   const user = await getSession();
+  const company = await getPublicCompany();
   if (user) redirect("/admin/dashboard");
 
   return (
@@ -80,7 +82,7 @@ export default async function ForgotPasswordPage() {
             </div>
             <div className="mt-8 mb-8 text-center">
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-dark dark:text-brand-bright">
-                TechCore CMS
+                {company.name} CMS
               </p>
               <h1 className="mt-3 text-2xl font-semibold tracking-tight text-ink transition-colors duration-300 dark:text-white">
                 Forgot password?
@@ -96,7 +98,7 @@ export default async function ForgotPasswordPage() {
           </div>
         </div>
         <p className="mt-5 text-center text-xs text-ink-muted transition-colors duration-300 dark:text-white/40">
-          Secure staff access · TechCore
+          Secure staff access · {company.name}
         </p>
       </div>
     </main>

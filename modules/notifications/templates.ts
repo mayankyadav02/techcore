@@ -16,15 +16,16 @@ function formatList(items: Array<[string, string]>) {
 }
 
 export function buildContactCustomerEmail(input: {
+  companyName: string;
   customerName: string;
   subject: string;
   message: string;
 }) {
-  const subject = `Thanks for contacting TechCore — ${input.subject}`;
+  const subject = `Thanks for contacting ${input.companyName} — ${input.subject}`;
   const text = [
     `Hi ${input.customerName},`,
     "",
-    "Thanks for reaching out to TechCore.",
+    "Thanks for reaching out to ${input.companyName}.",
     "We have received your message and a member of the team will review it shortly.",
     "",
     `Subject: ${input.subject}`,
@@ -32,19 +33,19 @@ export function buildContactCustomerEmail(input: {
     input.message,
     "",
     "Regards,",
-    "The TechCore team",
+    "The ${input.companyName} team",
     env.APP_URL || "https://localhost:3000",
   ].join("\n");
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-      <h2 style="margin-bottom: 12px;">Thanks for contacting TechCore</h2>
+      <h2 style="margin-bottom: 12px;">Thanks for contacting ${escapeHtml(input.companyName)}</h2>
       <p>Hi ${escapeHtml(input.customerName)},</p>
       <p>Thanks for reaching out. We have received your message and a member of the team will review it shortly.</p>
       <p><strong>Subject:</strong> ${escapeHtml(input.subject)}</p>
       <p><strong>Message:</strong></p>
       <p>${escapeHtml(input.message).replace(/\n/g, "<br />")}</p>
-      <p>Regards,<br />The TechCore team</p>
+      <p>Regards,<br />The ${input.companyName} team</p>
     </div>
   `;
 
@@ -52,6 +53,7 @@ export function buildContactCustomerEmail(input: {
 }
 
 export function buildContactAdminEmail(input: {
+  companyName: string;
   customerName: string;
   customerEmail: string;
   subject: string;
@@ -88,6 +90,7 @@ export function buildContactAdminEmail(input: {
 }
 
 export function buildQuoteCustomerEmail(input: {
+  companyName: string;
   customerName: string;
   company: string;
   serviceName: string;
@@ -98,7 +101,7 @@ export function buildQuoteCustomerEmail(input: {
   const text = [
     `Hi ${input.customerName},`,
     "",
-    "Thanks for requesting a quote from TechCore.",
+    "Thanks for requesting a quote from ${input.companyName}.",
     "We have received your enquiry and a member of the team will review the brief shortly.",
     "",
     `Company: ${input.company}`,
@@ -107,14 +110,14 @@ export function buildQuoteCustomerEmail(input: {
     `Timeline: ${input.timeline}`,
     "",
     "Regards,",
-    "The TechCore team",
+    "The ${input.companyName} team",
   ].join("\n");
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
       <h2 style="margin-bottom: 12px;">Thanks for your quote request</h2>
       <p>Hi ${escapeHtml(input.customerName)},</p>
-      <p>Thanks for requesting a quote from TechCore. We have received your enquiry and a member of the team will review the brief shortly.</p>
+      <p>Thanks for requesting a quote from ${input.companyName}. We have received your enquiry and a member of the team will review the brief shortly.</p>
       <ul style="padding-left: 18px; margin: 0 0 16px;">
         ${formatList([
           ["Company", input.company],
@@ -123,7 +126,7 @@ export function buildQuoteCustomerEmail(input: {
           ["Timeline", input.timeline],
         ])}
       </ul>
-      <p>Regards,<br />The TechCore team</p>
+      <p>Regards,<br />The ${input.companyName} team</p>
     </div>
   `;
 
@@ -131,6 +134,7 @@ export function buildQuoteCustomerEmail(input: {
 }
 
 export function buildQuoteAdminEmail(input: {
+  companyName: string;
   customerName: string;
   customerEmail: string;
   company: string;
@@ -170,6 +174,7 @@ export function buildQuoteAdminEmail(input: {
 }
 
 export function buildApplicationCustomerEmail(input: {
+  companyName: string;
   applicantName: string;
   jobTitle: string;
 }) {
@@ -177,19 +182,19 @@ export function buildApplicationCustomerEmail(input: {
   const text = [
     `Hi ${input.applicantName},`,
     "",
-    "Thanks for applying to TechCore.",
+    "Thanks for applying to ${input.companyName}.",
     `We have received your application for ${input.jobTitle} and will review it shortly.`,
     "",
     "Regards,",
-    "The TechCore team",
+    "The ${input.companyName} team",
   ].join("\n");
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
       <h2 style="margin-bottom: 12px;">Application received</h2>
       <p>Hi ${escapeHtml(input.applicantName)},</p>
-      <p>Thanks for applying to TechCore. We have received your application for ${escapeHtml(input.jobTitle)} and will review it shortly.</p>
-      <p>Regards,<br />The TechCore team</p>
+      <p>Thanks for applying to ${input.companyName}. We have received your application for ${escapeHtml(input.jobTitle)} and will review it shortly.</p>
+      <p>Regards,<br />The ${input.companyName} team</p>
     </div>
   `;
 
@@ -197,6 +202,7 @@ export function buildApplicationCustomerEmail(input: {
 }
 
 export function buildApplicationAdminEmail(input: {
+  companyName: string;
   applicantName: string;
   applicantEmail: string;
   jobTitle: string;
@@ -227,14 +233,15 @@ export function buildApplicationAdminEmail(input: {
 }
 
 export function buildPasswordResetOtpEmail(input: {
+  companyName: string;
   userName: string;
   otp: string;
 }) {
-  const subject = "TechCore CMS — Password Reset Code";
+  const subject = "${input.companyName} CMS — Password Reset Code";
   const text = [
     `Hi ${input.userName},`,
     "",
-    "You requested a password reset for your TechCore CMS account.",
+    "You requested a password reset for your ${input.companyName} CMS account.",
     "",
     `Your verification code is: ${input.otp}`,
     "",
@@ -242,7 +249,7 @@ export function buildPasswordResetOtpEmail(input: {
     "If you did not request a password reset, you can safely ignore this email.",
     "",
     "Regards,",
-    "The TechCore team",
+    "The ${input.companyName} team",
     env.APP_URL || "https://localhost:3000",
   ].join("\n");
 
@@ -250,13 +257,13 @@ export function buildPasswordResetOtpEmail(input: {
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
       <h2 style="margin-bottom: 12px;">Password Reset Code</h2>
       <p>Hi ${escapeHtml(input.userName)},</p>
-      <p>You requested a password reset for your TechCore CMS account.</p>
+      <p>You requested a password reset for your ${input.companyName} CMS account.</p>
       <p style="font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0a7c59; margin: 24px 0;">
         ${escapeHtml(input.otp)}
       </p>
       <p>This code expires in <strong>10 minutes</strong> and can only be used once.</p>
       <p>If you did not request this, you can safely ignore this email.</p>
-      <p>Regards,<br />The TechCore team</p>
+      <p>Regards,<br />The ${input.companyName} team</p>
     </div>
   `;
 
