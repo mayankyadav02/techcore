@@ -10,32 +10,35 @@ export function pageMetadata({
   path,
   seoTitle,
   seoDescription,
+  companyName,
 }: {
   title: string;
   description: string;
   path: string;
   seoTitle?: string;
   seoDescription?: string;
+  companyName?: string;
 }): Metadata {
   const fullTitle = seoTitle?.trim() || title;
   const metaDescription = seoDescription?.trim() || description;
   const url = `${siteUrl}${path}`;
+  const brandName = companyName || site.name;
 
   return {
     title: fullTitle,
     description: metaDescription,
     alternates: { canonical: path },
     openGraph: {
-      title: `${fullTitle} | ${site.name}`,
+      title: `${fullTitle} | ${brandName}`,
       description: metaDescription,
       url,
-      siteName: site.name,
+      siteName: brandName,
       type: "website",
       locale: "en_US",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${fullTitle} | ${site.name}`,
+      title: `${fullTitle} | ${brandName}`,
       description: metaDescription,
     },
   };
