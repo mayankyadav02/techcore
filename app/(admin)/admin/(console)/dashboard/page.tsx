@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/admin/page-header";
 import { StatusBars } from "@/components/charts/status-bars";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ButtonLink } from "@/components/ui/button-link";
+import { Badge } from "@/components/ui/badge";
 import { requirePagePermission } from "@/lib/auth";
 import { loadDashboard } from "@/modules/identity/dashboard.service";
 
@@ -31,8 +33,35 @@ export default async function AdminDashboardPage() {
         description="A snapshot of catalogue, leads, and hiring activity. Counts come from stored records — not live traffic."
         actions={<DashboardRefresh generatedAt={data.generatedAt} />}
       />
+
+      {(data.permissions.canWriteContent || data.permissions.canWriteUsers) && (
+        <Card className="p-5">
+          <h2 className="text-sm font-semibold text-ink mb-4">Quick Actions</h2>
+          <div className="flex flex-wrap gap-3">
+            {data.permissions.canWriteContent && (
+              <>
+                <ButtonLink href="/admin/services/new" variant="outline" size="sm">
+                  Add Service
+                </ButtonLink>
+                <ButtonLink href="/admin/blog/new" variant="outline" size="sm">
+                  Add Blog Post
+                </ButtonLink>
+                <ButtonLink href="/admin/media" variant="outline" size="sm">
+                  Upload Media
+                </ButtonLink>
+              </>
+            )}
+            {data.permissions.canWriteUsers && (
+              <ButtonLink href="/admin/users/new" variant="outline" size="sm">
+                Add User
+              </ButtonLink>
+            )}
+          </div>
+        </Card>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {data.canReadLeads ? (
+        {data.canReadLeads && (
           <>
             <DashboardCard
               label="Total enquiries"
@@ -44,7 +73,7 @@ export default async function AdminDashboardPage() {
               hint="Awaiting first response"
             />
           </>
-        ) : null}
+        )}
         <DashboardCard label="Projects" value={String(data.counts.projects)} />
         <DashboardCard label="Services" value={String(data.counts.services)} />
         <DashboardCard label="Blog posts" value={String(data.counts.posts)} />
@@ -53,13 +82,21 @@ export default async function AdminDashboardPage() {
           value={String(data.counts.jobs)}
           hint="Open roles"
         />
-        {data.canReadLeads ? (
+        {data.canReadLeads && (
           <DashboardCard
             label="Applications"
             value={String(data.counts.applications)}
           />
-        ) : null}
+        )}
+        {data.permissions.canReadUsers && (
+          <DashboardCard
+            label="Total users"
+            value={String(data.counts.users)}
+            hint="Active accounts"
+          />
+        )}
       </div>
+
       {data.canReadLeads ? (
         <>
           <div className="grid gap-6 xl:grid-cols-2">
@@ -146,6 +183,46 @@ export default async function AdminDashboardPage() {
           title="Lead queues are restricted"
           description="Your role can manage published content. Enquiry and application details are limited to admins."
         />
+      )}
+
+      {data.permissions.canReadAuditLogs && (
+        <Card className="p-0">
+          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+            <h2 className="text-sm font-semibold text-ink">
+              Recent System Activity
+            </h2>
+            <Link
+              href="/admin/audit-logs"
+              className="text-sm font-medium text-ink hover:underline"
+            >
+              View all
+            </Link>
+          </div>
+          {data.recentAuditLogs.length === 0 ? (
+            <div className="p-5">
+              <EmptyState
+                title="No activity yet"
+                description="System events and content changes will appear here."
+              />
+            </div>
+          ) : (
+            <ul className="divide-y divide-line">
+              {data.recentAuditLogs.map((log) => (
+                <li key={log.id} className="px-5 py-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-ink">{log.action}</p>
+                    <p className="mt-0.5 text-xs text-ink-subtle">
+                      {formatWhen(log.createdAt)}
+                    </p>
+                  </div>
+                  <Badge tone="neutral" className="capitalize">
+                    {log.resourceType.replace(/([A-Z])/g, " $1").trim()}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       )}
     </div>
   );
