@@ -4,6 +4,8 @@ import { Navbar } from "@/components/marketing/navbar";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { getPublicCompany } from "@/modules/content/public.service";
 
+import { Analytics } from "@vercel/analytics/next";
+
 export default async function PublicLayout({
   children,
 }: {
@@ -26,6 +28,7 @@ export default async function PublicLayout({
       <Footer company={company} />
       <ScrollToTop />
       <MobileTabBar company={company} />
+      <Analytics />
     </div>
   );
 }
