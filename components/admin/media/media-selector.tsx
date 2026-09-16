@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { listMediaAction } from "@/modules/media/actions";
+import { useDirtyState } from "@/components/admin/dirty-state-provider";
 
 type MediaItem = {
   _id: string;
@@ -25,6 +26,7 @@ export function MediaSelector({
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<MediaItem | null>(null);
+  const { setDirty } = useDirtyState();
 
   useEffect(() => {
     if (open && items.length === 0) {
@@ -74,6 +76,7 @@ export function MediaSelector({
                   onClick={() => {
                     onChange(item._id, item.url);
                     setSelected(item);
+                    setDirty(true);
                     setOpen(false);
                   }}
                 >

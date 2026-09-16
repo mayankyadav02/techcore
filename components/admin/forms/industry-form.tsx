@@ -36,7 +36,8 @@ export function IndustryForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/industries/${id}`}
+      onClosePath="/admin/industries"
+      onContinuePath={(id) => `/admin/industries/${id}`}
     >
       <FormSection title="Media" description="Imagery for the industry listing and detail page.">
         <input type="hidden" name="heroImageId" value={heroImageId} />

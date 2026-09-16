@@ -35,7 +35,8 @@ export function JobForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/careers/${id}`}
+      onClosePath="/admin/careers"
+      onContinuePath={(id) => `/admin/careers/${id}`}
     >
       <FormSection title="Role">
         <FormField label="Title" htmlFor="title">

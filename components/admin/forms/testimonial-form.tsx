@@ -30,7 +30,7 @@ export function TestimonialForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/testimonials/${id}`}
+      onClosePath="/admin/testimonials"
     >
       <FormSection title="Quote">
         <FormField label="Quote" htmlFor="quote" className="md:col-span-2">

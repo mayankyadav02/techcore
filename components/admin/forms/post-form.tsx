@@ -48,7 +48,8 @@ export function PostForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/blog/${id}`}
+      onClosePath="/admin/blog"
+      onContinuePath={(id) => `/admin/blog/${id}`}
     >
       <FormSection title="Article">
         <FormField label="Title" htmlFor="title">

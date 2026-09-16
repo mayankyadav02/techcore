@@ -45,7 +45,8 @@ export function ProjectForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/projects/${id}`}
+      onClosePath="/admin/projects"
+      onContinuePath={(id) => `/admin/projects/${id}`}
     >
       <FormSection title="Basics">
         <FormField label="Title" htmlFor="title">

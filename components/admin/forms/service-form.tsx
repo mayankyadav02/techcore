@@ -41,7 +41,8 @@ export function ServiceForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/services/${id}`}
+      onClosePath="/admin/services"
+      onContinuePath={(id) => `/admin/services/${id}`}
     >
       <FormSection title="Media" description="Imagery for the service listing and detail page.">
         <input type="hidden" name="heroImageId" value={heroImageId} />

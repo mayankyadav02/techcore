@@ -6,6 +6,7 @@ import Link from "@tiptap/extension-link";
 import { useEffect, useState } from "react";
 import { Bold, Italic, Strikethrough, Heading2, Heading3, List, ListOrdered, Quote, Link as LinkIcon, Undo, Redo, Unlink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDirtyState } from "@/components/admin/dirty-state-provider";
 
 interface RichTextEditorProps {
   name: string;
@@ -15,6 +16,7 @@ interface RichTextEditorProps {
 export function RichTextEditor({ name, defaultValue = "" }: RichTextEditorProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [value, setValue] = useState(defaultValue);
+  const { setDirty } = useDirtyState();
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,6 +40,7 @@ export function RichTextEditor({ name, defaultValue = "" }: RichTextEditorProps)
     content: initialValue || "",
     onUpdate: ({ editor }) => {
       setValue(editor.getHTML());
+      setDirty(true);
     },
     editorProps: {
       attributes: {

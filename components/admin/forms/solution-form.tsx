@@ -40,7 +40,8 @@ export function SolutionForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/solutions/${id}`}
+      onClosePath="/admin/solutions"
+      onContinuePath={(id) => `/admin/solutions/${id}`}
     >
       <FormSection title="Media" description="Imagery for the solution listing and detail page.">
         <input type="hidden" name="heroImageId" value={heroImageId} />

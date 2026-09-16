@@ -30,7 +30,7 @@ export function UserForm({
     <MutationForm
       action={action}
       submitLabel={submitLabel}
-      onSuccessPath={(id) => `/admin/users/${id}`}
+      onClosePath="/admin/users"
     >
       <FormSection title="Details">
         <FormField label="Email" htmlFor="email">
