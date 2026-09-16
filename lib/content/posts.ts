@@ -16,7 +16,7 @@ export type Post = {
   category: BlogCategory;
   date: string;
   readTime: string;
-  body: string[];
+  body: string | string[];
   tags?: string[];
   authorName?: string;
   heroImageId?: string;

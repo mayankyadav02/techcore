@@ -11,15 +11,20 @@
     "seed": "tsx scripts/seed.ts",
     "seed:admin": "tsx scripts/seed-admin.ts",
     "seed:media": "tsx scripts/seed-media.ts",
-    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/password-reset.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts tests/media-upload.test.ts tests/media-delete.test.ts tests/search.test.ts"
+    "test": "tsx --test tests/validation.test.ts tests/routes.test.ts tests/auth.test.ts tests/password-reset.test.ts tests/public-content.test.ts tests/public-sync.test.ts tests/email.test.ts tests/users.test.ts tests/media-upload.test.ts tests/media-delete.test.ts tests/search.test.ts tests/sanitize.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.8.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tiptap/extension-link": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "framer-motion": "^13.1.0",
+    "isomorphic-dompurify": "^3.19.0",
     "lucide-react": "^1.31.0",
     "mongoose": "^9.9.2",
     "next": "16.3.1",

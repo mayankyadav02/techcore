@@ -38,10 +38,10 @@ export async function updateHomepageAction(formData: FormData) {
     // Dynamically import the service and schema to avoid circular dependencies if any
     const { updateHomepageAdmin } = await import("@/modules/content/admin.service");
     const { homeInputSchema } = await import("@/modules/content/home.schema");
-    
+
     // Process form data into a plain object of strings
     const payload = Object.fromEntries(formData.entries());
-    
+
     await updateHomepageAdmin(parseForm(homeInputSchema, payload));
     return { ok: true as const, message: "Homepage content saved." };
   });
@@ -51,9 +51,9 @@ export async function updateAboutAction(formData: FormData) {
   return runAdminAction(async () => {
     const { updateAboutAdmin } = await import("@/modules/content/admin.service");
     const { aboutInputSchema } = await import("@/modules/content/about.schema");
-    
+
     const payload = Object.fromEntries(formData.entries());
-    
+
     await updateAboutAdmin(parseForm(aboutInputSchema, payload));
     return { ok: true as const, message: "About content saved." };
   });
@@ -63,9 +63,9 @@ export async function updatePageSeoAction(formData: FormData) {
   return runAdminAction(async () => {
     const { updatePageSeoAdmin } = await import("@/modules/content/admin.service");
     const { pageSeoInputSchema } = await import("@/modules/content/page-seo.schema");
-    
+
     const payload = Object.fromEntries(formData.entries());
-    
+
     await updatePageSeoAdmin(parseForm(pageSeoInputSchema, payload));
     return { ok: true as const, message: "Page SEO saved." };
   });
@@ -87,7 +87,13 @@ export async function updateLegalPageAction(formData: FormData) {
   return runAdminAction(async () => {
     const { updateLegalPageAdmin } = await import("@/modules/content/admin.service");
     const { legalPageSchema } = await import("@/modules/content/legal-page.schema");
+    const { sanitizeHtml } = await import("@/lib/sanitize");
+
     const payload = Object.fromEntries(formData.entries());
+    if (payload.content && typeof payload.content === "string") {
+      payload.content = sanitizeHtml(payload.content);
+    }
+
     await updateLegalPageAdmin(parseForm(legalPageSchema, payload));
     return { ok: true as const, message: "Legal page saved." };
   });

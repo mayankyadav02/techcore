@@ -5,6 +5,7 @@ import { Section } from "@/components/marketing/section";
 import { termsSections } from "@/lib/content/legal";
 import { loadPublicLegalPage } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
+import { RichText } from "@/components/ui/rich-text";
 
 import type { Metadata } from "next";
 import { getAllPublicPageSeo } from "@/modules/content/public.service";
@@ -30,12 +31,16 @@ export default async function TermsPage() {
       <PageHero eyebrow="Legal" title={legal?.content ? "Terms" : "Terms"} />
       <Section>
         <Container className="max-w-3xl space-y-10 rounded-[var(--radius-lg)] border border-line bg-elevated p-6 sm:p-10">
-          {sections.map((item) => (
-            <section key={item.title}>
-              <h2 className="text-xl font-semibold text-ink">{item.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-ink-muted">{item.body}</p>
-            </section>
-          ))}
+          {legal?.content ? (
+            <RichText content={legal.content} />
+          ) : (
+            sections.map((item) => (
+              <section key={item.title}>
+                <h2 className="text-xl font-semibold text-ink">{item.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-ink-muted">{item.body}</p>
+              </section>
+            ))
+          )}
         </Container>
       </Section>
       <CtaBand

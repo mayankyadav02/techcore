@@ -4,6 +4,7 @@ import { runAdminAction } from "@/lib/admin/action";
 import { parseForm } from "@/lib/admin/parse";
 import { formChecked, formString, splitLines } from "@/lib/admin/query";
 import { blogInputSchema } from "@/modules/insights/admin.schema";
+import { sanitizeHtml } from "@/lib/sanitize";
 import {
   createPost,
   deletePost,
@@ -16,7 +17,7 @@ function payload(formData: FormData) {
     title: formString(formData.get("title")),
     slug: formString(formData.get("slug")),
     excerpt: formString(formData.get("excerpt")),
-    body: formString(formData.get("body")),
+    body: sanitizeHtml(formString(formData.get("body"))),
     authorName: formString(formData.get("authorName")),
     category: formString(formData.get("category")),
     tags: splitLines(formData.get("tags")).flatMap((line) =>

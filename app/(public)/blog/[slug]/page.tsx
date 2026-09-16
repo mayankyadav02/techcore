@@ -12,6 +12,7 @@ import {
   relatedPublicPosts,
 } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
+import { RichText } from "@/components/ui/rich-text";
 
 export async function generateStaticParams() {
   return postStaticParams();
@@ -92,11 +93,7 @@ export default async function BlogDetailPage({
       />
       <Section>
         <Container className="max-w-3xl">
-          {post.body.map((paragraph) => (
-            <p key={paragraph.slice(0, 48)} className="mt-5 text-base leading-8 text-ink-muted first:mt-0">
-              {paragraph}
-            </p>
-          ))}
+          <RichText content={typeof post.body === "string" ? post.body : post.body.join("\n\n")} />
         </Container>
       </Section>
       <Section tone="muted">

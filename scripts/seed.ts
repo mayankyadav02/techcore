@@ -194,7 +194,7 @@ async function seed() {
           title: item.title,
           slug: item.slug,
           excerpt: item.excerpt,
-          body: item.body.join("\n\n"),
+          body: Array.isArray(item.body) ? item.body.join("\n\n") : item.body,
           authorName: item.authorName ?? "TechCore Practice",
           category: item.category,
           tags: item.tags?.length ? item.tags : [item.category],

@@ -5,6 +5,7 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { FormSection } from "@/components/admin/form-section";
 import { MutationForm } from "@/components/admin/mutation-form";
 import { MediaSelector } from "@/components/admin/media/media-selector";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { useState } from "react";
 import type { ActionResult } from "@/lib/admin/action";
 
@@ -60,7 +61,7 @@ export function PostForm({
           <Textarea id="excerpt" name="excerpt" rows={3} required defaultValue={values?.excerpt} />
         </FormField>
         <FormField label="Body" htmlFor="body" className="md:col-span-2">
-          <Textarea id="body" name="body" rows={12} required defaultValue={values?.body} />
+          <RichTextEditor name="body" defaultValue={values?.body} />
         </FormField>
       </FormSection>
       <FormSection title="Taxonomy and media">

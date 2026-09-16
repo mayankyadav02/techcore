@@ -313,7 +313,7 @@ export function mapPost(doc: Record<string, unknown>): PublicPost {
     category: (known ?? category) as BlogCategory,
     date: formatPublicDate(doc.publishedAt) || str(doc.date),
     readTime: str(doc.readTime) || "5 min",
-    body: asParagraphs(doc.body),
+    body: str(doc.body),
     featured: Boolean(doc.featured),
     authorName: str(doc.authorName),
     heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,

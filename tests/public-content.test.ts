@@ -90,7 +90,7 @@ describe("public content mapping", () => {
     assert.deepEqual(view.requirements, ["TypeScript", "React"]);
   });
 
-  it("turns blog body markdown into paragraphs", () => {
+  it("passes blog body through as string for RichText rendering", () => {
     const view = mapPost({
       slug: "a-practical-path-to-production-ai",
       title: "A practical path",
@@ -100,7 +100,7 @@ describe("public content mapping", () => {
       publishedAt: "2026-03-04T00:00:00.000Z",
       readTime: "7 min",
     });
-    assert.equal(view.body.length, 2);
+    assert.equal(view.body, "First paragraph.\n\nSecond paragraph.");
     assert.equal(view.category, "AI");
   });
 
