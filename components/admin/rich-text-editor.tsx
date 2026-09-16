@@ -3,10 +3,12 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
 import { useEffect, useState } from "react";
-import { Bold, Italic, Strikethrough, Heading2, Heading3, List, ListOrdered, Quote, Link as LinkIcon, Undo, Redo, Unlink } from "lucide-react";
+import { Bold, Italic, Strikethrough, Heading2, Heading3, List, ListOrdered, Quote, Link as LinkIcon, Undo, Redo, Unlink, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDirtyState } from "@/components/admin/dirty-state-provider";
+import { MediaSelector } from "@/components/admin/media/media-selector";
 
 interface RichTextEditorProps {
   name: string;
@@ -30,6 +32,10 @@ export function RichTextEditor({ name, defaultValue = "" }: RichTextEditorProps)
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image.configure({
+        inline: true,
+        allowBase64: false,
+      }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
@@ -171,6 +177,21 @@ export function RichTextEditor({ name, defaultValue = "" }: RichTextEditorProps)
             <Unlink className="h-4 w-4" />
           </ToolbarButton>
         )}
+
+        <MediaSelector
+          onChange={(_, url, item) => {
+            editor
+              .chain()
+              .focus()
+              .setImage({ src: url, alt: item.altText || item.filename })
+              .run();
+          }}
+          renderTrigger={(onClick) => (
+            <ToolbarButton onClick={onClick} isActive={editor.isActive("image")}>
+              <ImageIcon className="h-4 w-4" />
+            </ToolbarButton>
+          )}
+        />
 
         <div className="flex-1" />
 

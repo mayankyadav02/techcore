@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { listMediaAction } from "@/modules/media/actions";
 import { useDirtyState } from "@/components/admin/dirty-state-provider";
 
-type MediaItem = {
+export type MediaItem = {
   _id: string;
   url: string;
   filename: string;
@@ -17,10 +17,12 @@ export function MediaSelector({
   value,
   onChange,
   label = "Select Media",
+  renderTrigger,
 }: {
   value?: string;
-  onChange: (id: string, url: string) => void;
+  onChange: (id: string, url: string, item: MediaItem) => void;
   label?: string;
+  renderTrigger?: (onClick: () => void) => React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<MediaItem[]>([]);
@@ -48,18 +50,24 @@ export function MediaSelector({
   }, [value, items, selected]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-4">
-        {selected ? (
-          <div className="h-16 w-16 overflow-hidden rounded-[var(--radius-sm)] border border-line">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selected.url} alt={selected.filename} className="h-full w-full object-cover" />
+    <>
+      {renderTrigger ? (
+        renderTrigger(() => setOpen(true))
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-4">
+            {selected ? (
+              <div className="h-16 w-16 overflow-hidden rounded-[var(--radius-sm)] border border-line">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={selected.url} alt={selected.filename} className="h-full w-full object-cover" />
+              </div>
+            ) : null}
+            <Button type="button" variant="secondary" onClick={() => setOpen(true)}>
+              {selected ? "Change Media" : label}
+            </Button>
           </div>
-        ) : null}
-        <Button type="button" variant="secondary" onClick={() => setOpen(true)}>
-          {selected ? "Change Media" : label}
-        </Button>
-      </div>
+        </div>
+      )}
 
       <Dialog open={open} onClose={() => setOpen(false)} title="Select Media">
         <div className="flex min-h-[300px] flex-col gap-4">
@@ -74,7 +82,7 @@ export function MediaSelector({
                     value === item._id ? "border-brand" : "border-line"
                   }`}
                   onClick={() => {
-                    onChange(item._id, item.url);
+                    onChange(item._id, item.url, item);
                     setSelected(item);
                     setDirty(true);
                     setOpen(false);
@@ -102,6 +110,6 @@ export function MediaSelector({
           )}
         </div>
       </Dialog>
-    </div>
+    </>
   );
 }
