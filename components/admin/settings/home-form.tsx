@@ -254,7 +254,7 @@ export function HomeForm({ values }: { values: PublicHomepage }) {
 
   const reasonsFaqTab = (
     <>
-      <FormSection title="Why TechCore">
+      <FormSection title="Why Choose Us">
         <FormField label="Eyebrow" htmlFor="reasonsEyebrow">
           <Input id="reasonsEyebrow" name="reasonsEyebrow" defaultValue={values.reasonsEyebrow} />
         </FormField>

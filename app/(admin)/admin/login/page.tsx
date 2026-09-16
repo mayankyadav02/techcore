@@ -8,6 +8,14 @@ import { getSession } from "@/lib/auth";
 import { safeCallbackUrl } from "@/lib/auth-constants";
 import { getPublicCompany } from "@/modules/content/public.service";
 
+export async function generateMetadata() {
+  const company = await getPublicCompany();
+  return {
+    title: `Login — ${company.name}`,
+    robots: { index: false, follow: false },
+  };
+}
+
 export default async function AdminLoginPage({
   searchParams,
 }: {
@@ -127,7 +135,7 @@ export default async function AdminLoginPage({
   {/* Light Mode Logo */}
   <img
     src="/logo.light.png"
-    alt="TechCore"
+    alt={company.name}
     className="
       h-10 w-auto object-contain
       dark:hidden
@@ -137,7 +145,7 @@ export default async function AdminLoginPage({
   {/* Dark Mode Logo */}
   <img
     src="/logo.dark.png"
-    alt="TechCore"
+    alt={company.name}
     className="
       hidden h-10 w-auto object-contain
       dark:block

@@ -9,11 +9,13 @@ import { AdminAccountMenu } from "@/components/admin/admin-account-menu";
 import { Logo } from "@/components/marketing/logo";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
+import type { AdminNavGroup } from "@/lib/site";
+
 export function AdminHeader({
   items,
   user,
 }: {
-  items: { href: string; label: string }[];
+  items: AdminNavGroup[];
   user: { name: string; email: string; roleLabel: string };
 }) {
   const pathname = usePathname();
@@ -36,7 +38,7 @@ export function AdminHeader({
   }, [open]);
 
   const current =
-    items.find((item) =>
+    items.flatMap((g) => g.items).find((item) =>
       item.href === "/admin/dashboard"
         ? pathname === "/admin/dashboard" || pathname === "/admin"
         : pathname.startsWith(item.href),
@@ -80,7 +82,7 @@ export function AdminHeader({
             <div className="flex h-14 items-center border-b border-white/10 px-4">
               <Logo inverted size="sm" />
             </div>
-            <AdminSidebar items={items} tone="dark" onNavigate={() => setOpen(false)} />
+            <AdminSidebar groups={items} tone="dark" onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       ) : null}

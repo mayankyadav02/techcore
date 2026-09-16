@@ -5,10 +5,13 @@ import { ResetPasswordForm } from "@/components/admin/reset-password-form";
 import { getSession } from "@/lib/auth";
 import { getPublicCompany } from "@/modules/content/public.service";
 
-export const metadata = {
-  title: "Reset Password — TechCore CMS",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata() {
+  const company = await getPublicCompany();
+  return {
+    title: `Reset Password — ${company.name}`,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function ResetPasswordPage() {
   const user = await getSession();
@@ -71,12 +74,12 @@ export default async function ResetPasswordPage() {
             <div className="flex justify-center">
               <img
                 src="/logo.light.png"
-                alt="TechCore"
+                alt={company.name}
                 className="h-10 w-auto object-contain dark:hidden"
               />
               <img
                 src="/logo.dark.png"
-                alt="TechCore"
+                alt={company.name}
                 className="hidden h-10 w-auto object-contain dark:block"
               />
             </div>

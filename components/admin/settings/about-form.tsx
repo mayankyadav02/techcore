@@ -160,7 +160,7 @@ export function AboutForm({ values }: { values: PublicAbout }) {
 
   const expectationsFaqTab = (
     <>
-      <FormSection title="Why TechCore (Expectations)">
+      <FormSection title="Why Choose Us (Expectations)">
         <div className="md:col-span-2 text-sm text-ink-lighter mb-4">
           Note: The items displayed in this section are managed globally from the Homepage Settings. You can only edit the section intro here.
         </div>

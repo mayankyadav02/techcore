@@ -21,7 +21,7 @@ export function AdminShell({
           <Logo inverted className="text-sm" size="sm" />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <AdminSidebar items={items} tone="dark" />
+          <AdminSidebar groups={items} tone="dark" />
         </div>
       </aside>
       <div className="lg:pl-[var(--admin-sidebar)]">

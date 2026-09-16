@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { updateMediaAction, uploadMediaAction } from "@/modules/media/actions";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
+import { ConfirmAction } from "@/components/admin/confirm-action";
 
 type MediaItem = {
   _id: string;
@@ -27,6 +29,7 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { notify } = useToast();
 
   const filteredItems = items.filter((item) =>
     item.filename.toLowerCase().includes(search.toLowerCase())
@@ -40,9 +43,10 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
     if (res.success) {
       setItems(items.map((i) => (i._id === selected._id ? { ...i, altText } : i)));
       setSelected({ ...selected, altText });
+      notify({ title: "Alt text saved", tone: "success" });
       setEditingAlt(false);
     } else {
-      alert(res.error || "Failed to update alt text");
+      notify({ title: "Update failed", description: res.error || "Failed to update alt text", tone: "danger" });
     }
   };
 
@@ -52,14 +56,14 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
 
     const MAX_FILE_SIZE = 4 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      alert("File exceeds 4MB limit");
+      notify({ title: "Upload failed", description: "File exceeds 4MB limit", tone: "danger" });
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
     const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      alert("Unsupported MIME type");
+      notify({ title: "Upload failed", description: "Unsupported MIME type", tone: "danger" });
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
@@ -80,9 +84,10 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
         altText: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
       };
       setItems([newItem, ...items]);
+      notify({ title: "Media uploaded", tone: "success" });
       router.refresh();
     } else {
-      alert(res.error || "Failed to upload media");
+      notify({ title: "Upload failed", description: res.error || "Failed to upload media", tone: "danger" });
     }
 
     setUploading(false);
@@ -234,26 +239,25 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
                 )}
               </div>
               <div className="border-t border-line mt-auto pt-4 flex justify-end">
-                <Button 
-                  size="sm" 
+                <ConfirmAction
+                  label="Delete Media"
+                  title="Delete Media"
+                  description="Are you sure you want to delete this media? This cannot be undone."
+                  confirmLabel="Delete"
                   variant="danger"
-                  disabled={saving}
-                  onClick={async () => {
-                    if (!window.confirm("Are you sure you want to delete this media?")) return;
-                    setSaving(true);
+                  action={async () => {
                     const { deleteMediaAction } = await import("@/modules/media/actions");
                     const res = await deleteMediaAction(selected._id);
-                    setSaving(false);
-                    if (res.success) {
-                      setItems(items.filter(i => i._id !== selected._id));
-                      setSelected(null);
-                    } else {
-                      alert(res.error || "Failed to delete media");
+                    if (!res.success) {
+                      return { ok: false, code: "DELETE_FAILED", message: res.error || "Failed to delete media" };
                     }
+                    return { ok: true, message: "Media deleted" };
                   }}
-                >
-                  {saving ? "Deleting..." : "Delete Media"}
-                </Button>
+                  onSuccess={() => {
+                    setItems(items.filter(i => i._id !== selected._id));
+                    setSelected(null);
+                  }}
+                />
               </div>
             </div>
           </div>

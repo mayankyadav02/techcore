@@ -79,26 +79,64 @@ export const socialLinks = [
   { href: "https://x.com", label: "X" },
 ] as const;
 
-export const adminNav: {
+export type AdminNavItem = {
   href: string;
   label: string;
   permission: Permission;
-}[] = [
-  { href: "/admin/dashboard", label: "Dashboard", permission: "dashboard:read" },
-  { href: "/admin/services", label: "Services", permission: "content:read" },
-  { href: "/admin/solutions", label: "Solutions", permission: "content:read" },
-  { href: "/admin/industries", label: "Industries", permission: "content:read" },
-  { href: "/admin/projects", label: "Projects", permission: "content:read" },
-  { href: "/admin/blog", label: "Blog", permission: "content:read" },
-  { href: "/admin/careers", label: "Careers", permission: "content:read" },
-  { href: "/admin/applications", label: "Applications", permission: "leads:read" },
-  { href: "/admin/enquiries", label: "Enquiries", permission: "leads:read" },
-  { href: "/admin/testimonials", label: "Testimonials", permission: "testimonials:read" },
-  { href: "/admin/users", label: "Users", permission: "users:read" },
-  { href: "/admin/audit-logs", label: "Audit Logs", permission: "audit_logs:read" },
-  { href: "/admin/settings", label: "Settings", permission: "settings:read" },
+};
+
+export type AdminNavGroup = {
+  title: string;
+  items: AdminNavItem[];
+};
+
+export const adminNav: AdminNavGroup[] = [
+  {
+    title: "Overview",
+    items: [
+      { href: "/admin/dashboard", label: "Dashboard", permission: "dashboard:read" },
+    ],
+  },
+  {
+    title: "Content",
+    items: [
+      { href: "/admin/blog", label: "Blog", permission: "content:read" },
+      { href: "/admin/services", label: "Services", permission: "content:read" },
+      { href: "/admin/solutions", label: "Solutions", permission: "content:read" },
+      { href: "/admin/industries", label: "Industries", permission: "content:read" },
+      { href: "/admin/projects", label: "Projects", permission: "content:read" },
+      { href: "/admin/careers", label: "Careers", permission: "content:read" },
+      { href: "/admin/testimonials", label: "Testimonials", permission: "testimonials:read" },
+    ],
+  },
+  {
+    title: "Website",
+    items: [
+      { href: "/admin/media", label: "Media Library", permission: "content:read" },
+    ],
+  },
+  {
+    title: "Leads",
+    items: [
+      { href: "/admin/enquiries", label: "Enquiries", permission: "leads:read" },
+      { href: "/admin/applications", label: "Applications", permission: "leads:read" },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { href: "/admin/users", label: "Users", permission: "users:read" },
+      { href: "/admin/audit-logs", label: "Audit Logs", permission: "audit_logs:read" },
+      { href: "/admin/settings", label: "Settings", permission: "settings:read" },
+    ],
+  }
 ];
 
-export function adminNavForRole(role: Role) {
-  return adminNav.filter((item) => hasPermission(role, item.permission));
+export function adminNavForRole(role: Role): AdminNavGroup[] {
+  return adminNav
+    .map((group) => ({
+      title: group.title,
+      items: group.items.filter((item) => hasPermission(role, item.permission)),
+    }))
+    .filter((group) => group.items.length > 0);
 }

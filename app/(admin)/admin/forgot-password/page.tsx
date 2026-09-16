@@ -5,10 +5,13 @@ import { ForgotPasswordForm } from "@/components/admin/forgot-password-form";
 import { getSession } from "@/lib/auth";
 import { getPublicCompany } from "@/modules/content/public.service";
 
-export const metadata = {
-  title: "Forgot Password — TechCore CMS",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata() {
+  const company = await getPublicCompany();
+  return {
+    title: `Forgot Password — ${company.name}`,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function ForgotPasswordPage() {
   const user = await getSession();
@@ -71,12 +74,12 @@ export default async function ForgotPasswordPage() {
             <div className="flex justify-center">
               <img
                 src="/logo.light.png"
-                alt="TechCore"
+                alt={company.name}
                 className="h-10 w-auto object-contain dark:hidden"
               />
               <img
                 src="/logo.dark.png"
-                alt="TechCore"
+                alt={company.name}
                 className="hidden h-10 w-auto object-contain dark:block"
               />
             </div>
