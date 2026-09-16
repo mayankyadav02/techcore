@@ -76,10 +76,12 @@ export function MediaSelector({
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {items.map((item) => (
-                <div
+                <button
                   key={item._id}
-                  className={`group relative cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border ${
-                    value === item._id ? "border-brand" : "border-line"
+                  type="button"
+                  aria-label={`Select ${item.filename}`}
+                  className={`group relative cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                    value === item._id ? "border-brand ring-2 ring-brand ring-offset-1" : "border-line"
                   }`}
                   onClick={() => {
                     onChange(item._id, item.url, item);
@@ -99,7 +101,7 @@ export function MediaSelector({
                   <div className="absolute inset-x-0 bottom-0 bg-navy-950/80 p-1 px-2 text-[10px] text-white backdrop-blur-sm truncate">
                     {item.filename}
                   </div>
-                </div>
+                </button>
               ))}
               {items.length === 0 && (
                 <div className="col-span-full py-8 text-center text-sm text-ink-muted">

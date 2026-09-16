@@ -50,21 +50,18 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
     }
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [isDragging, setIsDragging] = useState(false);
 
+  const processFile = async (file: File) => {
     const MAX_FILE_SIZE = 4 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       notify({ title: "Upload failed", description: "File exceeds 4MB limit", tone: "danger" });
-      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
     const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       notify({ title: "Upload failed", description: "Unsupported MIME type", tone: "danger" });
-      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
@@ -83,7 +80,7 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
         sizeBytes: file.size,
         altText: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
       };
-      setItems([newItem, ...items]);
+      setItems((prev) => [newItem, ...prev]);
       notify({ title: "Media uploaded", tone: "success" });
       router.refresh();
     } else {
@@ -91,8 +88,50 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
     }
 
     setUploading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file) return;
+    await processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.types.includes("Files")) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.types.includes("Files")) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set dragging to false if we are leaving the main container
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (uploading) return;
+
+    const files = Array.from(e.dataTransfer.files);
+    for (const file of files) {
+      await processFile(file);
     }
   };
 
@@ -104,7 +143,20 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div
+      className="flex flex-col gap-6 relative min-h-[300px]"
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {isDragging && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center rounded-[var(--radius-sm)] bg-brand/5 border-2 border-dashed border-brand/50 backdrop-blur-[2px] pointer-events-none">
+          <div className="rounded-lg bg-surface px-6 py-4 shadow-lg border border-line">
+            <p className="text-sm font-medium text-ink">Drop files here</p>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <input
           type="search"
@@ -133,14 +185,16 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
         {filteredItems.map((item) => (
-          <div
+          <button
             key={item._id}
-            className="group relative cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-line bg-surface shadow-sm transition-shadow hover:shadow-md"
+            type="button"
+            className="group relative cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-line bg-surface shadow-sm transition-shadow hover:shadow-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             onClick={() => {
               setSelected(item);
               setAltText(item.altText || "");
               setEditingAlt(false);
             }}
+            aria-label={`View ${item.filename}`}
           >
             <div className="aspect-square bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -158,7 +212,7 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
                 {item.width && item.height ? `${item.width}x${item.height}` : "Unknown dimensions"}
               </p>
             </div>
-          </div>
+          </button>
         ))}
         {filteredItems.length === 0 && (
           <div className="col-span-full py-12 text-center text-sm text-ink-muted">
