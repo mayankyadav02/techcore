@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["contact"] || {};
   return pageMetadata({
     title: "Contact",
-    description: "Contact TechCore about a programme, a role, or a question.",
+    description: "Contact us about a programme, a role, or a question.",
     path: "/contact",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,
@@ -39,7 +39,7 @@ export default async function ContactPage({
       <PageHero
         eyebrow={pageContent?.heroEyebrow || "Contact"}
         title={pageContent?.heroTitle || "Write to the practice."}
-        description={pageContent?.heroDescription || "Share enough context for a useful reply. A valid submission is stored as an enquiry for the TechCore team."}
+        description={pageContent?.heroDescription || "Share enough context for a useful reply. A valid submission is stored as an enquiry for our team."}
         actions={
           <ButtonLink href={pageContent?.primaryCta?.href || "#enquiry"} variant="primary">
             {pageContent?.primaryCta?.label || "Send Enquiry"}
@@ -114,7 +114,7 @@ export default async function ContactPage({
                       Studio location
                     </p>
                     <p className="mt-1 text-xs leading-5 text-ink-muted">
-                      San Francisco studio location. A live map is not embedded
+                      Headquarters location. A live map is not embedded
                       until operations require it.
                     </p>
                   </div>
@@ -163,8 +163,7 @@ export default async function ContactPage({
             </h2>
 
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink-muted">
-              Some common questions before starting a conversation with
-              TechCore.
+              Some common questions before starting a conversation with {company.name}.
             </p>
           </div>
 

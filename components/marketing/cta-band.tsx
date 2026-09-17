@@ -5,11 +5,11 @@ import { ButtonLink } from "@/components/ui/button-link";
 
 export function CtaBand({
   title = "Have a project in mind?",
-  description = "Share a short brief. We work discovery-first, treat security as default, and will say honestly whether TechCore is the right team — then what a first release could look like.",
+  description = "Share a short brief. We work discovery-first, treat security as default, and will say honestly whether we are the right team — then what a first release could look like.",
   primaryHref = "/quote",
   primaryLabel = "Request a Quote",
   secondaryHref = "/contact",
-  secondaryLabel = "Talk to TechCore",
+  secondaryLabel = "Talk to Us",
 }: {
   title?: string;
   description?: string;

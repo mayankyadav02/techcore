@@ -23,7 +23,7 @@ export function PlaceholderPage({
             description="This route is in place for navigation and layout. Page content ships with the content platform phase."
             action={
               <ButtonLink href="/contact" variant="outline">
-                Contact TechCore
+                Contact Us
               </ButtonLink>
             }
           />

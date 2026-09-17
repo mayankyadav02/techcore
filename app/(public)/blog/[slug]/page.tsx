@@ -123,7 +123,7 @@ export default async function BlogDetailPage({
         title="Discuss this with the practice."
         description="A short conversation is enough to tell you whether the idea belongs in a first release."
         primaryHref="/contact"
-        primaryLabel="Talk to TechCore"
+        primaryLabel="Talk to Us"
         secondaryHref="/quote"
         secondaryLabel="Request a Quote"
       />

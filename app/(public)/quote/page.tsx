@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["quote"] || {};
   return pageMetadata({
     title: "Request a quote",
-    description: "Start a TechCore project enquiry. Describe the work, budget, and timeline.",
+    description: "Start a project enquiry. Describe the work, budget, and timeline.",
     path: "/quote",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,

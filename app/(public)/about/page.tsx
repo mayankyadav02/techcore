@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const content = await getPublicAbout();
   return pageMetadata({
     title: content.heroTitle || "About",
-    description: content.heroDescription || "TechCore is a fictional IT services practice organised around delivery, integrity, and operable software.",
+    description: content.heroDescription || "This is a fictional IT services practice organised around delivery, integrity, and operable software.",
     path: "/about",
     seoTitle: content.seoTitle,
     seoDescription: content.seoDescription,

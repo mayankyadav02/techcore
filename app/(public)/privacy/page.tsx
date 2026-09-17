@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["privacy"] || {};
   return pageMetadata({
     title: "Privacy Policy",
-    description: "How the TechCore demonstration website would handle personal information.",
+    description: "How the demonstration website would handle personal information.",
     path: "/privacy",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,

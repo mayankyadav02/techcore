@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata({
     title: "Projects",
     description:
-      "Recent delivery from TechCore, including complex re-platforming and custom enterprise software.",
+      "Recent delivery from our team, including complex re-platforming and custom enterprise software.",
     path: "/projects",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,
@@ -71,7 +71,7 @@ export default async function ProjectsPage() {
       </Section>
       <CtaBand
         title="Discuss a similar programme"
-        description="These cases are fictional demonstrations. Share a brief if you want TechCore to scope something in the same shape."
+        description="These cases are fictional demonstrations. Share a brief if you want us to scope something in the same shape."
         primaryHref="/quote"
         primaryLabel="Discuss Similar Project"
       />

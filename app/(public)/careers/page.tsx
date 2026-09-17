@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["careers"] || {};
   return pageMetadata({
     title: "Careers",
-    description: "Open roles at TechCore: engineering, design, and quality. Fictional listings for this demonstration site.",
+    description: "Open roles: engineering, design, and quality. Fictional listings for this demonstration site.",
     path: "/careers",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,
@@ -33,7 +33,7 @@ export default async function CareersPage() {
       <PageHero
         eyebrow={pageContent?.heroEyebrow || "Careers"}
         title={pageContent?.heroTitle || "Work with people who finish things."}
-        description={pageContent?.heroDescription || "These roles describe the kind of team TechCore would hire. Applications are stored for the hiring team."}
+        description={pageContent?.heroDescription || "These roles describe the kind of team the practice would hire. Applications are stored for the hiring team."}
         actions={
           <>
             <ButtonLink href={pageContent?.primaryCta?.href || "#open-positions"} variant="primary">
@@ -92,7 +92,7 @@ export default async function CareersPage() {
         title="Not seeing a role?"
         description="Send a short note through contact. Open roles are listed above when they are live."
         primaryHref="/contact"
-        primaryLabel="Talk to TechCore"
+        primaryLabel="Talk to Us"
         secondaryHref="/careers#open-positions"
         secondaryLabel="View open roles"
       />

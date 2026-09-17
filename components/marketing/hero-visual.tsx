@@ -98,7 +98,7 @@ export function HeroVisual({ stats }: { stats: CatalogueStat[] }) {
               dark:text-brand-bright
             "
           >
-            TechCore Platform
+            Operations Platform
           </p>
 
           <h2
@@ -126,7 +126,7 @@ export function HeroVisual({ stats }: { stats: CatalogueStat[] }) {
             "
           >
             A live overview of the digital services, solutions, projects and
-            content currently published by TechCore.
+            content currently published by the practice.
           </p>
         </div>
 

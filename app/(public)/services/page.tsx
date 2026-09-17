@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["services"] || {};
   return pageMetadata({
     title: "Services",
-    description: "Web, mobile, custom software, AI, cloud, design, security, and consulting from TechCore.",
+    description: "Web, mobile, custom software, AI, cloud, design, security, and consulting from our team.",
     path: "/services",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,

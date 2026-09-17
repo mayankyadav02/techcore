@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = allSeo["terms"] || {};
   return pageMetadata({
     title: "Terms",
-    description: "Terms of use for the TechCore demonstration website.",
+    description: "Terms of use for the demonstration website.",
     path: "/terms",
     seoTitle: seo.seoTitle,
     seoDescription: seo.seoDescription,
@@ -45,7 +45,7 @@ export default async function TermsPage() {
       </Section>
       <CtaBand
         title="Ready to engage?"
-        description="Request a Quote for a scoped brief, or talk to TechCore first."
+        description="Request a Quote for a scoped brief, or talk to us first."
         primaryHref="/quote"
         primaryLabel="Request a Quote"
       />
