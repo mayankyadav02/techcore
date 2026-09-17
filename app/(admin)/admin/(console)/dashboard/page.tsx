@@ -10,6 +10,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
 import { requirePagePermission } from "@/lib/auth";
 import { loadDashboard } from "@/modules/identity/dashboard.service";
+import { formatAuditAction } from "@/lib/admin/audit-format";
 
 function formatWhen(value: string) {
   if (!value) return "—";
@@ -210,7 +211,9 @@ export default async function AdminDashboardPage() {
               {data.recentAuditLogs.map((log) => (
                 <li key={log.id} className="px-5 py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-ink">{log.action}</p>
+                    <p className="text-sm font-medium text-ink" title={log.action}>
+                      {formatAuditAction(log.action)}
+                    </p>
                     <p className="mt-0.5 text-xs text-ink-subtle">
                       {formatWhen(log.createdAt)}
                     </p>

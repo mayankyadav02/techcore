@@ -10,6 +10,7 @@ import {
   listAuditLogs,
 } from "@/modules/shared/audit-log.admin.service";
 import type { AuditLogListRow } from "@/modules/shared/audit-log.admin.service";
+import { formatAuditAction } from "@/lib/admin/audit-format";
 
 function formatDateTime(value: Date | undefined) {
   if (!value) return "-";
@@ -110,7 +111,7 @@ export async function AuditLogsListPage({
               defaultValue={params.action}
               options={[
                 { value: "", label: "All actions" },
-                ...actions.map((action) => ({ value: action, label: action })),
+                ...actions.map((action) => ({ value: action, label: formatAuditAction(action) })),
               ]}
             />
             <div className="w-full sm:w-40">
@@ -153,8 +154,8 @@ export async function AuditLogsListPage({
             <td className="px-4 py-3">
               <ActorCell row={row} />
             </td>
-            <td className="px-4 py-3 font-medium whitespace-nowrap text-ink">
-              {row.action}
+            <td className="px-4 py-3 font-medium whitespace-nowrap text-ink" title={row.action}>
+              {formatAuditAction(row.action)}
             </td>
             <td className="px-4 py-3 whitespace-nowrap text-ink-muted">
               {row.resourceType}

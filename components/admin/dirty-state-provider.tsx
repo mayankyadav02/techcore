@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface DirtyStateContextType {
   isDirty: boolean;
@@ -19,7 +20,9 @@ export function useDirtyState() {
 
 export function DirtyStateProvider({ children }: { children: ReactNode }) {
   const [isDirty, setDirty] = useState(false);
+  const [navTarget, setNavTarget] = useState<string | null>(null);
   const router = useRouter();
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -62,19 +65,67 @@ export function DirtyStateProvider({ children }: { children: ReactNode }) {
       }
 
       e.preventDefault();
-      if (window.confirm("You have unsaved changes. Leave this page?")) {
-        setDirty(false);
-        router.push(targetUrl.pathname + targetUrl.search + targetUrl.hash);
-      }
+      setNavTarget(targetUrl.pathname + targetUrl.search + targetUrl.hash);
     };
 
     document.addEventListener("click", handleClick, { capture: true });
     return () => document.removeEventListener("click", handleClick, { capture: true });
-  }, [isDirty, router]);
+  }, [isDirty]);
+
+  useEffect(() => {
+    const node = dialogRef.current;
+    if (!node) return;
+    if (navTarget && !node.open) {
+      node.showModal();
+    } else if (!navTarget && node.open) {
+      node.close();
+    }
+  }, [navTarget]);
 
   return (
     <DirtyStateContext.Provider value={{ isDirty, setDirty }}>
       {children}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="dirty-dialog-title"
+        aria-describedby="dirty-dialog-desc"
+        className="max-h-[min(32rem,calc(100dvh-2rem))] w-[min(28rem,calc(100%-2rem))] overflow-y-auto overscroll-contain rounded-[var(--radius-lg)] border border-line bg-elevated p-0 text-ink shadow-[var(--shadow-md)] backdrop:bg-navy-950/50"
+        onClose={() => setNavTarget(null)}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+          <h2 id="dirty-dialog-title" className="text-base font-semibold">
+            Unsaved changes
+          </h2>
+        </div>
+        <div className="space-y-3 px-5 py-4 text-sm text-ink-muted">
+          <p id="dirty-dialog-desc">
+            You have unsaved changes. Leaving this page will discard them.
+            Do you want to leave or stay and save?
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setNavTarget(null)}
+          >
+            Stay
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => {
+              setDirty(false);
+              if (navTarget) {
+                router.push(navTarget);
+              }
+              setNavTarget(null);
+            }}
+          >
+            Leave
+          </Button>
+        </div>
+      </dialog>
     </DirtyStateContext.Provider>
   );
 }
