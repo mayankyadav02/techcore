@@ -143,7 +143,7 @@ export default async function ContactPage({
               </div>
 
               <div className="mt-7">
-                <ContactForm defaultSubject={subject ?? ""} />
+                <ContactForm defaultSubject={subject ?? ""} companyName={company.name} />
               </div>
             </div>
           </div>

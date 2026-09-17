@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Logo } from "@/components/marketing/logo";
 import { ResetPasswordForm } from "@/components/admin/reset-password-form";
 import { getSession } from "@/lib/auth";
 import { getPublicCompany } from "@/modules/content/public.service";
@@ -72,16 +73,7 @@ export default async function ResetPasswordPage() {
           <div className="h-1 bg-brand" aria-hidden="true" />
           <div className="p-6 sm:p-9">
             <div className="flex justify-center">
-              <img
-                src="/logo.light.png"
-                alt={company.name}
-                className="h-10 w-auto object-contain dark:hidden"
-              />
-              <img
-                src="/logo.dark.png"
-                alt={company.name}
-                className="hidden h-10 w-auto object-contain dark:block"
-              />
+              <Logo company={company} size="md" />
             </div>
             <div className="mt-8 mb-8 text-center">
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-dark dark:text-brand-bright">

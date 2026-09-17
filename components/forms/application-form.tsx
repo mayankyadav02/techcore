@@ -12,7 +12,7 @@ import {
 } from "@/lib/content/forms";
 import { applyApiErrors, postForm } from "@/lib/api/client";
 
-export function ApplicationForm({ jobId }: { jobId: string }) {
+export function ApplicationForm({ jobId, companyName }: { jobId: string; companyName: string }) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -89,7 +89,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
             aria-describedby={errors.gdprConsent ? "app-consent-error" : undefined}
             {...register("gdprConsent")}
           />
-          I agree that TechCore may process this application.
+          I agree that {companyName} may process this application.
         </label>
       </ConsentField>
       {serverError ? <FormBanner tone="error">{serverError}</FormBanner> : null}

@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/seo";
 import { loadPublicServices, loadPublicPageContent } from "@/lib/public-content";
 
 import type { Metadata } from "next";
-import { getAllPublicPageSeo } from "@/modules/content/public.service";
+import { getAllPublicPageSeo, getPublicCompany } from "@/modules/content/public.service";
 
 export async function generateMetadata(): Promise<Metadata> {
   const allSeo = await getAllPublicPageSeo();
@@ -25,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function QuotePage() {
   const pageContent = await loadPublicPageContent("quote");
   const rows = await loadPublicServices();
+  const company = await getPublicCompany();
   const services = rows.map((item) => ({
     slug: item.slug,
     title: item.title,
@@ -35,7 +36,7 @@ export default async function QuotePage() {
       <PageHero
         eyebrow={pageContent?.heroEyebrow || "Engage"}
         title={pageContent?.heroTitle || "Start a project."}
-        description={pageContent?.heroDescription || "Tell us the outcome you need. A valid submission is stored as an enquiry for the TechCore team. We treat security as default and start with a written first release."}
+        description={pageContent?.heroDescription || `Tell us the outcome you need. A valid submission is stored as an enquiry for the ${company.name} team. We treat security as default and start with a written first release.`}
         actions={
           <>
             <ButtonLink href={pageContent?.primaryCta?.href || "#quote"} variant="primary">
@@ -61,7 +62,7 @@ export default async function QuotePage() {
                 description="A quote can be requested once at least one service is published in the CMS."
               />
             ) : (
-              <QuoteForm services={services} />
+              <QuoteForm services={services} companyName={company.name} />
             )}
           </div>
         </Container>

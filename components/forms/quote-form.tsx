@@ -20,8 +20,10 @@ import { applyApiErrors, postJson } from "@/lib/api/client";
 
 export function QuoteForm({
   services,
+  companyName,
 }: {
   services: { slug: string; title: string }[];
+  companyName: string;
 }) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -258,7 +260,7 @@ export function QuoteForm({
               />
 
               <span>
-                I agree that TechCore may use this information to respond to my
+                I agree that {companyName} may use this information to respond to my
                 enquiry.
               </span>
             </label>

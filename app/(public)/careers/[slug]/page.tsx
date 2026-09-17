@@ -116,7 +116,7 @@ export default async function JobDetailPage({
               Applications are stored for the hiring team. Resume files are not accepted; please include relevant experience in your cover note.
             </p>
             <div className="mt-6 max-w-xl rounded-[var(--radius-lg)] border border-line bg-elevated p-5 shadow-[var(--shadow-sm)] sm:p-6">
-              <ApplicationForm jobId={job.id} />
+              <ApplicationForm jobId={job.id} companyName={company.name} />
             </div>
           </div>
           <p className="mt-10 text-sm">

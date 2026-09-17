@@ -162,6 +162,7 @@ describe("test email server action", () => {
     
     await connectMongo();
     await User.deleteMany({ email: { $in: ["email-test-super@test.com", "email-test-regular@test.com", "email-test-noemail@test.com"] } });
+    await User.deleteMany({ name: "No Email Admin", email: null });
     
     const superAdmin = await User.create({
       name: "Super Admin",
@@ -210,6 +211,7 @@ describe("test email server action", () => {
   after(async () => {
     await User.deleteMany({ email: { $in: ["email-test-super@test.com", "email-test-regular@test.com", "email-test-noemail@test.com"] } });
     await Session.deleteMany({ userId: { $in: [superAdminId, unverifiedUserId].filter(Boolean) } });
+    await User.deleteMany({ name: "No Email Admin", email: null });
     await disconnectMongo();
   });
 
@@ -264,5 +266,20 @@ describe("test email server action", () => {
     const result = await actions.sendTestEmailAction();
     assert.equal(result.success, false);
     assert.equal(result.error, "Too many test emails sent. Please wait before trying again.");
+  });
+});
+
+describe("email templates interpolation", () => {
+  it("interpolates company name and otp successfully", async () => {
+    const templates = await import("../modules/notifications/templates");
+    const email = templates.buildPasswordResetOtpEmail({
+      companyName: "Acme",
+      userName: "Alice",
+      otp: "123",
+    });
+    assert.ok(email.subject.includes("Acme CMS"));
+    assert.ok(!email.subject.includes("input.companyName"));
+    assert.ok(email.text.includes("Acme CMS account."));
+    assert.ok(email.text.includes("code is: 123"));
   });
 });

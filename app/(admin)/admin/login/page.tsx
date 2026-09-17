@@ -126,35 +126,9 @@ export default async function AdminLoginPage({
           />
 
           <div className="p-6 sm:p-9">
-            {/* Logo */}
-            {/* <div className="flex justify-center">
-              <Logo inverted size="md" />
-            </div> */}
-            
-<div className="flex justify-center">
-  {/* Light Mode Logo */}
-  <img
-    src="/logo.light.png"
-    alt={company.name}
-    className="
-      h-10 w-auto object-contain
-      dark:hidden
-    "
-  />
-
-  {/* Dark Mode Logo */}
-  <img
-    src="/logo.dark.png"
-    alt={company.name}
-    className="
-      hidden h-10 w-auto object-contain
-      dark:block
-    "
-  />
-</div>
-
-
-            
+            <div className="flex justify-center">
+              <Logo company={company} size="md" />
+            </div>
 
             {/* Heading */}
             <div className="mt-8 text-center">

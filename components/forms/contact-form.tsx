@@ -9,7 +9,13 @@ import { Input, Textarea } from "@/components/ui/input";
 import { contactSchema, type ContactInput } from "@/lib/content/forms";
 import { applyApiErrors, postJson } from "@/lib/api/client";
 
-export function ContactForm({ defaultSubject = "" }: { defaultSubject?: string }) {
+export function ContactForm({
+  defaultSubject = "",
+  companyName,
+}: {
+  defaultSubject?: string;
+  companyName: string;
+}) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -80,7 +86,7 @@ export function ContactForm({ defaultSubject = "" }: { defaultSubject?: string }
             aria-describedby={errors.gdprConsent ? "gdprConsent-error" : undefined}
             {...register("gdprConsent")}
           />
-          I agree that TechCore may use this information to respond to my enquiry.
+          I agree that {companyName} may use this information to respond to my enquiry.
         </label>
       </ConsentField>
       {serverError ? <FormBanner tone="error">{serverError}</FormBanner> : null}

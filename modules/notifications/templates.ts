@@ -25,7 +25,7 @@ export function buildContactCustomerEmail(input: {
   const text = [
     `Hi ${input.customerName},`,
     "",
-    "Thanks for reaching out to ${input.companyName}.",
+    `Thanks for reaching out to ${input.companyName}.`,
     "We have received your message and a member of the team will review it shortly.",
     "",
     `Subject: ${input.subject}`,
@@ -33,7 +33,7 @@ export function buildContactCustomerEmail(input: {
     input.message,
     "",
     "Regards,",
-    "The ${input.companyName} team",
+    `The ${input.companyName} team`,
     env.APP_URL || "https://localhost:3000",
   ].join("\n");
 
@@ -101,7 +101,7 @@ export function buildQuoteCustomerEmail(input: {
   const text = [
     `Hi ${input.customerName},`,
     "",
-    "Thanks for requesting a quote from ${input.companyName}.",
+    `Thanks for requesting a quote from ${input.companyName}.`,
     "We have received your enquiry and a member of the team will review the brief shortly.",
     "",
     `Company: ${input.company}`,
@@ -110,7 +110,7 @@ export function buildQuoteCustomerEmail(input: {
     `Timeline: ${input.timeline}`,
     "",
     "Regards,",
-    "The ${input.companyName} team",
+    `The ${input.companyName} team`,
   ].join("\n");
 
   const html = `
@@ -182,11 +182,11 @@ export function buildApplicationCustomerEmail(input: {
   const text = [
     `Hi ${input.applicantName},`,
     "",
-    "Thanks for applying to ${input.companyName}.",
+    `Thanks for applying to ${input.companyName}.`,
     `We have received your application for ${input.jobTitle} and will review it shortly.`,
     "",
     "Regards,",
-    "The ${input.companyName} team",
+    `The ${input.companyName} team`,
   ].join("\n");
 
   const html = `
@@ -237,11 +237,11 @@ export function buildPasswordResetOtpEmail(input: {
   userName: string;
   otp: string;
 }) {
-  const subject = "${input.companyName} CMS — Password Reset Code";
+  const subject = `${input.companyName} CMS — Password Reset Code`;
   const text = [
     `Hi ${input.userName},`,
     "",
-    "You requested a password reset for your ${input.companyName} CMS account.",
+    `You requested a password reset for your ${input.companyName} CMS account.`,
     "",
     `Your verification code is: ${input.otp}`,
     "",
@@ -249,7 +249,7 @@ export function buildPasswordResetOtpEmail(input: {
     "If you did not request a password reset, you can safely ignore this email.",
     "",
     "Regards,",
-    "The ${input.companyName} team",
+    `The ${input.companyName} team`,
     env.APP_URL || "https://localhost:3000",
   ].join("\n");
 
