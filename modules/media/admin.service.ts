@@ -4,25 +4,45 @@ import { requireAnyPermission } from "@/lib/auth";
 import { writeAuditLog } from "@/lib/audit";
 import type { MediaUpdateInput } from "@/modules/media/media.schema";
 
-export async function listMediaAdmin(query?: string) {
+export async function listMediaAdmin(
+  query?: string,
+  page: number = 1,
+  limit: number = 24
+) {
   await requireAnyPermission(["site:write"]);
   await connectMongo();
+
+  const safePage = Math.max(1, Math.floor(page));
+  const safeLimit = Math.min(100, Math.max(1, Math.floor(limit)));
 
   const filter = query
     ? { filename: { $regex: query, $options: "i" } }
     : {};
 
+  const totalCount = await Media.countDocuments(filter);
+  const pageCount = Math.ceil(totalCount / safeLimit);
+
   const docs = await Media.find(filter)
     .sort({ createdAt: -1 })
+    .skip((safePage - 1) * safeLimit)
+    .limit(safeLimit)
     .lean();
 
-  return docs.map((doc) => ({
+  const items = docs.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
     uploadedBy: doc.uploadedBy?.toString(),
     createdAt: doc.createdAt?.toISOString(),
     updatedAt: doc.updatedAt?.toISOString(),
   }));
+
+  return {
+    items,
+    page: safePage,
+    limit: safeLimit,
+    totalCount,
+    pageCount,
+  };
 }
 
 export async function getMediaAdmin(id: string) {
@@ -30,7 +50,7 @@ export async function getMediaAdmin(id: string) {
   await connectMongo();
   const doc = await Media.findById(id).lean();
   if (!doc) return null;
-  
+
   return {
     ...doc,
     _id: doc._id.toString(),
@@ -97,7 +117,7 @@ export async function uploadMediaAdmin(data: {
     actorId: data.userId,
     resourceType: "Media",
     resourceId: doc._id.toString(),
-    metadata: { 
+    metadata: {
       filename: data.filename,
       mimeType: data.mimeType,
       sizeBytes: data.sizeBytes,

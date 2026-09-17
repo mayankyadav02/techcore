@@ -5,12 +5,12 @@ import { updateMediaAdmin, listMediaAdmin } from "@/modules/media/admin.service"
 import { getSession } from "@/lib/auth";
 import { cacheTags, revalidatePublic } from "@/lib/cache-tags";
 
-export async function listMediaAction(query?: string) {
+export async function listMediaAction(query?: string, page?: number, limit?: number) {
   try {
     const user = await getSession();
     if (!user) return { success: false, error: "Unauthorized" };
-    const items = await listMediaAdmin(query);
-    return { success: true, items };
+    const result = await listMediaAdmin(query, page, limit);
+    return { success: true, ...result };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
@@ -25,7 +25,7 @@ export async function updateMediaAction(input: MediaUpdateInput) {
 
     const validated = mediaUpdateSchema.parse(input);
     await updateMediaAdmin(validated, user.id);
-    
+
     // Invalidate media tag and any content that might depend on it (e.g. homepage, company)
     revalidatePublic([
       cacheTags.media,
@@ -50,7 +50,7 @@ export async function uploadMediaAction(formData: FormData) {
   try {
     const user = await getSession();
     if (!user) return { success: false, error: "Unauthorized" };
-    
+
     const { hasPermission } = await import("@/lib/rbac");
     if (!hasPermission(user.role, "site:write")) {
       return { success: false, error: "Permission denied" };
@@ -70,14 +70,14 @@ export async function uploadMediaAction(formData: FormData) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    
+
     if (!(await validateImageContent(buffer))) {
       return { success: false, error: "Invalid file content/signature" };
     }
 
     const { put, del } = await import("@vercel/blob");
     const { uploadMediaAdmin } = await import("@/modules/media/admin.service");
-    
+
     const ext = file.name.split('.').pop()?.replace(/[^a-z0-9]/gi, '') || "bin";
     const uniqueName = `media/${crypto.randomUUID()}.${ext}`;
 
@@ -100,7 +100,7 @@ export async function uploadMediaAction(formData: FormData) {
         sizeBytes: file.size,
         userId: user.id,
       });
-      
+
       const { revalidatePublic, cacheTags } = await import("@/lib/cache-tags");
       if (process.env.BLOB_READ_WRITE_TOKEN !== "test-token") {
         revalidatePublic([cacheTags.media]);

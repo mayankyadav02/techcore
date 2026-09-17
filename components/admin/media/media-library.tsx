@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { updateMediaAction, uploadMediaAction } from "@/modules/media/actions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmAction } from "@/components/admin/confirm-action";
+import { AdminPagination, listHref } from "@/components/admin/admin-pagination";
 
 type MediaItem = {
   _id: string;
@@ -19,21 +20,53 @@ type MediaItem = {
   height?: number;
 };
 
-export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
+export function MediaLibrary({
+  initialItems,
+  initialSearch = "",
+  page,
+  pageCount
+}: {
+  initialItems: MediaItem[];
+  initialSearch?: string;
+  page: number;
+  pageCount: number;
+}) {
   const [items, setItems] = useState<MediaItem[]>(initialItems);
   const [selected, setSelected] = useState<MediaItem | null>(null);
   const [editingAlt, setEditingAlt] = useState(false);
   const [altText, setAltText] = useState("");
   const [saving, setSaving] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { notify } = useToast();
 
-  const filteredItems = items.filter((item) =>
-    item.filename.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search !== initialSearch) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (search) {
+          params.set("q", search);
+        } else {
+          params.delete("q");
+        }
+        params.delete("page"); // reset to page 1 on search
+        router.push(`${pathname}?${params.toString()}`);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search, initialSearch, pathname, searchParams, router]);
 
   const handleSaveAlt = async () => {
     if (!selected) return;
@@ -70,19 +103,14 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
     formData.append("file", file);
 
     const res = await uploadMediaAction(formData);
-    
+
     if (res.success && res.item) {
-      const newItem: MediaItem = {
-        _id: res.item._id,
-        url: res.item.url,
-        filename: file.name,
-        mimeType: file.type,
-        sizeBytes: file.size,
-        altText: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
-      };
-      setItems((prev) => [newItem, ...prev]);
       notify({ title: "Media uploaded", tone: "success" });
-      router.refresh();
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("page");
+      params.delete("q");
+      router.push(`${pathname}?${params.toString()}`);
     } else {
       notify({ title: "Upload failed", description: res.error || "Failed to upload media", tone: "danger" });
     }
@@ -116,7 +144,6 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only set dragging to false if we are leaving the main container
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsDragging(false);
     }
@@ -141,6 +168,8 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
     if (kb > 1024) return (kb / 1024).toFixed(2) + " MB";
     return kb.toFixed(0) + " KB";
   };
+
+  const currentParams = Object.fromEntries(searchParams.entries());
 
   return (
     <div
@@ -184,7 +213,7 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
-        {filteredItems.map((item) => (
+        {items.map((item) => (
           <button
             key={item._id}
             type="button"
@@ -214,12 +243,18 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
             </div>
           </button>
         ))}
-        {filteredItems.length === 0 && (
+        {items.length === 0 && (
           <div className="col-span-full py-12 text-center text-sm text-ink-muted">
             No media found.
           </div>
         )}
       </div>
+
+      <AdminPagination
+        page={page}
+        pageCount={pageCount}
+        hrefForPage={(p) => listHref(pathname, currentParams, p)}
+      />
 
       <Dialog open={!!selected} onClose={() => setSelected(null)} title="Media Details">
         {selected && (
@@ -310,6 +345,14 @@ export function MediaLibrary({ initialItems }: { initialItems: MediaItem[] }) {
                   onSuccess={() => {
                     setItems(items.filter(i => i._id !== selected._id));
                     setSelected(null);
+                    // if items.length === 1, we deleted the last item on the page. We could refresh the server to fetch properly.
+                    if (items.length === 1 && page > 1) {
+                      const params = new URLSearchParams(searchParams.toString());
+                      params.set("page", String(page - 1));
+                      router.push(`${pathname}?${params.toString()}`);
+                    } else {
+                      router.refresh();
+                    }
                   }}
                 />
               </div>
