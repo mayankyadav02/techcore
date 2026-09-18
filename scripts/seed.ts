@@ -47,6 +47,7 @@ async function seed() {
   const { Solution } = await import("@/modules/catalog/solution.model");
   const { Industry } = await import("@/modules/catalog/industry.model");
   const { Project } = await import("@/modules/work/project.model");
+  const { htmlToSearchText } = await import("@/modules/insights/blog-search-text");
   const { BlogPost } = await import("@/modules/insights/blog-post.model");
   const { Job } = await import("@/modules/careers/job.model");
   const { Testimonial } = await import("@/modules/social-proof/testimonial.model");
@@ -195,6 +196,7 @@ async function seed() {
           slug: item.slug,
           excerpt: item.excerpt,
           body: Array.isArray(item.body) ? item.body.join("\n\n") : item.body,
+          plainTextBody: htmlToSearchText(Array.isArray(item.body) ? item.body.join("\n\n") : item.body),
           authorName: item.authorName ?? "TechCore Practice",
           category: item.category,
           tags: item.tags?.length ? item.tags : [item.category],

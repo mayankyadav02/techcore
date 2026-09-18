@@ -12,10 +12,15 @@ import { Industry } from "../modules/catalog/industry.model";
 const UNIQUE_TERM = "XYZABC123";
 
 import { connectMongo } from "../lib/db";
+import { htmlToSearchText } from "../modules/insights/blog-search-text";
 
 before(async () => {
   await connectMongo();
-  
+
+  try {
+    await mongoose.connection.collection("posts").dropIndex("blog_post_text_idx");
+  } catch (e) {}
+
   await Service.syncIndexes();
   await Job.syncIndexes();
   await BlogPost.syncIndexes();
@@ -80,6 +85,7 @@ before(async () => {
     slug: `pub-blog-${UNIQUE_TERM.toLowerCase()}`,
     excerpt: `Blog ${UNIQUE_TERM}.`,
     body: "Body",
+    plainTextBody: "Body",
     category: "Technology",
     authorName: "John Doe",
     status: "published"
@@ -90,11 +96,23 @@ before(async () => {
     slug: `draft-blog-${UNIQUE_TERM.toLowerCase()}`,
     excerpt: `Draft ${UNIQUE_TERM}.`,
     body: "Draft.",
+    plainTextBody: "Draft.",
     category: "Technology",
     authorName: "John Doe",
     status: "draft"
   });
 
+  const htmlBody = '<div class="hidden-attr-unique-123">\\n  <a href="https://fakedomain.com/some-path">\\n    Visible Search Text\\n  </a>\\n</div>\\n<h2>React Development</h2>\\n<p>Hello</p>\\n<p>World</p>';
+  await BlogPost.create({
+    title: `HTML ${UNIQUE_TERM} Blog`,
+    slug: `html-blog-${UNIQUE_TERM.toLowerCase()}`,
+    excerpt: `HTML Blog ${UNIQUE_TERM}.`,
+    body: htmlBody,
+    plainTextBody: htmlToSearchText(htmlBody),
+    category: "Technology",
+    authorName: "John Doe",
+    status: "published"
+  });
 });
 
 after(async () => {
@@ -118,7 +136,7 @@ describe("Public Search Service", () => {
 
   it("should find published Service and exclude draft/deleted", async () => {
     const results = await searchPublicContent(UNIQUE_TERM);
-    
+
     const services = results.filter(r => r.type === "service");
     assert.strictEqual(services.length, 1);
     assert.strictEqual(services[0].title, `Published ${UNIQUE_TERM} Service`);
@@ -126,7 +144,7 @@ describe("Public Search Service", () => {
 
   it("should find open Job and exclude closed", async () => {
     const results = await searchPublicContent(UNIQUE_TERM);
-    
+
     const jobs = results.filter(r => r.type === "job");
     assert.strictEqual(jobs.length, 1);
     assert.strictEqual(jobs[0].title, `Open ${UNIQUE_TERM} Job`);
@@ -134,20 +152,58 @@ describe("Public Search Service", () => {
 
   it("should find published BlogPost and exclude draft", async () => {
     const results = await searchPublicContent(UNIQUE_TERM);
-    
+
     const blogs = results.filter(r => r.type === "blog");
-    assert.strictEqual(blogs.length, 1);
-    assert.strictEqual(blogs[0].title, `Published ${UNIQUE_TERM} Blog`);
+    assert.strictEqual(blogs.length, 2);
+    assert.ok(blogs.some(b => b.title === `Published ${UNIQUE_TERM} Blog`));
   });
 
   it("should normalize result shape", async () => {
     const results = await searchPublicContent(UNIQUE_TERM);
     const result = results[0];
-    
+
     assert.ok(result.type);
     assert.ok(result.title);
     assert.ok(result.slug);
     assert.ok(result.description);
     assert.ok(result.href);
+  });
+
+  it("should NOT find blog post by HTML tags or attributes", async () => {
+    const r1 = await searchPublicContent("hidden-attr-unique-123");
+    assert.strictEqual(r1.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
+
+    const r2 = await searchPublicContent("fakedomain");
+    assert.strictEqual(r2.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
+
+    const r3 = await searchPublicContent("href");
+    assert.strictEqual(r3.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
+
+    const r4 = await searchPublicContent("div");
+    assert.strictEqual(r4.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
+
+    const r5 = await searchPublicContent("class");
+    assert.strictEqual(r5.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
+  });
+
+  it("should find blog post by visible text", async () => {
+    const results = await searchPublicContent("Visible Search Text");
+    assert.ok(results.some(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`));
+  });
+
+  it("should find blog post by heading text", async () => {
+    const results = await searchPublicContent("React Development");
+    assert.ok(results.some(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`));
+  });
+
+  it("should find blog post by paragraph boundaries independently", async () => {
+    const r1 = await searchPublicContent("Hello");
+    assert.ok(r1.some(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`));
+
+    const r2 = await searchPublicContent("World");
+    assert.ok(r2.some(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`));
+
+    const r3 = await searchPublicContent("HelloWorld");
+    assert.strictEqual(r3.filter(r => r.slug === `html-blog-${UNIQUE_TERM.toLowerCase()}`).length, 0);
   });
 });

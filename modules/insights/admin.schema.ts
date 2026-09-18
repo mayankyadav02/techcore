@@ -11,6 +11,7 @@ export const blogInputSchema = z.object({
     .refine((value) => value === "" || slugPattern.test(value), "Use a lowercase slug"),
   excerpt: z.string().trim().min(10).max(400),
   body: z.string().trim().min(20).max(50000),
+  plainTextBody: z.string().trim().max(50000).optional(),
   authorName: z.string().trim().min(2).max(80),
   category: z.string().trim().min(2).max(40),
   tags: z.array(z.string().trim().min(1).max(40)).max(20),

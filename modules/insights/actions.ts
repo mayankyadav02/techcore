@@ -5,6 +5,7 @@ import { parseForm } from "@/lib/admin/parse";
 import { formChecked, formString, splitLines } from "@/lib/admin/query";
 import { blogInputSchema } from "@/modules/insights/admin.schema";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { htmlToSearchText } from "@/modules/insights/blog-search-text";
 import {
   createPost,
   deletePost,
@@ -13,11 +14,13 @@ import {
 } from "@/modules/insights/admin.service";
 
 function payload(formData: FormData) {
+  const body = sanitizeHtml(formString(formData.get("body")));
   return parseForm(blogInputSchema, {
     title: formString(formData.get("title")),
     slug: formString(formData.get("slug")),
     excerpt: formString(formData.get("excerpt")),
-    body: sanitizeHtml(formString(formData.get("body"))),
+    body,
+    plainTextBody: htmlToSearchText(body),
     authorName: formString(formData.get("authorName")),
     category: formString(formData.get("category")),
     tags: splitLines(formData.get("tags")).flatMap((line) =>

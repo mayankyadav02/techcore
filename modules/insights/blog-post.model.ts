@@ -15,6 +15,7 @@ const blogPostSchema = new Schema(
     },
     excerpt: { type: String, required: true, trim: true, maxlength: 400 },
     body: { type: String, required: true, trim: true, maxlength: 50000 },
+    plainTextBody: { type: String, trim: true, maxlength: 50000 },
     authorName: { type: String, required: true, trim: true, maxlength: 80 },
     category: { type: String, required: true, trim: true, maxlength: 40 },
     tags: { type: [String], default: [] },
@@ -44,7 +45,7 @@ blogPostSchema.index(
   {
     title: "text",
     excerpt: "text",
-    body: "text",
+    plainTextBody: "text",
     category: "text",
   },
   { name: "blog_post_text_idx" }
