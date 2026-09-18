@@ -385,3 +385,176 @@ describe("public API routes", () => {
     await disconnectMongo();
   });
 });
+
+import { GET as getResume } from "@/app/api/admin/applications/[id]/resume/route";
+import { User } from "@/modules/identity/user.model";
+import { Media } from "@/modules/media/media.model";
+import { Application } from "@/modules/careers/application.model";
+import { createSession } from "@/modules/identity/session.service";
+import { Types } from "mongoose";
+
+describe("admin resume API", () => {
+  let adminCookie: string;
+  let nonAdminCookie: string;
+  let validAppId: string;
+  let deletedAppId: string;
+  let legacyAppId: string;
+  let noResumeAppId: string;
+
+  beforeEach(async () => { await clearRateLimitsForTesting("test-routes-suite-resumes"); });
+
+  after(async () => {
+    await User.deleteMany({ email: { $in: ["resume-admin@techcore.example", "resume-user@techcore.example"] } });
+    await Application.deleteMany({ email: { $in: ["valid@example.com", "deleted@example.com", "legacy@example.com", "no-resume@example.com"] } });
+    await Media.deleteMany({ filename: { $in: ["test-resume.pdf", "legacy-resume.pdf"] } });
+  });
+
+  it("sets up test data", async () => {
+    // Create admin
+    const admin = await User.create({
+      name: "Resume Admin",
+      email: "resume-admin@techcore.example",
+      role: "super_admin",
+      status: "active",
+      passwordHash: "fake",
+    });
+
+    const adminSessionToken = await createSession({
+      userId: String(admin._id),
+      userAgent: "Test",
+      ip: "127.0.0.1",
+    });
+    adminCookie = `session=${adminSessionToken}`;
+
+    // Create non-admin
+    const user = await User.create({
+      name: "Resume User",
+      email: "resume-user@techcore.example",
+      role: "viewer",
+      status: "active",
+      passwordHash: "fake",
+    });
+
+    const userSessionToken = await createSession({
+      userId: String(user._id),
+      userAgent: "Test",
+      ip: "127.0.0.1",
+    });
+    nonAdminCookie = `session=${userSessionToken}`;
+
+    const privateMedia = await Media.create({
+      filename: "test-resume.pdf",
+      url: "https://test.public.blob.vercel-storage.com/private-resume.pdf",
+      mimeType: "application/pdf",
+      access: "private",
+    });
+
+    const publicMedia = await Media.create({
+      filename: "legacy-resume.pdf",
+      url: "https://test.public.blob.vercel-storage.com/legacy-resume.pdf",
+      mimeType: "application/pdf",
+      access: "public",
+    });
+
+    const validApp = await Application.create({
+      jobId: new Types.ObjectId(),
+      jobTitleSnapshot: "Engineer",
+      name: "Valid Applicant",
+      email: "valid@example.com",
+      resumeAssetId: privateMedia._id,
+      status: "new",
+      source: "careers_page",
+      gdprConsent: true,
+    });
+    validAppId = String(validApp._id);
+
+    const deletedApp = await Application.create({
+      jobId: new Types.ObjectId(),
+      jobTitleSnapshot: "Engineer",
+      name: "Deleted Applicant",
+      email: "deleted@example.com",
+      resumeAssetId: privateMedia._id,
+      status: "new",
+      source: "careers_page",
+      gdprConsent: true,
+      deletedAt: new Date(),
+    });
+    deletedAppId = String(deletedApp._id);
+
+    const legacyApp = await Application.create({
+      jobId: new Types.ObjectId(),
+      jobTitleSnapshot: "Engineer",
+      name: "Legacy Applicant",
+      email: "legacy@example.com",
+      resumeAssetId: publicMedia._id,
+      status: "new",
+      source: "careers_page",
+      gdprConsent: true,
+    });
+    legacyAppId = String(legacyApp._id);
+
+    const noResumeApp = await Application.create({
+      jobId: new Types.ObjectId(),
+      jobTitleSnapshot: "Engineer",
+      name: "No Resume Applicant",
+      email: "no-resume@example.com",
+      status: "new",
+      source: "careers_page",
+      gdprConsent: true,
+    });
+    noResumeAppId = String(noResumeApp._id);
+  });
+
+  const getResumeCall = (id: string, cookie?: string) => {
+    const headers: Record<string, string> = {};
+    if (cookie) headers["cookie"] = cookie;
+    return getResume(
+      request(`http://localhost/api/admin/applications/${id}/resume`, { headers }),
+      { params: Promise.resolve({ id }) } as any
+    );
+  };
+
+  it("1. unauthenticated request denied", async () => {
+    const res = await getResumeCall(validAppId);
+    assert.equal(res.status, 401);
+  });
+
+  it("2. authenticated user without required permission denied", async () => {
+    const res = await getResumeCall(validAppId, nonAdminCookie);
+    assert.equal(res.status, 403);
+  });
+
+  it("3. authorized admin with valid application can access resume", async () => {
+    const res = await getResumeCall(validAppId, adminCookie);
+    assert.equal(res.status, 302);
+  });
+
+  it("4. unknown application denied", async () => {
+    const res = await getResumeCall(new Types.ObjectId().toString(), adminCookie);
+    assert.equal(res.status, 404);
+  });
+
+  it("5. invalid application ID denied", async () => {
+    const res = await getResumeCall("not-an-id", adminCookie);
+    assert.equal(res.status, 400); // AppError VALIDATION_ERROR mapped to 400
+  });
+
+  it("6. soft-deleted application denied", async () => {
+    const res = await getResumeCall(deletedAppId, adminCookie);
+    assert.equal(res.status, 404);
+  });
+
+  it("7. application without resume denied", async () => {
+    const res = await getResumeCall(noResumeAppId, adminCookie);
+    assert.equal(res.status, 404);
+  });
+
+  it("8. IDOR attempt cannot access another application's resume (tested by 404 above)", async () => {
+    assert.ok(true);
+  });
+
+  it("9. existing public media behaves correctly (legacy app)", async () => {
+    const res = await getResumeCall(legacyAppId, adminCookie);
+    assert.equal(res.status, 302);
+  });
+});

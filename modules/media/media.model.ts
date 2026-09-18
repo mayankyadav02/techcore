@@ -9,6 +9,7 @@ const mediaSchema = new Schema(
     sizeBytes: { type: Number },
     width: { type: Number },
     height: { type: Number },
+    access: { type: String, enum: ["public", "private"], default: "public" },
     uploadedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true },

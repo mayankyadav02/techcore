@@ -10,7 +10,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { applicationApiSchema } from "@/modules/leads/schema";
 import { createApplication } from "@/modules/careers/application.service";
 import { put, del } from "@vercel/blob";
-import { uploadPublicResumeMedia } from "@/modules/media/admin.service";
+import { uploadPrivateResumeMedia } from "@/modules/media/admin.service";
 import { ALLOWED_RESUME_TYPES, MAX_RESUME_SIZE, validateResumeContent } from "@/lib/file-validation";
 import { AppError } from "@/lib/errors";
 
@@ -69,7 +69,7 @@ export async function POST(
         blobUrl = `https://test.public.blob.vercel-storage.com/${uniqueName}`;
       } else {
         const blob = await put(uniqueName, buffer, {
-          access: 'public',
+          access: 'private',
           contentType: resume.type,
           addRandomSuffix: false,
         });
@@ -77,7 +77,7 @@ export async function POST(
       }
 
       try {
-        const media = await uploadPublicResumeMedia({
+        const media = await uploadPrivateResumeMedia({
           filename: resume.name,
           url: blobUrl,
           mimeType: resume.type,

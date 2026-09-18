@@ -183,7 +183,7 @@ export async function deleteMediaAdmin(id: string, userId: string) {
 
   return { success: true };
 }
-export async function uploadPublicResumeMedia(data: {
+export async function uploadPrivateResumeMedia(data: {
   filename: string;
   url: string;
   mimeType: string;
@@ -196,6 +196,7 @@ export async function uploadPublicResumeMedia(data: {
     mimeType: data.mimeType,
     sizeBytes: data.sizeBytes,
     altText: "Applicant Resume",
+    access: "private",
   });
   await doc.save();
   return { id: doc._id.toString(), url: doc.url };
