@@ -4,7 +4,7 @@ import { connectMongo } from "@/lib/db";
 import { Application } from "@/modules/careers/application.model";
 import { parseObjectId } from "@/lib/api/ids";
 import { AppError } from "@/lib/errors";
-import { get } from "@vercel/blob";
+import { blobClient } from "@/modules/media/blob";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export async function GET(
       throw new AppError("NOT_FOUND", "Resume media record is missing or corrupted.");
     }
 
-    const result = await get(media.url, {
+    const result = await blobClient.get(media.url, {
       access: media.access === "private" ? "private" : "public",
     });
 

@@ -563,7 +563,7 @@ describe("admin resume API", () => {
   });
 
   it("3. authorized private resume streamed correctly", async () => {
-    const blobModule = require("@vercel/blob");
+    const blobModule = require("@/modules/media/blob").blobClient;
     const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
       assert.equal(url, mediaAUrl);
       assert.equal(options.access, "private");
@@ -606,7 +606,7 @@ describe("admin resume API", () => {
   });
 
   it("8. real object-boundary / IDOR test", async () => {
-    const blobModule = require("@vercel/blob");
+    const blobModule = require("@/modules/media/blob").blobClient;
     let calledUrl = "";
     const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
       calledUrl = url;
@@ -628,7 +628,7 @@ describe("admin resume API", () => {
   });
 
   it("9. legacy public resume streams correctly", async () => {
-    const blobModule = require("@vercel/blob");
+    const blobModule = require("@/modules/media/blob").blobClient;
     const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
       assert.equal(url, legacyMediaUrl);
       assert.equal(options.access, "public");
@@ -647,7 +647,7 @@ describe("admin resume API", () => {
   });
 
   it("10. Blob returns null -> 404", async () => {
-    const blobModule = require("@vercel/blob");
+    const blobModule = require("@/modules/media/blob").blobClient;
     const getMock = mock.method(blobModule, "get", async () => {
       return null;
     });
@@ -663,7 +663,7 @@ describe("admin resume API", () => {
   });
 
   it("11. Blob throws -> safe error", async () => {
-    const blobModule = require("@vercel/blob");
+    const blobModule = require("@/modules/media/blob").blobClient;
     const getMock = mock.method(blobModule, "get", async () => {
       throw new Error("Secret provider credential failure 0xDEADBEEF");
     });
