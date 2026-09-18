@@ -14,6 +14,10 @@ export type SearchResult = {
   href: string;
 };
 
+type ScoredSearchResult = SearchResult & {
+  _internalScore: number;
+};
+
 const MAX_QUERY_LENGTH = 100;
 const LIMIT_PER_MODEL = 10;
 
@@ -69,60 +73,65 @@ export async function searchPublicContent(query: string): Promise<SearchResult[]
         .lean(),
     ]);
 
-    const results: SearchResult[] = [];
+    const scoredResults: ScoredSearchResult[] = [];
 
     for (const doc of services) {
-      results.push({
+      scoredResults.push({
         type: "service",
         title: (doc as any).title,
         slug: (doc as any).slug,
         description: (doc as any).summary,
         href: `/services/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
     for (const doc of solutions) {
-      results.push({
+      scoredResults.push({
         type: "solution",
         title: (doc as any).title,
         slug: (doc as any).slug,
         description: (doc as any).summary,
         href: `/solutions/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
     for (const doc of industries) {
-      results.push({
+      scoredResults.push({
         type: "industry",
         title: (doc as any).title,
         slug: (doc as any).slug,
         description: (doc as any).summary,
         href: `/industries/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
     for (const doc of projects) {
-      results.push({
+      scoredResults.push({
         type: "project",
         title: (doc as any).title,
         slug: (doc as any).slug,
         description: (doc as any).summary,
         href: `/projects/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
     for (const doc of blogs) {
-      results.push({
+      scoredResults.push({
         type: "blog",
         title: (doc as any).title,
         slug: (doc as any).slug,
         description: (doc as any).excerpt,
         href: `/blog/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
     for (const doc of jobs) {
-      results.push({
+      scoredResults.push({
         type: "job",
         title: (doc as any).title,
         slug: (doc as any).slug,
@@ -130,10 +139,23 @@ export async function searchPublicContent(query: string): Promise<SearchResult[]
         // Let's use department & location as the description to keep it safe and concise.
         description: `${(doc as any).department || ""} - ${(doc as any).location || ""}`,
         href: `/careers/${(doc as any).slug}`,
+        _internalScore: (doc as any).score || 0,
       });
     }
 
-    return results;
+    // Sort globally by score descending, then fallback to slug ascending
+    scoredResults.sort((a, b) => {
+      if (b._internalScore !== a._internalScore) {
+        return b._internalScore - a._internalScore;
+      }
+      return a.slug.localeCompare(b.slug);
+    });
+
+    // Map back to SearchResult, removing _internalScore
+    return scoredResults.map((r) => {
+      const { _internalScore, ...rest } = r;
+      return rest;
+    });
   } catch (error) {
     console.error("Search error:", error);
     // Don't expose MongoDB errors to the user
