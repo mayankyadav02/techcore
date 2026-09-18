@@ -1,6 +1,6 @@
 import "./load-env";
 import assert from "node:assert/strict";
-import { after, before, describe, it } from "node:test";
+import { after, before, beforeEach, describe, it } from "node:test";
 import { NextRequest } from "next/server";
 import { POST as postLogin } from "@/app/api/auth/login/route";
 import { POST as postLogout } from "@/app/api/auth/logout/route";
@@ -15,13 +15,16 @@ import {
   hashSessionToken,
 } from "@/modules/identity/session.service";
 import { connectMongo, disconnectMongo } from "@/lib/db";
+import { clearRateLimitsForTesting } from "@/lib/rate-limit";
 import { proxy } from "@/proxy";
 
 const password = "correct-horse-battery";
 const email = `auth.${Date.now()}@techcore.example`;
 
 function request(url: string, init?: RequestInit) {
-  return new Request(url, init);
+  const headers = new Headers(init?.headers);
+  headers.set("x-test-client-key", "test-auth-suite");
+  return new Request(url, { ...init, headers });
 }
 
 function cookieHeader(response: Response) {
@@ -31,6 +34,7 @@ function cookieHeader(response: Response) {
 }
 
 describe("admin authentication", () => {
+  beforeEach(async () => { await clearRateLimitsForTesting("test-auth-suite"); });
   before(async () => {
     await connectMongo();
     await User.create({

@@ -1,12 +1,13 @@
 import "./load-env";
 import assert from "node:assert/strict";
 import { createHash, createHmac } from "node:crypto";
-import { after, afterEach, before, describe, it } from "node:test";
+import { after, afterEach, before, beforeEach, describe, it } from "node:test";
 import { POST as postForgotPassword } from "@/app/api/auth/forgot-password/route";
 import { POST as postResetPassword } from "@/app/api/auth/reset-password/route";
 import { env } from "@/lib/env";
 import { AppError } from "@/lib/errors";
 import { connectMongo, disconnectMongo } from "@/lib/db";
+import { clearRateLimitsForTesting } from "@/lib/rate-limit";
 import { AuditLog } from "@/modules/shared/audit-log.model";
 import { PasswordReset } from "@/modules/identity/password-reset.model";
 import { hashPassword, verifyPassword } from "@/modules/identity/password";
@@ -27,7 +28,9 @@ let userCounter = 0;
 let createdUserIds: string[] = [];
 
 function request(url: string, init?: RequestInit) {
-  return new Request(url, init);
+  const headers = new Headers(init?.headers);
+  headers.set("x-test-client-key", "test-password-reset-suite");
+  return new Request(url, { ...init, headers });
 }
 
 async function createUser(input?: {

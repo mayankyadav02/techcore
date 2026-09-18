@@ -8,12 +8,17 @@ import { POST as postEnquiry } from "@/app/api/enquiries/route";
 import { GET as getJob } from "@/app/api/jobs/[id]/route";
 import { POST as postApply } from "@/app/api/jobs/[id]/apply/route";
 import { disconnectMongo } from "@/lib/db";
+import { clearRateLimitsForTesting } from "@/lib/rate-limit";
 
 function request(url: string, init?: RequestInit) {
-  return new Request(url, init);
+  const headers = new Headers(init?.headers);
+  headers.set("x-test-client-key", "test-routes-suite");
+  return new Request(url, { ...init, headers });
 }
 
+import { beforeEach } from "node:test";
 describe("public API routes", () => {
+  beforeEach(async () => { await clearRateLimitsForTesting("test-routes-suite"); });
   it("lists published services", async () => {
     const response = await getServices();
     const body = (await response.json()) as {

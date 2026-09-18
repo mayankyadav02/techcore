@@ -106,7 +106,7 @@ export async function readFormData(request: Request) {
 }
 
 export function clientKey(request: Request) {
-  if (env.NODE_ENV !== "production") return "local";
+  if (env.NODE_ENV !== "production") { const testKey = request.headers.get("x-test-client-key"); if (testKey) return testKey; return "local"; }
   // Use the first forwarded hop only when this process sits behind a proxy
   // that overwrites the header. Spoofed values are not treated as trusted identity.
   const forwarded = request.headers.get("x-forwarded-for");

@@ -1,8 +1,6 @@
 import { AppError } from "@/lib/errors";
-
-type Bucket = { count: number; resetAt: number };
-
-const buckets = new Map<string, Bucket>();
+import { connectMongo } from "@/lib/db";
+import { RateLimit } from "@/modules/shared/rate-limit.model";
 
 const WINDOW_MS = 15 * 60 * 1000;
 
@@ -16,38 +14,42 @@ const limits: Record<string, number> = {
   test_email: 3,
 };
 
-function prune(now: number) {
-  if (buckets.size < 500) return;
-  for (const [key, bucket] of buckets) {
-    if (bucket.resetAt <= now) buckets.delete(key);
-  }
-}
-
 /**
- * In-memory limiter. Safe for a single Node process; not shared across
- * serverless instances. Replace with Redis when the platform is clustered.
+ * Distributed rate limiter using MongoDB. Safe for Vercel/serverless environments.
+ * Uses a fixed absolute window approach to prevent race conditions.
  */
 export async function rateLimit(key: string): Promise<{
   success: boolean;
   remaining: number;
 }> {
-  const now = Date.now();
-  prune(now);
   const route = key.split(":")[0] ?? "contact";
   const max = limits[route] ?? 10;
-  const current = buckets.get(key);
 
-  if (!current || current.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return { success: true, remaining: max - 1 };
+  const windowId = Math.floor(Date.now() / WINDOW_MS);
+  const windowKey = `${key}:${windowId}`;
+
+  try {
+    await connectMongo();
+    const doc = await RateLimit.findOneAndUpdate(
+      { key: windowKey },
+      {
+        $inc: { count: 1 },
+        $setOnInsert: { expiresAt: new Date(Date.now() + WINDOW_MS * 2) }
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    if (doc.count > max) {
+      return { success: false, remaining: 0 };
+    }
+
+    return { success: true, remaining: max - doc.count };
+  } catch (error) {
+    // If the database is unreachable, we fail-closed for abuse endpoints
+    // to prevent attacks taking down the database from bypassing rate limits.
+    // We throw INTERNAL_ERROR so it generates a 500 cleanly.
+    throw new AppError("INTERNAL_ERROR", "Unable to verify rate limit.");
   }
-
-  if (current.count >= max) {
-    return { success: false, remaining: 0 };
-  }
-
-  current.count += 1;
-  return { success: true, remaining: max - current.count };
 }
 
 export async function enforceRateLimit(route: string, client: string) {
@@ -60,6 +62,13 @@ export async function enforceRateLimit(route: string, client: string) {
   }
 }
 
-export function clearRateLimitsForTesting() {
-  buckets.clear();
+export async function clearRateLimitsForTesting(keyPrefix?: string) {
+  if (process.env.NODE_ENV === "test") {
+    await connectMongo();
+    if (keyPrefix) {
+      await RateLimit.deleteMany({ key: new RegExp(keyPrefix) });
+    } else {
+      await RateLimit.deleteMany({});
+    }
+  }
 }

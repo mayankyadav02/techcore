@@ -12,7 +12,7 @@ describe("Applications API (Phase 17)", () => {
   let jobId: string;
   let testAppUrl: string;
 
-  beforeEach(() => clearRateLimitsForTesting());
+  beforeEach(async () => { await clearRateLimitsForTesting("test-applications-suite"); });
 
   before(async () => {
     process.env.BLOB_READ_WRITE_TOKEN = "test-token";
@@ -47,13 +47,13 @@ describe("Applications API (Phase 17)", () => {
     formData.append("coverLetter", "This is a cover letter of sufficient length.");
     formData.append("gdprConsent", "true");
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
-    
+
     assert.strictEqual(res.status, 201);
     const body = await res.json();
     assert.strictEqual(body.success, true);
-    
+
     const app = await Application.findOne({ email: "resume-test1@example.com" });
     assert.ok(app);
     assert.ok(!app.resumeAssetId);
@@ -70,15 +70,15 @@ describe("Applications API (Phase 17)", () => {
     const file = new File([pdfBuffer], "resume.pdf", { type: "application/pdf" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 201);
-    
+
     const app = await Application.findOne({ email: "resume-test2@example.com" });
     assert.ok(app);
     assert.ok(app.resumeAssetId);
-    
+
     const media = await Media.findById(app.resumeAssetId);
     assert.ok(media);
     assert.strictEqual(media.mimeType, "application/pdf");
@@ -96,7 +96,7 @@ describe("Applications API (Phase 17)", () => {
     const file = new File([docBuffer], "resume.doc", { type: "application/msword" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 201);
@@ -114,11 +114,11 @@ describe("Applications API (Phase 17)", () => {
     const zipBuffer = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
     const wordBuffer = Buffer.from("word/document.xml");
     const docxBuffer = Buffer.concat([zipBuffer, wordBuffer]);
-    
+
     const file = new File([docxBuffer], "resume.docx", { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 201);
@@ -137,7 +137,7 @@ describe("Applications API (Phase 17)", () => {
     const file = new File([invalidBuffer], "resume.html", { type: "text/html" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 400);
@@ -156,7 +156,7 @@ describe("Applications API (Phase 17)", () => {
     const file = new File([fakeBuffer], "fake.pdf", { type: "application/pdf" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 400);
@@ -175,7 +175,7 @@ describe("Applications API (Phase 17)", () => {
     const file = new File([bigBuffer], "resume.pdf", { type: "application/pdf" });
     formData.append("resume", file);
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 400);
@@ -189,7 +189,7 @@ describe("Applications API (Phase 17)", () => {
     formData.append("email", "not-an-email");
     formData.append("gdprConsent", "false");
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 400);
@@ -207,11 +207,11 @@ describe("Applications API (Phase 17)", () => {
     formData.append("gdprConsent", "true");
     formData.append("website", "http://spam.com"); // Honeypot filled
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 201);
-    
+
     // Ensure no application was actually created
     const app = await Application.findOne({ email: "resume-test-spam@example.com" });
     assert.strictEqual(app, null);
@@ -220,17 +220,18 @@ describe("Applications API (Phase 17)", () => {
   test("11) Same-origin protection is preserved", async () => {
     const formData = new FormData();
     formData.append("name", "Cross Origin");
-    
+
     // In test environments, NODE_ENV="test", so assertSameOrigin might pass if origin is not checked properly?
     // Wait, let's mock headers
-    const req = new Request(testAppUrl, { 
-      method: "POST", 
+    const req = new Request(testAppUrl, {
+      method: "POST",
       body: formData,
       headers: {
-        "Origin": "http://evil.com"
+        "Origin": "http://evil.com",
+        "x-test-client-key": "test-applications-suite"
       }
     });
-    
+
     // In lib/api/request.ts, if origin matches expected origin, it succeeds.
     // If not, it fails.
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
@@ -251,14 +252,13 @@ describe("Applications API (Phase 17)", () => {
 
     const initialMediaCount = await Media.countDocuments({ altText: "Applicant Resume" });
 
-    const req = new Request(testAppUrl, { method: "POST", body: formData });
+    const req = new Request(testAppUrl, { method: "POST", body: formData, headers: { "x-test-client-key": "test-applications-suite" } });
     const res = await postApply(req, { params: Promise.resolve({ id: jobId }) });
 
     assert.strictEqual(res.status, 409); // CONFLICT
-    
+
     // Verify media was rolled back
     const finalMediaCount = await Media.countDocuments({ altText: "Applicant Resume" });
     assert.strictEqual(finalMediaCount, initialMediaCount);
   });
 });
-
