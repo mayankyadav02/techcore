@@ -32,4 +32,8 @@ export const settingsInputSchema = z.object({
   footerText: z.string().trim().max(400).optional(),
   seoTitle: z.string().trim().max(120).optional(),
   seoDescription: z.string().trim().max(320).optional(),
+  themeBrand: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Must be a 6-digit hex color").optional().or(z.literal("")),
+  themeBrandDark: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Must be a 6-digit hex color").optional().or(z.literal("")),
+  themeBrandLight: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Must be a 6-digit hex color").optional().or(z.literal("")),
+  themeRadius: z.enum(["none", "sm", "md", "lg"]).optional().or(z.literal("")),
 });

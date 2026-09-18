@@ -43,7 +43,7 @@ export function Logo({
       href="/"
       aria-label={displayName}
       className={cn(
-        "inline-flex min-w-0 shrink-0 items-center rounded-[var(--radius-sm)] transition-[transform,box-shadow] duration-200 hover:scale-[1.03] hover:shadow-[0_0_22px_rgb(0_200_120_/_0.28)] motion-reduce:hover:scale-100 motion-reduce:hover:shadow-none",
+        "inline-flex min-w-0 shrink-0 items-center rounded-[var(--radius-sm)] transition-[transform,box-shadow] duration-200 hover:scale-[1.03] hover:shadow-[0_0_22px_color-mix(in_srgb,var(--brand)_28%,transparent)] motion-reduce:hover:scale-100 motion-reduce:hover:shadow-none",
         className,
       )}
     >

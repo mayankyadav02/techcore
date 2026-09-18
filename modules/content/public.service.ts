@@ -25,6 +25,12 @@ export type PublicCompany = {
   navigation: { href: string; label: string }[];
   cta: { href: string; label: string };
   footerGroups: { title: string; links: { href: string; label: string }[] }[];
+  theme?: {
+    brand?: string;
+    brandDark?: string;
+    brandLight?: string;
+    radius?: string;
+  };
 };
 
 export const fallbackCompany: PublicCompany = {
@@ -380,6 +386,12 @@ function mapSettings(row: {
     footerGroups: row.footerGroups?.length 
       ? row.footerGroups 
       : (fallbackFooter as unknown as { title: string; links: { href: string; label: string }[] }[]),
+    theme: {
+      brand: (row as any).theme?.brand || undefined,
+      brandDark: (row as any).theme?.brandDark || undefined,
+      brandLight: (row as any).theme?.brandLight || undefined,
+      radius: (row as any).theme?.radius || undefined,
+    },
   };
 }
 

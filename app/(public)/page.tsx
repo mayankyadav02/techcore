@@ -391,7 +391,7 @@ export default async function HomePage() {
 
               <Link
                 href="/solutions"
-                className="group inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-brand/20 bg-brand/5 px-5 text-sm font-medium text-brand-dark transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-brand/10 hover:shadow-[0_8px_24px_rgb(0_200_120_/_0.10)]"
+                className="group inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-brand/20 bg-brand/5 px-5 text-sm font-medium text-brand-dark transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-brand/10 hover:shadow-[0_8px_24px_color-mix(in_srgb,var(--brand)_10%,transparent)]"
               >
                 View Solutions
                 <span

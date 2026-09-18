@@ -33,7 +33,7 @@ export function ServiceCard({
           group-hover:scale-110
           group-hover:bg-brand
           group-hover:text-white
-          group-hover:shadow-[0_12px_35px_rgba(0,200,120,0.22)]
+          group-hover:shadow-[0_12px_35px_color-mix(in_srgb,var(--brand)_22%,transparent)]
         "
       >
         <LineIcon

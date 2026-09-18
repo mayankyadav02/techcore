@@ -12,9 +12,9 @@ export function PackageCards({ packages }: { packages: PublicHomepage["packages"
           interactive
           className={cn(
             "group relative flex h-full min-w-0 flex-col overflow-hidden p-5 transition-all duration-300 sm:p-7",
-            "hover:-translate-y-1 hover:shadow-[0_18px_45px_rgb(0_200_120_/_0.10)]",
+            "hover:-translate-y-1 hover:shadow-[0_18px_45px_color-mix(in_srgb,var(--brand)_10%,transparent)]",
             item.featured &&
-              "border-brand/50 ring-1 ring-brand/30 shadow-[0_12px_35px_rgb(0_200_120_/_0.08)]",
+              "border-brand/50 ring-1 ring-brand/30 shadow-[0_12px_35px_color-mix(in_srgb,var(--brand)_8%,transparent)]",
           )}
         >
           {/* Premium top accent */}

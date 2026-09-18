@@ -1,5 +1,5 @@
 import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
-import { seoSchema, socialLinksSchema, navItemSchema, footerGroupSchema } from "@/modules/shared/subdocs";
+import { seoSchema, socialLinksSchema, navItemSchema, footerGroupSchema, themeSchema } from "@/modules/shared/subdocs";
 
 const settingsSchema = new Schema(
   {
@@ -31,6 +31,7 @@ const settingsSchema = new Schema(
     footerText: { type: String, trim: true, maxlength: 400 },
     socialLinks: { type: socialLinksSchema, default: () => ({}) },
     defaultSeo: { type: seoSchema, default: () => ({}) },
+    theme: { type: themeSchema, default: () => ({}) },
     featureFlags: {
       careersOpen: { type: Boolean, default: true },
     },

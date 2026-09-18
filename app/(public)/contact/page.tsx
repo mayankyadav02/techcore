@@ -105,7 +105,7 @@ export default async function ContactPage({
               <div className="mt-8 overflow-hidden rounded-[var(--radius-md)] border border-line bg-elevated p-5">
                 <div className="flex items-start gap-3">
                   <span
-                    className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand shadow-[0_0_0_4px_rgb(0_200_120/0.10)]"
+                    className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand shadow-[0_0_0_4px_color-mix(in_srgb,var(--brand)_10%,transparent)]"
                     aria-hidden="true"
                   />
 

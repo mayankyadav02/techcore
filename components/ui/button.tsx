@@ -13,10 +13,10 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const variantClass: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand text-navy-950 hover:bg-brand-bright shadow-[0_8px_22px_rgb(0_200_120_/_0.28)]",
+    "bg-brand text-navy-950 hover:bg-brand-bright shadow-[0_8px_22px_color-mix(in_srgb,var(--brand)_28%,transparent)]",
 
   secondary:
-    "tc-gradient text-navy-950 hover:opacity-95 shadow-[0_8px_22px_rgb(0_200_120_/_0.22)]",
+    "tc-gradient text-navy-950 hover:opacity-95 shadow-[0_8px_22px_color-mix(in_srgb,var(--brand)_22%,transparent)]",
 
   outline:
     "border border-line-strong bg-elevated text-ink hover:border-brand hover:bg-surface-muted",

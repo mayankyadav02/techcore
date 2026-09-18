@@ -531,7 +531,7 @@ className={cn(
                                 w-1.5
                                 rounded-full
                                 bg-brand
-                                shadow-[0_0_10px_rgb(0_200_120_/_0.65)]
+                                shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_65%,transparent)]
                               "
                               aria-hidden="true"
                             />

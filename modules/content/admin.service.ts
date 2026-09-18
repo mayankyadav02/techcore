@@ -40,6 +40,10 @@ export async function getSettingsAdmin() {
       footerText: "",
       seoTitle: "",
       seoDescription: "",
+      themeBrand: "",
+      themeBrandDark: "",
+      themeBrandLight: "",
+      themeRadius: "",
     };
   }
   return {
@@ -59,6 +63,10 @@ export async function getSettingsAdmin() {
     footerText: row.footerText ?? "",
     seoTitle: row.defaultSeo?.title ?? "",
     seoDescription: row.defaultSeo?.description ?? "",
+    themeBrand: (row as any).theme?.brand ?? "",
+    themeBrandDark: (row as any).theme?.brandDark ?? "",
+    themeBrandLight: (row as any).theme?.brandLight ?? "",
+    themeRadius: (row as any).theme?.radius ?? "",
   };
 }
 
@@ -107,11 +115,30 @@ export async function updateSettingsAdmin(
   if (canWriteSettings) {
     updateObj["defaultSeo.title"] = input.seoTitle;
     updateObj["defaultSeo.description"] = input.seoDescription;
+
+    if (input.themeBrand) updateObj["theme.brand"] = input.themeBrand;
+    if (input.themeBrandDark) updateObj["theme.brandDark"] = input.themeBrandDark;
+    if (input.themeBrandLight) updateObj["theme.brandLight"] = input.themeBrandLight;
+    if (input.themeRadius) updateObj["theme.radius"] = input.themeRadius;
+  }
+
+  const updateDoc: any = { $set: updateObj };
+  const unsetObj: Record<string, 1> = {};
+
+  if (canWriteSettings) {
+    if (input.themeBrand === "") unsetObj["theme.brand"] = 1;
+    if (input.themeBrandDark === "") unsetObj["theme.brandDark"] = 1;
+    if (input.themeBrandLight === "") unsetObj["theme.brandLight"] = 1;
+    if (input.themeRadius === "") unsetObj["theme.radius"] = 1;
+  }
+
+  if (Object.keys(unsetObj).length > 0) {
+    updateDoc.$unset = unsetObj;
   }
 
   await Settings.findOneAndUpdate(
     { key: "global" },
-    { $set: updateObj },
+    updateDoc,
     { upsert: true, setDefaultsOnInsert: true },
   );
   await writeAuditLog({

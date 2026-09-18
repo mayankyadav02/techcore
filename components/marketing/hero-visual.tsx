@@ -237,9 +237,9 @@ export function HeroVisual({ stats }: { stats: CatalogueStat[] }) {
                     h-2 w-2
                     rounded-full
                     bg-brand
-                    shadow-[0_0_12px_rgba(0,200,120,0.55)]
+                    shadow-[0_0_12px_color-mix(in_srgb,var(--brand)_55%,transparent)]
                     dark:bg-brand-bright
-                    dark:shadow-[0_0_12px_rgba(0,240,106,0.75)]
+                    dark:shadow-[0_0_12px_color-mix(in_srgb,var(--brand-bright)_75%,transparent)]
                   "
                 />
               </div>
@@ -391,7 +391,7 @@ export function HeroVisual({ stats }: { stats: CatalogueStat[] }) {
                         duration-300
                         ${
                           index === activeImage
-                            ? "w-6 bg-brand-bright shadow-[0_0_8px_rgba(0,240,106,0.55)]"
+                            ? "w-6 bg-brand-bright shadow-[0_0_8px_color-mix(in_srgb,var(--brand-bright)_55%,transparent)]"
                             : "w-1.5 bg-white/65"
                         }
                       `}

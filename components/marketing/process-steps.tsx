@@ -32,7 +32,7 @@ export function ProcessSteps({ steps }: { steps: PublicHomepage["processSteps"] 
                 group-hover:border-brand
                 group-hover:bg-brand
                 group-hover:text-white
-                group-hover:shadow-[0_0_0_5px_var(--surface),0_0_20px_rgb(0_200_120_/_0.18)]
+                group-hover:shadow-[0_0_0_5px_var(--surface),0_0_20px_color-mix(in_srgb,var(--brand)_18%,transparent)]
               "
             >
               {String(index + 1).padStart(2, "0")}

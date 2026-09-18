@@ -79,3 +79,13 @@ export type SeoFields = {
   description?: string;
   ogImageId?: Types.ObjectId;
 };
+
+export const themeSchema = new Schema(
+  {
+    brand: { type: String, match: /^#[0-9A-Fa-f]{6}$/ },
+    brandDark: { type: String, match: /^#[0-9A-Fa-f]{6}$/ },
+    brandLight: { type: String, match: /^#[0-9A-Fa-f]{6}$/ },
+    radius: { type: String, enum: ["none", "sm", "md", "lg"] },
+  },
+  { _id: false },
+);

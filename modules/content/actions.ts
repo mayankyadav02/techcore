@@ -27,6 +27,10 @@ export async function updateSettingsAction(formData: FormData) {
         footerText: formString(formData.get("footerText")),
         seoTitle: formString(formData.get("seoTitle")),
         seoDescription: formString(formData.get("seoDescription")),
+        themeBrand: formString(formData.get("themeBrand")),
+        themeBrandDark: formString(formData.get("themeBrandDark")),
+        themeBrandLight: formString(formData.get("themeBrandLight")),
+        themeRadius: formString(formData.get("themeRadius")),
       }),
     );
     return { ok: true as const, message: "Settings saved." };

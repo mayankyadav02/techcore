@@ -30,7 +30,7 @@ export function CtaBand({
       <div
         className="
           pointer-events-none absolute inset-0
-          bg-[radial-gradient(circle_at_15%_50%,rgb(0_200_120_/_0.14),transparent_34%),radial-gradient(circle_at_85%_20%,rgb(0_217_192_/_0.08),transparent_30%)]
+          bg-[radial-gradient(circle_at_15%_50%,color-mix(in_srgb,var(--brand)_14%,transparent),transparent_34%),radial-gradient(circle_at_85%_20%,color-mix(in_srgb,var(--brand-teal)_8%,transparent),transparent_30%)]
         "
         aria-hidden="true"
       />
@@ -94,7 +94,7 @@ export function CtaBand({
                   w-full sm:w-auto
                   transition-all duration-300
                   hover:-translate-y-0.5
-                  hover:shadow-[0_10px_30px_rgb(0_200_120_/_0.18)]
+                  hover:shadow-[0_10px_30px_color-mix(in_srgb,var(--brand)_18%,transparent)]
                 "
               >
                 {primaryLabel}
