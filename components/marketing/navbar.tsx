@@ -162,10 +162,8 @@ className={cn(
           <nav
             aria-label="Primary"
             className="
-              absolute top-1/2 left-1/2
+              mx-auto
               hidden
-              -translate-x-1/2
-              -translate-y-1/2
               items-center
               gap-3
               lg:flex
