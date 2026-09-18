@@ -6,6 +6,7 @@ import { GET as getService } from "@/app/api/services/[slug]/route";
 import { POST as postContact } from "@/app/api/contact/route";
 import { POST as postEnquiry } from "@/app/api/enquiries/route";
 import { GET as getJob } from "@/app/api/jobs/[id]/route";
+import { Enquiry } from "@/modules/leads/enquiry.model";
 import { POST as postApply } from "@/app/api/jobs/[id]/apply/route";
 import { disconnectMongo } from "@/lib/db";
 import { clearRateLimitsForTesting } from "@/lib/rate-limit";
@@ -143,6 +144,32 @@ describe("public API routes", () => {
     assert.equal(body.success, false);
   });
 
+  it("ignores a contact enquiry when honeypot is triggered", async () => {
+    const email = `honeypot.contact.${Date.now()}@techcore.example`;
+    const response = await postContact(
+      request("http://localhost/api/contact", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "Spam Bot",
+          email,
+          subject: "Architecture review",
+          message: "This message is long enough to pass the minimum length.",
+          gdprConsent: true,
+          website: "http://spam.com",
+        }),
+      }),
+    );
+    const body = (await response.json()) as { success: boolean; data?: { id?: string } };
+    assert.equal(response.status, 201);
+    assert.equal(body.success, true);
+    assert.ok(body.data?.id); // opaque id returned
+
+    // Ensure not persisted
+    const dbRecord = await Enquiry.findOne({ email });
+    assert.strictEqual(dbRecord, null);
+  });
+
   it("stores a valid contact enquiry", async () => {
     const response = await postContact(
       request("http://localhost/api/contact", {
@@ -264,6 +291,35 @@ describe("public API routes", () => {
     assert.equal(response.status, 400);
     assert.equal(body.success, false);
     assert.ok(body.fields?.gdprConsent);
+  });
+
+  it("ignores a quote enquiry when honeypot is triggered", async () => {
+    const email = `honeypot.quote.${Date.now()}@techcore.example`;
+    const response = await postEnquiry(
+      request("http://localhost/api/enquiries", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "Spam Bot",
+          email,
+          company: "Analytical Engines",
+          service: "web-development",
+          budget: "50-150k",
+          timeline: "1-3-months",
+          description: "We need a replacement for an internal operations portal.",
+          gdprConsent: true,
+          website: "http://spam.com",
+        }),
+      }),
+    );
+    const body = (await response.json()) as { success: boolean; data?: { id?: string } };
+    assert.equal(response.status, 201);
+    assert.equal(body.success, true);
+    assert.ok(body.data?.id);
+
+    // Ensure not persisted
+    const dbRecord = await Enquiry.findOne({ email });
+    assert.strictEqual(dbRecord, null);
   });
 
   it("stores a valid quote enquiry", async () => {
