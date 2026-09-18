@@ -392,25 +392,32 @@ import { Media } from "@/modules/media/media.model";
 import { Application } from "@/modules/careers/application.model";
 import { createSession } from "@/modules/identity/session.service";
 import { Types } from "mongoose";
+import { mock } from "node:test";
 
 describe("admin resume API", () => {
   let adminCookie: string;
   let nonAdminCookie: string;
-  let validAppId: string;
+  let appAId: string;
+  let appBId: string;
   let deletedAppId: string;
   let legacyAppId: string;
   let noResumeAppId: string;
+  let mediaAUrl: string;
+  let mediaBUrl: string;
+  let legacyMediaUrl: string;
 
-  beforeEach(async () => { await clearRateLimitsForTesting("test-routes-suite-resumes"); });
+  beforeEach(async () => {
+    await clearRateLimitsForTesting("test-routes-suite-resumes");
+  });
 
   after(async () => {
     await User.deleteMany({ email: { $in: ["resume-admin@techcore.example", "resume-user@techcore.example"] } });
-    await Application.deleteMany({ email: { $in: ["valid@example.com", "deleted@example.com", "legacy@example.com", "no-resume@example.com"] } });
-    await Media.deleteMany({ filename: { $in: ["test-resume.pdf", "legacy-resume.pdf"] } });
+    await Application.deleteMany({ email: { $in: ["appA@example.com", "appB@example.com", "deleted@example.com", "legacy@example.com", "no-resume@example.com"] } });
+    await Media.deleteMany({ filename: { $in: ["resumeA.pdf", "resumeB.pdf", "legacy-resume.pdf"] } });
+    mock.restoreAll();
   });
 
   it("sets up test data", async () => {
-    // Create admin
     const admin = await User.create({
       name: "Resume Admin",
       email: "resume-admin@techcore.example",
@@ -426,7 +433,6 @@ describe("admin resume API", () => {
     });
     adminCookie = `session=${adminSessionToken}`;
 
-    // Create non-admin
     const user = await User.create({
       name: "Resume User",
       email: "resume-user@techcore.example",
@@ -442,38 +448,60 @@ describe("admin resume API", () => {
     });
     nonAdminCookie = `session=${userSessionToken}`;
 
-    const privateMedia = await Media.create({
-      filename: "test-resume.pdf",
-      url: "https://test.public.blob.vercel-storage.com/private-resume.pdf",
+    mediaAUrl = "https://example.com/blob/A.pdf";
+    const mediaA = await Media.create({
+      filename: "resumeA.pdf",
+      url: mediaAUrl,
       mimeType: "application/pdf",
       access: "private",
     });
 
-    const publicMedia = await Media.create({
+    mediaBUrl = "https://example.com/blob/B.pdf";
+    const mediaB = await Media.create({
+      filename: "resumeB.pdf",
+      url: mediaBUrl,
+      mimeType: "application/pdf",
+      access: "private",
+    });
+
+    legacyMediaUrl = "https://example.com/blob/legacy.pdf";
+    const legacyMedia = await Media.create({
       filename: "legacy-resume.pdf",
-      url: "https://test.public.blob.vercel-storage.com/legacy-resume.pdf",
+      url: legacyMediaUrl,
       mimeType: "application/pdf",
       access: "public",
     });
 
-    const validApp = await Application.create({
+    const appA = await Application.create({
       jobId: new Types.ObjectId(),
       jobTitleSnapshot: "Engineer",
-      name: "Valid Applicant",
-      email: "valid@example.com",
-      resumeAssetId: privateMedia._id,
+      name: "App A",
+      email: "appA@example.com",
+      resumeAssetId: mediaA._id,
       status: "new",
       source: "careers_page",
       gdprConsent: true,
     });
-    validAppId = String(validApp._id);
+    appAId = String(appA._id);
+
+    const appB = await Application.create({
+      jobId: new Types.ObjectId(),
+      jobTitleSnapshot: "Engineer",
+      name: "App B",
+      email: "appB@example.com",
+      resumeAssetId: mediaB._id,
+      status: "new",
+      source: "careers_page",
+      gdprConsent: true,
+    });
+    appBId = String(appB._id);
 
     const deletedApp = await Application.create({
       jobId: new Types.ObjectId(),
       jobTitleSnapshot: "Engineer",
       name: "Deleted Applicant",
       email: "deleted@example.com",
-      resumeAssetId: privateMedia._id,
+      resumeAssetId: mediaA._id,
       status: "new",
       source: "careers_page",
       gdprConsent: true,
@@ -486,7 +514,7 @@ describe("admin resume API", () => {
       jobTitleSnapshot: "Engineer",
       name: "Legacy Applicant",
       email: "legacy@example.com",
-      resumeAssetId: publicMedia._id,
+      resumeAssetId: legacyMedia._id,
       status: "new",
       source: "careers_page",
       gdprConsent: true,
@@ -505,38 +533,66 @@ describe("admin resume API", () => {
     noResumeAppId = String(noResumeApp._id);
   });
 
-  const getResumeCall = (id: string, cookie?: string) => {
+  const getResumeCall = (id: string, cookie?: string, query?: string) => {
     const headers: Record<string, string> = {};
     if (cookie) headers["cookie"] = cookie;
+    const url = `http://localhost/api/admin/applications/${id}/resume${query ? `?${query}` : ""}`;
     return getResume(
-      request(`http://localhost/api/admin/applications/${id}/resume`, { headers }),
+      request(url, { headers }),
       { params: Promise.resolve({ id }) } as any
     );
   };
 
+  const createMockStream = (content: string) => {
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode(content));
+        controller.close();
+      }
+    });
+  };
+
   it("1. unauthenticated request denied", async () => {
-    const res = await getResumeCall(validAppId);
+    const res = await getResumeCall(appAId);
     assert.equal(res.status, 401);
   });
 
   it("2. authenticated user without required permission denied", async () => {
-    const res = await getResumeCall(validAppId, nonAdminCookie);
+    const res = await getResumeCall(appAId, nonAdminCookie);
     assert.equal(res.status, 403);
   });
 
-  it("3. authorized admin with valid application can access resume", async () => {
-    const res = await getResumeCall(validAppId, adminCookie);
-    assert.equal(res.status, 302);
+  it("3. authorized private resume streamed correctly", async () => {
+    const blobModule = require("@vercel/blob");
+    const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
+      assert.equal(url, mediaAUrl);
+      assert.equal(options.access, "private");
+      return {
+        stream: createMockStream("TEST RESUME CONTENT"),
+        blob: { contentType: "application/pdf" }
+      };
+    });
+
+    const res = await getResumeCall(appAId, adminCookie);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("Content-Type"), "application/pdf");
+    assert.match(res.headers.get("Content-Disposition") || "", /attachment; filename="resumeA.pdf"/);
+    assert.equal(res.headers.get("Cache-Control"), "private, no-store, max-age=0, must-revalidate");
+
+    const bodyText = await res.text();
+    assert.equal(bodyText, "TEST RESUME CONTENT");
+
+    getMock.mock.restore();
   });
 
-  it("4. unknown application denied", async () => {
+  it("4. invalid ObjectId denied", async () => {
+    const res = await getResumeCall("not-an-id", adminCookie);
+    assert.equal(res.status, 400);
+  });
+
+  it("5. nonexistent application denied", async () => {
     const res = await getResumeCall(new Types.ObjectId().toString(), adminCookie);
     assert.equal(res.status, 404);
-  });
-
-  it("5. invalid application ID denied", async () => {
-    const res = await getResumeCall("not-an-id", adminCookie);
-    assert.equal(res.status, 400); // AppError VALIDATION_ERROR mapped to 400
   });
 
   it("6. soft-deleted application denied", async () => {
@@ -549,12 +605,77 @@ describe("admin resume API", () => {
     assert.equal(res.status, 404);
   });
 
-  it("8. IDOR attempt cannot access another application's resume (tested by 404 above)", async () => {
-    assert.ok(true);
+  it("8. real object-boundary / IDOR test", async () => {
+    const blobModule = require("@vercel/blob");
+    let calledUrl = "";
+    const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
+      calledUrl = url;
+      return {
+        stream: createMockStream("BLOB CONTENT FOR: " + url),
+        blob: { contentType: "application/pdf" }
+      };
+    });
+
+    const res = await getResumeCall(appBId, adminCookie, `url=${mediaAUrl}`);
+    assert.equal(res.status, 200);
+
+    const bodyText = await res.text();
+
+    assert.equal(calledUrl, mediaBUrl);
+    assert.equal(bodyText, "BLOB CONTENT FOR: " + mediaBUrl);
+
+    getMock.mock.restore();
   });
 
-  it("9. existing public media behaves correctly (legacy app)", async () => {
+  it("9. legacy public resume streams correctly", async () => {
+    const blobModule = require("@vercel/blob");
+    const getMock = mock.method(blobModule, "get", async (url: string, options: any) => {
+      assert.equal(url, legacyMediaUrl);
+      assert.equal(options.access, "public");
+      return {
+        stream: createMockStream("LEGACY PUBLIC RESUME CONTENT"),
+        blob: { contentType: "application/pdf" }
+      };
+    });
+
     const res = await getResumeCall(legacyAppId, adminCookie);
-    assert.equal(res.status, 302);
+    assert.equal(res.status, 200);
+    const bodyText = await res.text();
+    assert.equal(bodyText, "LEGACY PUBLIC RESUME CONTENT");
+
+    getMock.mock.restore();
+  });
+
+  it("10. Blob returns null -> 404", async () => {
+    const blobModule = require("@vercel/blob");
+    const getMock = mock.method(blobModule, "get", async () => {
+      return null;
+    });
+
+    const res = await getResumeCall(appAId, adminCookie);
+    assert.equal(res.status, 404);
+
+    const json = await res.json() as any;
+    assert.equal(json.success, false);
+    assert.equal(json.code, "NOT_FOUND");
+
+    getMock.mock.restore();
+  });
+
+  it("11. Blob throws -> safe error", async () => {
+    const blobModule = require("@vercel/blob");
+    const getMock = mock.method(blobModule, "get", async () => {
+      throw new Error("Secret provider credential failure 0xDEADBEEF");
+    });
+
+    const res = await getResumeCall(appAId, adminCookie);
+    assert.equal(res.status, 500);
+
+    const json = await res.json() as any;
+    assert.equal(json.success, false);
+    assert.equal(json.code, "INTERNAL_ERROR");
+    assert.ok(!JSON.stringify(json).includes("0xDEADBEEF"));
+
+    getMock.mock.restore();
   });
 });

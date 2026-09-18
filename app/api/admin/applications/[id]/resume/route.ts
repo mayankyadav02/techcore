@@ -40,10 +40,6 @@ export async function GET(
       throw new AppError("NOT_FOUND", "Resume media record is missing or corrupted.");
     }
 
-    if (media.url.includes("test.public.blob.vercel-storage.com")) {
-      return Response.redirect(media.url, 302);
-    }
-
     const result = await get(media.url, {
       access: media.access === "private" ? "private" : "public",
     });
