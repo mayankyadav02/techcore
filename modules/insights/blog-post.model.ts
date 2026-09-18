@@ -48,7 +48,15 @@ blogPostSchema.index(
     plainTextBody: "text",
     category: "text",
   },
-  { name: "blog_post_text_idx" }
+  {
+    name: "blog_post_text_idx",
+    weights: {
+      title: 10,
+      category: 5,
+      excerpt: 5,
+      plainTextBody: 1,
+    }
+  }
 );
 
 export type BlogPost = InferSchemaType<typeof blogPostSchema>;

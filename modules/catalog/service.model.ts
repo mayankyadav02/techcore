@@ -51,7 +51,14 @@ serviceSchema.index(
     summary: "text",
     body: "text",
   },
-  { name: "service_text_idx" }
+  {
+    name: "service_text_idx",
+    weights: {
+      title: 10,
+      summary: 5,
+      body: 1,
+    }
+  }
 );
 
 export type Service = InferSchemaType<typeof serviceSchema>;

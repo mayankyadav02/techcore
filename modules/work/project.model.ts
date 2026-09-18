@@ -67,7 +67,17 @@ projectSchema.index(
     solution: "text",
     sector: "text",
   },
-  { name: "project_text_idx" }
+  {
+    name: "project_text_idx",
+    weights: {
+      title: 10,
+      sector: 5,
+      summary: 5,
+      overview: 2,
+      challenge: 1,
+      solution: 1,
+    }
+  }
 );
 
 export type Project = InferSchemaType<typeof projectSchema>;

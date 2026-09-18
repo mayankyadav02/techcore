@@ -44,7 +44,14 @@ industrySchema.index(
     summary: "text",
     body: "text",
   },
-  { name: "industry_text_idx" }
+  {
+    name: "industry_text_idx",
+    weights: {
+      title: 10,
+      summary: 5,
+      body: 1,
+    }
+  }
 );
 
 export type Industry = InferSchemaType<typeof industrySchema>;

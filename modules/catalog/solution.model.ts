@@ -50,7 +50,16 @@ solutionSchema.index(
     problem: "text",
     approach: "text",
   },
-  { name: "solution_text_idx" }
+  {
+    name: "solution_text_idx",
+    weights: {
+      title: 10,
+      summary: 5,
+      problem: 3,
+      approach: 3,
+      body: 1,
+    }
+  }
 );
 
 export type Solution = InferSchemaType<typeof solutionSchema>;

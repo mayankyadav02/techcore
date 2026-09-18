@@ -56,7 +56,15 @@ jobSchema.index(
     description: "text",
     requirements: "text",
   },
-  { name: "job_text_idx" }
+  {
+    name: "job_text_idx",
+    weights: {
+      title: 10,
+      department: 5,
+      description: 1,
+      requirements: 1,
+    }
+  }
 );
 
 export type Job = InferSchemaType<typeof jobSchema>;
