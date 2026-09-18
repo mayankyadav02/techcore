@@ -20,6 +20,7 @@ function jobQuery(idOrSlug: string) {
 export async function createApplication(
   idOrSlug: string,
   input: z.infer<typeof applicationApiSchema>,
+  resumeAssetId?: string,
 ) {
   const query = jobQuery(idOrSlug);
   await connectMongo();
@@ -50,6 +51,7 @@ export async function createApplication(
     email: input.email,
     phone: input.phone || undefined,
     coverLetter: input.coverLetter,
+    resumeAssetId,
     status: "new",
     source: "careers_page",
     gdprConsent: true,

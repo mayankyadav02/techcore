@@ -46,6 +46,9 @@ export function ApplicationForm({ jobId, companyName }: { jobId: string; company
         body.set("coverLetter", values.coverLetter);
         body.set("website", values.website ?? "");
         body.set("gdprConsent", values.gdprConsent ? "true" : "false");
+        if (values.resume && values.resume.length > 0) {
+          body.set("resume", values.resume[0]);
+        }
         const result = await postForm(`/api/jobs/${jobId}/apply`, body);
         if (!result.ok) {
           applyApiErrors(result.body, setError, setServerError);
@@ -53,7 +56,7 @@ export function ApplicationForm({ jobId, companyName }: { jobId: string; company
         }
         setServerMessage(
           result.body.message ??
-            "Your application has been received. Only the form fields are stored — file uploads are not accepted yet.",
+            "Your application has been received.",
         );
       })}
     >
@@ -76,9 +79,10 @@ export function ApplicationForm({ jobId, companyName }: { jobId: string; company
       >
         <Textarea id="coverLetter" rows={6} {...register("coverLetter")} />
       </FormField>
-      <p className="text-xs text-ink-subtle">
-        Resume files are not stored. Include relevant experience in the cover note.
-      </p>
+      <FormField label="Resume (Optional)" htmlFor="resume" error={errors.resume?.message?.toString()}>
+        <p className="mb-2 text-xs text-ink-muted">Accepted formats: PDF, DOC, DOCX (Max 4MB)</p>
+        <Input id="resume" type="file" accept=".pdf,.doc,.docx" {...register("resume")} />
+      </FormField>
       <ConsentField htmlFor="app-consent" error={errors.gdprConsent?.message}>
         <label htmlFor="app-consent" className="flex items-start gap-3 text-sm text-ink-muted">
           <input
@@ -100,3 +104,5 @@ export function ApplicationForm({ jobId, companyName }: { jobId: string; company
     </form>
   );
 }
+
+

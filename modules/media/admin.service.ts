@@ -183,3 +183,20 @@ export async function deleteMediaAdmin(id: string, userId: string) {
 
   return { success: true };
 }
+export async function uploadPublicResumeMedia(data: {
+  filename: string;
+  url: string;
+  mimeType: string;
+  sizeBytes: number;
+}) {
+  await connectMongo();
+  const doc = new Media({
+    filename: data.filename,
+    url: data.url,
+    mimeType: data.mimeType,
+    sizeBytes: data.sizeBytes,
+    altText: "Applicant Resume",
+  });
+  await doc.save();
+  return { id: doc._id.toString(), url: doc.url };
+}

@@ -59,3 +59,7 @@ export async function enforceRateLimit(route: string, client: string) {
     );
   }
 }
+
+export function clearRateLimitsForTesting() {
+  buckets.clear();
+}

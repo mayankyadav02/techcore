@@ -62,3 +62,35 @@ export async function validateImageContent(buffer: Buffer): Promise<boolean> {
 
   return false;
 }
+export const MAX_RESUME_SIZE = 4 * 1024 * 1024; // 4MB
+
+export const ALLOWED_RESUME_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+export async function validateResumeContent(buffer: Buffer): Promise<boolean> {
+  if (buffer.length < 8) return false;
+
+  // PDF: %PDF-
+  if (buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46 && buffer[4] === 0x2d) {
+    return true;
+  }
+
+  // DOCX: PK.. (ZIP format)
+  if (buffer[0] === 0x50 && buffer[1] === 0x4b && buffer[2] === 0x03 && buffer[3] === 0x04) {
+    // Basic heuristic to ensure it's an Office Open XML document rather than just any ZIP
+    if (buffer.includes(Buffer.from("[Content_Types].xml")) || buffer.includes(Buffer.from("word/"))) {
+      return true;
+    }
+  }
+
+  // DOC: D0 CF 11 E0
+  if (buffer[0] === 0xd0 && buffer[1] === 0xcf && buffer[2] === 0x11 && buffer[3] === 0xe0) {
+    return true;
+  }
+
+  return false;
+}
+

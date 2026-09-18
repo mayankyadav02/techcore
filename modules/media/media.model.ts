@@ -5,7 +5,7 @@ const mediaSchema = new Schema(
     filename: { type: String, required: true, trim: true, maxlength: 255 },
     url: { type: String, required: true, trim: true, maxlength: 1000, unique: true },
     altText: { type: String, trim: true, maxlength: 320, default: "" },
-    mimeType: { type: String, required: true, trim: true, maxlength: 50 },
+    mimeType: { type: String, required: true, trim: true, maxlength: 80 },
     sizeBytes: { type: Number },
     width: { type: Number },
     height: { type: Number },
@@ -20,3 +20,4 @@ export type MediaModel = Model<Media>;
 export const Media =
   (mongoose.models.Media as MediaModel | undefined) ??
   mongoose.model<Media>("Media", mediaSchema);
+

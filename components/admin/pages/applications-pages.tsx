@@ -139,6 +139,21 @@ export async function ApplicationDetailPage({ id }: { id: string }) {
             </p>
           </div>
           <div className="border-t border-line pt-4">
+            <h2 className="text-sm font-semibold text-ink">Resume</h2>
+            {record.resumeAssetId && typeof record.resumeAssetId === 'object' && 'url' in record.resumeAssetId ? (
+              <a
+                href={(record.resumeAssetId as any).url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex text-sm text-primary hover:underline"
+              >
+                Download / View Resume
+              </a>
+            ) : (
+              <p className="mt-2 text-sm text-ink-muted">No resume submitted.</p>
+            )}
+          </div>
+          <div className="border-t border-line pt-4">
             <h2 className="text-sm font-semibold text-ink">Notes</h2>
             <ul className="mt-3 space-y-3">
               {(Array.isArray(record.notes) ? record.notes : []).map((note, index) => {
@@ -186,3 +201,4 @@ export async function ApplicationDetailPage({ id }: { id: string }) {
     </div>
   );
 }
+

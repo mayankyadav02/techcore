@@ -200,7 +200,9 @@ export async function getApplication(id: string) {
   const row = await Application.findOne({
     _id: parseObjectId(id),
     ...notDeleted,
-  }).lean();
+  })
+    .populate("resumeAssetId")
+    .lean();
   if (!row) throw new AppError("NOT_FOUND", "Application not found.");
   return mapRow(row);
 }

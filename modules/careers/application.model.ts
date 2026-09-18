@@ -21,7 +21,7 @@ const applicationSchema = new Schema(
     },
     phone: { type: String, trim: true, maxlength: 40 },
     coverLetter: { type: String, trim: true, maxlength: 8000 },
-    resumeAssetId: { type: Schema.Types.ObjectId },
+    resumeAssetId: { type: Schema.Types.ObjectId, ref: "Media" },
     status: {
       type: String,
       enum: applicationStatuses,

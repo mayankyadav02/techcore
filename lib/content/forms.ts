@@ -11,7 +11,9 @@ export { budgetValues, timelineValues };
 
 export const contactSchema = contactApiSchema;
 export const quoteSchema = enquiryApiSchema;
-export const applicationSchema = applicationApiSchema;
+export const applicationSchema = applicationApiSchema.extend({
+  resume: typeof window === "undefined" ? z.any().optional() : z.custom<FileList>().optional(),
+});
 
 export type ContactInput = z.infer<typeof contactSchema>;
 export type QuoteInput = z.infer<typeof quoteSchema>;
