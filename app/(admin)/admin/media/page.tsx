@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/admin/page-header";
+import { Breadcrumb } from "@/components/admin/breadcrumb";
 import { MediaLibrary } from "@/components/admin/media/media-library";
 import { listMediaAdmin } from "@/modules/media/admin.service";
 import { requireAnyPagePermission } from "@/lib/auth";
@@ -31,7 +32,8 @@ export default async function AdminMediaPage(props: {
   }));
 
   return (
-    <div className="flex flex-col gap-8 pb-12">
+    <div className="flex flex-col gap-6 pb-12">
+      <Breadcrumb items={[{ href: "/admin/dashboard", label: "Dashboard" }, { label: "Media Library" }]} />
       <PageHeader
         title="Media Library"
         description="Manage existing local image assets across the site."

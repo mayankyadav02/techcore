@@ -8,6 +8,9 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmAction } from "@/components/admin/confirm-action";
 import { AdminPagination, listHref } from "@/components/admin/admin-pagination";
+import { Upload } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type MediaItem = {
   _id: string;
@@ -187,12 +190,12 @@ export function MediaLibrary({
         </div>
       )}
       <div className="flex items-center justify-between">
-        <input
+        <Input
           type="search"
           placeholder="Search media..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm rounded-[var(--radius-sm)] border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-brand"
+          className="w-full max-w-sm"
         />
         <div className="flex items-center gap-2">
           <input
@@ -207,6 +210,7 @@ export function MediaLibrary({
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
+            <Upload className="mr-2 h-4 w-4" />
             {uploading ? "Uploading..." : "Upload Media"}
           </Button>
         </div>
@@ -217,7 +221,7 @@ export function MediaLibrary({
           <button
             key={item._id}
             type="button"
-            className="group relative cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-line bg-surface shadow-sm transition-shadow hover:shadow-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="group relative cursor-pointer overflow-hidden rounded-[var(--radius-md)] border border-line bg-elevated shadow-sm transition-shadow hover:shadow-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             onClick={() => {
               setSelected(item);
               setAltText(item.altText || "");
@@ -244,9 +248,11 @@ export function MediaLibrary({
           </button>
         ))}
         {items.length === 0 && (
-          <div className="col-span-full py-12 text-center text-sm text-ink-muted">
-            No media found.
-          </div>
+          <EmptyState
+            title="No media found"
+            description="Upload images to use them across the site."
+            className="col-span-full"
+          />
         )}
       </div>
 
@@ -296,10 +302,9 @@ export function MediaLibrary({
                 <h4 className="mb-2 text-sm font-semibold text-ink">Alt Text</h4>
                 {editingAlt ? (
                   <div className="flex flex-col gap-2">
-                    <textarea
+                    <Textarea
                       value={altText}
                       onChange={(e) => setAltText(e.target.value)}
-                      className="min-h-[80px] w-full rounded-[var(--radius-sm)] border border-line bg-surface p-2 text-sm text-ink outline-none focus:border-brand"
                       placeholder="Describe the image for screen readers"
                     />
                     <div className="flex gap-2">
