@@ -89,6 +89,7 @@ export async function uploadMediaAction(formData: FormData) {
         access: 'public',
         contentType: file.type,
         addRandomSuffix: false, // already using UUID
+        token: process.env.BLOB_READ_WRITE_TOKEN,
       });
     }
 
