@@ -44,7 +44,8 @@ export async function updateHomepageAction(formData: FormData) {
     const { homeInputSchema } = await import("@/modules/content/home.schema");
 
     // Process form data into a plain object of strings
-    const payload = Object.fromEntries(formData.entries());
+    const payload = Object.fromEntries(formData.entries()) as Record<string, unknown>;
+    payload.heroImageIds = formData.getAll("heroImageIds");
 
     await updateHomepageAdmin(parseForm(homeInputSchema, payload));
     return { ok: true as const, message: "Homepage content saved." };

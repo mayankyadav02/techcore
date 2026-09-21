@@ -9,6 +9,8 @@ import { updateSettingsAction } from "@/modules/content/actions";
 import { sendTestEmailAction } from "@/modules/notifications/actions";
 import { Tabs } from "@/components/ui/tabs";
 import { MediaSelector } from "@/components/admin/media/media-selector";
+import { HomeForm } from "@/components/admin/settings/home-form";
+import type { PublicHomepage } from "@/modules/content/public.service";
 
 type NavItem = { label: string; href: string };
 type FooterGroup = { title: string; links: NavItem[] };
@@ -254,8 +256,10 @@ export function SettingsForm(values: {
   themeBrandDark: string;
   themeBrandLight: string;
   themeRadius: string;
+  homepageValues: PublicHomepage;
   canWriteInternal: boolean;
 }) {
+  const [activeTab, setActiveTab] = useState("branding");
   const [nav, setNav] = useState<NavItem[]>(values.navigation || []);
   const [footer, setFooter] = useState<FooterGroup[]>(values.footerGroups || []);
   const [logoId, setLogoId] = useState(values.logoId || "");
@@ -545,46 +549,39 @@ export function SettingsForm(values: {
   );
 
   return (
-    <MutationForm action={updateSettingsAction} submitLabel="Save settings">
-      {({ fieldErrors }) => {
-        const hasError = (keys: string[]) => keys.some((k) => !!fieldErrors[k]);
-        return (
-          <Tabs
-            tabs={[
-              {
-                id: "branding",
-                label: "Branding",
-                panel: brandingTab,
-                error: hasError(["companyName", "tagline", "logoType", "logoId", "logoText", "contactEmail", "contactPhone", "address"])
-              },
-              {
-                id: "navigation",
-                label: "Navigation",
-                panel: navTab,
-                error: hasError(["navigationJson", "ctaLabel", "ctaUrl"])
-              },
-              {
-                id: "footer",
-                label: "Footer",
-                panel: footerTab,
-                error: hasError(["footerText", "footerGroupsJson"])
-              },
-              {
-                id: "social",
-                label: "Social & SEO",
-                panel: socialTab,
-                error: hasError(["linkedin", "x", "seoTitle", "seoDescription"])
-              },
-              {
-                id: "theme",
-                label: "Theme & Appearance",
-                panel: themeTab,
-                error: hasError(["themeBrand", "themeBrandDark", "themeBrandLight", "themeRadius"])
-              },
-            ]}
-          />
-        );
-      }}
-    </MutationForm>
+    <div>
+      <Tabs
+        activeId={activeTab}
+        onChange={setActiveTab}
+        tabs={[
+          { id: "branding", label: "Branding" },
+          { id: "homepage", label: "Homepage Content" },
+          { id: "navigation", label: "Navigation" },
+          { id: "footer", label: "Footer" },
+          { id: "social", label: "Social & SEO" },
+          { id: "theme", label: "Theme & Appearance" },
+        ]}
+      />
+
+      <div className="pt-4">
+        <div className={activeTab === "homepage" ? "block" : "hidden"}>
+          <HomeForm values={values.homepageValues} />
+        </div>
+
+        <div className={activeTab !== "homepage" ? "block" : "hidden"}>
+          <MutationForm action={updateSettingsAction} submitLabel="Save settings">
+            {() => (
+              <div className="space-y-6">
+                <div className={activeTab === "branding" ? "block" : "hidden"}>{brandingTab}</div>
+                <div className={activeTab === "navigation" ? "block" : "hidden"}>{navTab}</div>
+                <div className={activeTab === "footer" ? "block" : "hidden"}>{footerTab}</div>
+                <div className={activeTab === "social" ? "block" : "hidden"}>{socialTab}</div>
+                <div className={activeTab === "theme" ? "block" : "hidden"}>{themeTab}</div>
+              </div>
+            )}
+          </MutationForm>
+        </div>
+      </div>
+    </div>
   );
 }

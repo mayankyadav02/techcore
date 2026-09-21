@@ -217,6 +217,14 @@ export async function updateHomepageAdmin(
     }
   }
 
+  if (input.heroImageIds) {
+    updateObj.heroImageIds = input.heroImageIds.filter(Boolean);
+  }
+
+  if (input.aboutImageId === "") {
+    updateObj.aboutImageId = null;
+  }
+
   await HomeContent.findOneAndUpdate(
     { key: "home" },
     { $set: updateObj },
@@ -232,7 +240,7 @@ export async function updateHomepageAdmin(
   
   revalidatePublic(
     [cacheTags.homepage, cacheTags.about],
-    ["/", "/about", "/admin/settings/homepage"],
+    ["/", "/about", "/admin/settings"],
   );
 }
 
