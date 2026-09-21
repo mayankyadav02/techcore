@@ -10,13 +10,16 @@ import { Logo } from "@/components/marketing/logo";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 import type { AdminNavGroup } from "@/lib/site";
+import type { PublicCompany } from "@/modules/content/public.service";
 
 export function AdminHeader({
   items,
   user,
+  company,
 }: {
   items: AdminNavGroup[];
   user: { name: string; email: string; roleLabel: string };
+  company: PublicCompany;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -80,7 +83,7 @@ export function AdminHeader({
             className="relative flex h-full w-[min(16rem,calc(100%-2.5rem))] flex-col overflow-y-auto overscroll-contain bg-navy-950"
           >
             <div className="flex h-14 items-center border-b border-white/10 px-4">
-              <Logo inverted size="sm" />
+              <Logo inverted size="sm" company={company} />
             </div>
             <AdminSidebar groups={items} tone="dark" onNavigate={() => setOpen(false)} />
           </aside>
