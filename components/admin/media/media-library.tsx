@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { updateMediaAction, uploadMediaAction } from "@/modules/media/actions";
@@ -8,7 +8,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmAction } from "@/components/admin/confirm-action";
 import { AdminPagination, listHref } from "@/components/admin/admin-pagination";
-import { Upload } from "lucide-react";
+import { Upload, RefreshCw } from "lucide-react";
 import { Input, Textarea } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -46,6 +46,13 @@ export function MediaLibrary({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { notify } = useToast();
+  const [isPending, startTransition] = useTransition();
+
+  const handleRefresh = () => {
+    startTransition(() => {
+      router.refresh();
+    });
+  };
 
   useEffect(() => {
     setItems(initialItems);
@@ -189,15 +196,15 @@ export function MediaLibrary({
           </div>
         </div>
       )}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 rounded-[var(--radius-lg)] border border-line bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between">
         <Input
           type="search"
           placeholder="Search media..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm"
+          className="w-full sm:max-w-sm"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <input
             type="file"
             accept="image/jpeg, image/png, image/webp, image/avif"
@@ -207,6 +214,17 @@ export function MediaLibrary({
             aria-label="Upload media file"
           />
           <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={isPending}
+            title="Refresh media"
+            className="px-3"
+          >
+            <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin text-brand" : "text-ink-subtle"}`} />
+            <span className="sr-only">Refresh media</span>
+          </Button>
+          <Button
+            className="flex-1 sm:flex-none"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
@@ -216,7 +234,7 @@ export function MediaLibrary({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-6">
         {items.map((item) => (
           <button
             key={item._id}
@@ -273,7 +291,7 @@ export function MediaLibrary({
                 className="h-full max-h-[400px] w-full object-contain"
               />
             </div>
-            <div className="flex w-full flex-col gap-4 sm:w-64">
+            <div className="flex w-full flex-col gap-4 sm:w-72 sm:shrink-0">
               <div>
                 <h4 className="text-sm font-semibold text-ink">Filename</h4>
                 <p className="break-all text-sm text-ink-muted">{selected.filename}</p>
