@@ -5,6 +5,7 @@ import { Application } from "@/modules/careers/application.model";
 import { parseObjectId } from "@/lib/api/ids";
 import { AppError } from "@/lib/errors";
 import { blobClient } from "@/modules/media/blob";
+import { type Media } from "@/modules/media/media.model";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export async function GET(
       throw new AppError("NOT_FOUND", "No resume attached to this application.");
     }
 
-    const media = application.resumeAssetId as any;
+    const media = application.resumeAssetId as Partial<Media> | null;
 
     if (!media || !media.url) {
       throw new AppError("NOT_FOUND", "Resume media record is missing or corrupted.");

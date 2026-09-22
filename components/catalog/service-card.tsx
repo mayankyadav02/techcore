@@ -12,7 +12,6 @@ type ServiceCardProps = {
 
 export function ServiceCard({
   service,
-  index = 0,
   featured = false,
 }: ServiceCardProps) {
   return (

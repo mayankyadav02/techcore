@@ -175,7 +175,7 @@ const cachedPageContent = unstable_cache(
     const { connectMongo } = await import("@/lib/db");
     const { PageContent } = await import("@/modules/content/page-content.model");
     await connectMongo();
-    return PageContent.findOne({ key } as any).select("-updatedBy -__v").lean();
+    return PageContent.findOne({ key } as Record<string, unknown>).select("-updatedBy -__v").lean();
   },
   ["public-page-content"],
   { tags: [cacheTags.pageContent], revalidate: 3600 },
@@ -191,7 +191,7 @@ const cachedLegalPage = unstable_cache(
     const { connectMongo } = await import("@/lib/db");
     const { LegalPage } = await import("@/modules/content/legal-page.model");
     await connectMongo();
-    return LegalPage.findOne({ key } as any).select("-updatedBy -__v").lean();
+    return LegalPage.findOne({ key } as Record<string, unknown>).select("-updatedBy -__v").lean();
   },
   ["public-legal-page"],
   { tags: [cacheTags.legalPage], revalidate: 3600 },

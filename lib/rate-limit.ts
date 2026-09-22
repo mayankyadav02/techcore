@@ -44,7 +44,7 @@ export async function rateLimit(key: string): Promise<{
     }
 
     return { success: true, remaining: max - doc.count };
-  } catch (error) {
+  } catch {
     // If the database is unreachable, we fail-closed for abuse endpoints
     // to prevent attacks taking down the database from bypassing rate limits.
     // We throw INTERNAL_ERROR so it generates a 500 cleanly.

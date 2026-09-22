@@ -20,7 +20,7 @@ function tabActive(pathname: string, href: string) {
 
 import type { PublicCompany } from "@/modules/content/public.service";
 
-export function MobileTabBar({ company: _company }: { company?: PublicCompany }) {
+export function MobileTabBar({}: { company?: PublicCompany }) {
   const pathname = usePathname();
 
   return (

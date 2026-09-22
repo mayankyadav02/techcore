@@ -16,7 +16,7 @@ const safeJsonArray = <T extends z.ZodTypeAny>(schema: T) =>
           return z.NEVER;
         }
         return parsed;
-      } catch (e) {
+      } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Invalid JSON array",

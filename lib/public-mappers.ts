@@ -135,11 +135,14 @@ export type PublicTestimonial = {
 
 export function mapMedia(doc: Record<string, unknown>, fieldName: string = "heroImageId") {
   const value = doc[fieldName];
-  if (value && typeof value === "object" && (value as any).url) {
-    return {
-      url: (value as any).url as string,
-      altText: (value as any).altText as string,
-    };
+  if (value && typeof value === "object" && "url" in value) {
+    const media = value as { url?: unknown; altText?: unknown };
+    if (typeof media.url === "string") {
+      return {
+        url: media.url,
+        altText: typeof media.altText === "string" ? media.altText : "",
+      };
+    }
   }
   return undefined;
 }
@@ -166,7 +169,7 @@ export function mapService(doc: Record<string, unknown>): PublicService {
           .filter((item): item is { title: string; content: string } => Boolean(item))
       : [],
     icon: isIconName(doc.icon) ? doc.icon : "consulting",
-    heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,
+    heroImageId: doc.heroImageId ? (doc.heroImageId as { _id?: unknown })?._id?.toString() || doc.heroImageId?.toString() : undefined,
     heroMedia: mapMedia(doc, "heroImageId"),
     featured: Boolean(doc.featured),
     ...seoFields(doc),
@@ -184,7 +187,7 @@ export function mapSolution(doc: Record<string, unknown>): PublicSolution {
     features: asStringArray(doc.features),
     technology: asStringArray(doc.technology),
     benefits: asStringArray(doc.outcomes ?? doc.benefits),
-    heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,
+    heroImageId: doc.heroImageId ? (doc.heroImageId as { _id?: unknown })?._id?.toString() || doc.heroImageId?.toString() : undefined,
     heroMedia: mapMedia(doc, "heroImageId"),
     featured: Boolean(doc.featured),
     ...seoFields(doc),
@@ -281,7 +284,7 @@ export function mapProject(doc: Record<string, unknown>): PublicProject {
     industrySlug: str(doc.industrySlug) || undefined,
     solutionSlug: str(doc.solutionSlug) || undefined,
     serviceSlugs: asStringArray(doc.serviceSlugs),
-    heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,
+    heroImageId: doc.heroImageId ? (doc.heroImageId as { _id?: unknown })?._id?.toString() || doc.heroImageId?.toString() : undefined,
     heroMedia: mapMedia(doc, "heroImageId"),
     featured: Boolean(doc.featured),
     ...seoFields(doc),
@@ -296,7 +299,7 @@ export function mapIndustry(doc: Record<string, unknown>): PublicIndustry {
     summary: str(doc.summary),
     body: str(doc.body),
     focus: asStringArray(doc.focus),
-    heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,
+    heroImageId: doc.heroImageId ? (doc.heroImageId as { _id?: unknown })?._id?.toString() || doc.heroImageId?.toString() : undefined,
     heroMedia: mapMedia(doc, "heroImageId"),
     featured: Boolean(doc.featured),
     ...seoFields(doc),
@@ -316,7 +319,7 @@ export function mapPost(doc: Record<string, unknown>): PublicPost {
     body: str(doc.body),
     featured: Boolean(doc.featured),
     authorName: str(doc.authorName),
-    heroImageId: doc.heroImageId ? (doc.heroImageId as any)?._id?.toString() || doc.heroImageId?.toString() : undefined,
+    heroImageId: doc.heroImageId ? (doc.heroImageId as { _id?: unknown })?._id?.toString() || doc.heroImageId?.toString() : undefined,
     heroMedia: mapMedia(doc, "heroImageId"),
     ...seoFields(doc),
   };

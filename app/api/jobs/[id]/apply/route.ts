@@ -84,7 +84,7 @@ export async function POST(
           sizeBytes: resume.size,
         });
         resumeAssetId = media.id;
-      } catch (e) {
+      } catch {
         if (blobUrl && process.env.BLOB_READ_WRITE_TOKEN !== "test-token") {
           await del(blobUrl).catch(() => {});
         }

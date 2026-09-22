@@ -215,7 +215,7 @@ function TestEmailButton() {
                 } else {
                   setMessage({ text: res.error || "Failed to send test email.", error: true });
                 }
-              } catch (err) {
+              } catch {
                 setMessage({ text: "An unexpected error occurred.", error: true });
               }
             });

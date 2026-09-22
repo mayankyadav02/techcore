@@ -35,7 +35,7 @@ import { getPublicCompany, getPublicHomepage } from "@/modules/content/public.se
 import { CoverMedia } from "@/components/marketing/cover-media";
 import { catalogImage } from "@/lib/public-images";
 import Link from "next/link";
-import Image from "next/image";
+
 
 import type { Metadata } from "next";
 
