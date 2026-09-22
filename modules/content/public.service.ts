@@ -4,6 +4,7 @@ import { mapMedia } from "@/lib/public-mappers";
 import { cacheTags } from "@/lib/cache-tags";
 import { Settings } from "@/modules/content/settings.model";
 import { HomeContent } from "@/modules/content/home.model";
+import "@/modules/media/media.model";
 import { AboutContent } from "@/modules/content/about.model";
 import { PageSeo } from "@/modules/content/page-seo.model";
 import { site, socialLinks as fallbackSocial, publicNav as fallbackNav, publicCta as fallbackCta, footerGroups as fallbackFooter } from "@/lib/site";
